@@ -103,8 +103,8 @@ void initialize(Data_pointers *program_data)
 
 int main(int argc, char *argv[]) 
 {
-        unsigned long int dim_power, end_time, steps;
-        double dt;
+        unsigned long int dim_power, steps;
+        double end_time, dt;
         FILE *output_u, *output_v;
         char **char_ptr = NULL;
 
@@ -120,8 +120,8 @@ int main(int argc, char *argv[])
 
         dim_power = strtoul(argv[1], char_ptr, 10);
         steps = strtoul(argv[2], char_ptr, 10);
-        domain_size = strtoul(argv[3], char_ptr, 10);
-        end_time = strtoul(argv[4], char_ptr, 10);
+        domain_size = strtod(argv[3], char_ptr);
+        end_time = strtod(argv[4], char_ptr);
         dt = (double) end_time/steps;
 
         printf("Callibrating FFTW...\n");
@@ -145,7 +145,7 @@ int main(int argc, char *argv[])
         }
                                      
         for (size_t i = 0; i < steps; ++i) {
-                //compute_nonlinear(&program_data, (double) end_time/steps/2);
+                compute_nonlinear(&program_data, dt);
                 compute_linear(&program_data);
                 double timestamp = (double) end_time/steps * i;
 

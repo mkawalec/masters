@@ -9,7 +9,7 @@ const double a = 0.125;
 const double b = -0.004;
 const double R = 1;
 const double D = 40;
-unsigned long int domain_size = 40;
+double domain_size = 40.0;
 
 double l2_norm(double *array, size_t size)
 {

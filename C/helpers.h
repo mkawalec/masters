@@ -5,8 +5,7 @@ extern const double a;
 extern const double b;
 extern const double R;
 extern const double D;
-extern unsigned long int domain_size;
-
+extern double domain_size;
 
 typedef struct Data_pointers {
         /* The complex arrays are the intermediate arrays
