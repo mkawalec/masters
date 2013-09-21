@@ -128,7 +128,7 @@ int main(int argc, char *argv[])
         steps = strtoul(argv[2], char_ptr, 10);
         domain_size = strtod(argv[3], char_ptr);
         end_time = strtod(argv[4], char_ptr);
-        dt = (double) end_time/steps;
+        dt = (double) end_time/steps/2;
 
         printf("Callibrating FFTW...\n");
         Data_pointers program_data = allocate_precompute(dim_power, dt);
@@ -160,7 +160,6 @@ int main(int argc, char *argv[])
                         fprintf(outputs[j], "%lf %lf\n", timestamp, 
                                         *(double*) program_data.c_u[j]);
                 }
-
 
                 // Print the results to the output
                 if (i%1 == 0) {
