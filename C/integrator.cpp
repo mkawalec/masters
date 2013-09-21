@@ -3,7 +3,6 @@
 #include <fftw3.h>
 #include <complex>
 #include <math.h>
-#include <string.h>
 
 #include "helpers.h"
 
@@ -112,6 +111,7 @@ int main(int argc, char *argv[])
         unsigned long int dim_power, steps;
         double end_time, dt;
         FILE *output_u, *output_v;
+        FILE **outputs = NULL;
         char **char_ptr = NULL;
 
         if (argc < 5) {
@@ -120,16 +120,19 @@ int main(int argc, char *argv[])
                 return -1;
         }
 
-        // Output files
-        output_u = fopen("output_u", "w");
-        output_v = fopen("output_v", "w");
-
+        // Parse the commandline parameters
         dim_power = strtoul(argv[1], char_ptr, 10);
         steps = strtoul(argv[2], char_ptr, 10);
         domain_size = strtod(argv[3], char_ptr);
         end_time = strtod(argv[4], char_ptr);
         dt = (double) end_time/steps/2;
 
+        // Bind the output files
+        output_u = fopen("output_u", "w");
+        output_v = fopen("output_v", "w");
+
+
+        // Initialize everything
         printf("Callibrating FFTW...\n");
         Data_pointers program_data = allocate_precompute(dim_power, dt);
         printf("done\n");
@@ -139,16 +142,7 @@ int main(int argc, char *argv[])
         printf("done\n");            
 
         // Initialize modes outputs and open the files
-        FILE **outputs;
-        outputs = (FILE**) malloc(sizeof(FILE*) * program_data.size_complex);
-        for (size_t j = 0; j < program_data.size_complex; ++j) {
-                char num[10];
-                char filename[20] = "output_";
-                sprintf(num, "%ld", j);
-                strcat(filename, num);
-                outputs[j] = (FILE*) malloc(sizeof(FILE*));
-                outputs[j] = fopen(filename, "w");
-        }
+        initialize_modes_outputs(&outputs, &program_data);
                                      
         for (size_t i = 0; i < steps; ++i) {
                 compute_nonlinear(&program_data, dt);
@@ -156,10 +150,9 @@ int main(int argc, char *argv[])
                 double timestamp = (double) end_time/steps * i;
 
                 // Print the modes
-                for (size_t j = 0; j < program_data.size_complex; ++j){
+                for (size_t j = 0; j < program_data.size_complex; ++j)
                         fprintf(outputs[j], "%lf %lf\n", timestamp, 
                                         *(double*) program_data.c_u[j]);
-                }
 
                 // Print the results to the output
                 if (i%1 == 0) {

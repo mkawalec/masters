@@ -1,5 +1,6 @@
 #include <fftw3.h>
 #include <complex>
+#include <string.h>
 
 #include "helpers.h"
 
@@ -102,6 +103,24 @@ void compute_linear_operators(Data_pointers *program_data, double dt)
 
                 *(program_data->Lu + i) = (1 + 0.5 * dt * Lx) / (1 - 0.5 * dt * Lx);
                 *(program_data->Lv + i) = (1 + 0.5 * dt * Ly) / (1 - 0.5 * dt * Ly);
+        }
+}
+
+void initialize_modes_outputs(FILE ***outputs, Data_pointers *program_data)
+{
+        *outputs = (FILE**) malloc(sizeof(FILE*) * program_data->size_complex);
+        for (size_t j = 0; j < program_data->size_complex; ++j) {
+                /* Create the filenames output_n where n is
+                 * the number of the wave mode height in that 
+                 * file
+                 */
+                char num[10];
+                char filename[20] = "output_";
+                sprintf(num, "%ld", j);
+                strcat(filename, num);
+
+                *(*outputs + j) = (FILE*) malloc(sizeof(FILE*));
+                *(*outputs + j) = fopen(filename, "w");
         }
 }
 
