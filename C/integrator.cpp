@@ -77,11 +77,14 @@ void compute_linear(Data_pointers *prog_data)
                 double *c_u = prog_data->c_u[i];
                 double *c_v = prog_data->c_v[i];
 
-                // Computing u and v
-                *(c_u + 1) *= *(prog_data->Lu + i);
+                /* To compute u and v, multiply both parts of the number
+                 * by the (real) value of the corresponding precomputed
+                 * linear operator
+                 */
                 *(c_u) *= *(prog_data->Lu + i);
-                *(c_v + 1) *= *(prog_data->Lv + i);
+                *(c_u + 1) *= *(prog_data->Lu + i);
                 *(c_v) *= *(prog_data->Lv + i);
+                *(c_v + 1) *= *(prog_data->Lv + i);
         }
 }
 
@@ -96,6 +99,9 @@ void initialize(Data_pointers *program_data)
                 program_data->v[i] = 1.0;
         }
 
+        /* On every stage we are interested in working
+         * on the Fourier space
+         */
         fftw_execute(program_data->i_u);
         fftw_execute(program_data->i_v);
 }
@@ -114,7 +120,7 @@ int main(int argc, char *argv[])
                 return -1;
         }
 
-        // Output file
+        // Output files
         output_u = fopen("output_u", "w");
         output_v = fopen("output_v", "w");
 
