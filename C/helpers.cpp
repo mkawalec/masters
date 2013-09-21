@@ -124,3 +124,11 @@ void initialize_modes_outputs(FILE ***outputs, Data_pointers *program_data)
         }
 }
 
+void print_modes(FILE ***outputs, Data_pointers *program_data, double timestamp)
+{
+        for (size_t j = 0; j < program_data->size_complex; ++j)
+                fprintf(*(*outputs + j), "%lf %lf\n", timestamp, 
+                                *(double*) program_data->c_u[j]);
+}
+
+

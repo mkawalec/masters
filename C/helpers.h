@@ -30,3 +30,4 @@ void normalize(double *array, size_t size);
 Data_pointers allocate_precompute(unsigned long int dim_power, double dt);
 void compute_linear_operators(Data_pointers *program_data, double dt);
 void initialize_modes_outputs(FILE ***outputs, Data_pointers *program_data);
+void print_modes(FILE ***outputs, Data_pointers *program_data, double timestamp);
