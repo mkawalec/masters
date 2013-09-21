@@ -1,4 +1,13 @@
-masters
+Maichal's Masters Project
 =======
 
-My Masters Project in Physics sources
+These are the sources for my Masters Project in Physics @ University of Edinburgh.
+
+C part
+===
+
+The C part uses cmake, so to configure and compile use
+
+    mkdir build ; cd build ; cmake .. ; make -j3
+
+
