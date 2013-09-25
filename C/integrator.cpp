@@ -103,6 +103,13 @@ void initialize(Data_pointers *program_data)
          */
         fftw_execute(program_data->i_u);
         fftw_execute(program_data->i_v);
+
+        // Initialize the complex bits, for debugging
+        for (size_t i = 0; i < program_data->size_complex; ++i) {
+                double *c_u = program_data->c_u[i];
+                *c_u = domain_size / (i + 1);
+                *(c_u + 1) = *c_u;
+        }
 }
 
 
@@ -142,7 +149,7 @@ int main(int argc, char *argv[])
         printf("done\n");            
 
         // Initialize modes outputs and open the files
-        //initialize_modes_outputs(&outputs, &program_data);
+        initialize_modes_outputs(&outputs, &program_data);
                                      
         for (size_t i = 0; i < steps; ++i) {
                 compute_nonlinear(&program_data, dt);
@@ -150,10 +157,11 @@ int main(int argc, char *argv[])
                 double timestamp = (double) end_time/steps * i;
 
                 // Print the modes
-                //print_modes(&outputs, &program_data, timestamp);
+                if (i < 100)
+                        print_modes(&outputs, &program_data, timestamp);
 
                 // Print the results to the output
-                if (i%1000 == 0) {
+                if (i%1 == 0) {
                         // Transform to the real basis
                         fftw_execute(program_data.e_u);
                         fftw_execute(program_data.e_v);
@@ -170,6 +178,6 @@ int main(int argc, char *argv[])
 
         fclose(output_u);
         fclose(output_v);
-        //for (size_t j = 0; j < program_data.size_complex; ++j)
-        //        fclose(outputs[j]);
+        for (size_t j = 0; j < program_data.size_complex; ++j)
+                fclose(outputs[j]);
 }
