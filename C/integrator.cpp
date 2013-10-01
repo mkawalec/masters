@@ -27,6 +27,7 @@ void compute_nonlinear(Data_pointers *prog_data, double dt)
         double *u = prog_data->u;
         double *v = prog_data->v;
         double *du = prog_data->du;
+
         // Multiply the parts according to the nonlinear equation
         for (i = 0; i < prog_data->size_real; ++i) {
                 double temp_u;
@@ -56,17 +57,19 @@ void compute_nonlinear(Data_pointers *prog_data, double dt)
                 double *v = prog_data->c_v[i];
 
                 if (i > 2.0/3 * prog_data->size_complex) {
-                        *u = 0;
-                        *(u + 1) = 0;
-                        *v = 0;
-                        *(v + 1) = 0;
+                        *u = 0.0;
+                        *(u + 1) = 0.0;
+                        *v = 0.0;
+                        *(v + 1) = 0.0;
                 } else {
                         *u /= prog_data->size_real;
                         *(u + 1) /= prog_data->size_real;
                         *v /= prog_data->size_real;
                         *(v + 1) /= prog_data->size_real;
+                        printf("%d %lf %lf\n", i, *u, *(u + 1));
                 }
         }
+        printf("\n");
 }
 
 
