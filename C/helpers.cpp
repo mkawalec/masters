@@ -109,7 +109,7 @@ void compute_linear_operators(Data_pointers *program_data, double dt)
 void initialize_modes_outputs(FILE ***outputs, Data_pointers *program_data)
 {
         *outputs = (FILE**) malloc(sizeof(FILE*) * program_data->size_complex * 2/3);
-        for (size_t j = 0; j < program_data->size_complex * 2/3; ++j) {
+        for (size_t j = 0; j < program_data->size_complex * 2.0/3; ++j) {
                 /* Create the filenames output_n where n is
                  * the number of the wave mode height in that 
                  * file
@@ -126,7 +126,7 @@ void initialize_modes_outputs(FILE ***outputs, Data_pointers *program_data)
 
 void print_modes(FILE ***outputs, Data_pointers *program_data, double timestamp)
 {
-        for (size_t j = 0; j < program_data->size_complex * 2/3; ++j)
+        for (size_t j = 0; j < program_data->size_complex * 2.0/3; ++j)
                 fprintf(*(*outputs + j), "%lf %lf %lf\n", timestamp, 
                                 *(double*) program_data->c_u[j],
                                 *(double*) (program_data->c_u[j] + 1));

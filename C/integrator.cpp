@@ -24,9 +24,17 @@ void compute_nonlinear(Data_pointers *prog_data, double dt)
         fftw_execute(prog_data->f_v);
         fftw_execute(prog_data->f_du);
 
+        // Normalize the transfor
         double *u = prog_data->u;
         double *v = prog_data->v;
         double *du = prog_data->du;
+        double norm_factor = sqrt(prog_data->size_real);
+
+        for (i = 0; i < prog_data->size_real; ++i) {
+            *(u + i) /= norm_factor;
+            *(v + i) /= norm_factor;
+            *(du + i) /= norm_factor;
+        }
 
         // Multiply the parts according to the nonlinear equation
         for (i = 0; i < prog_data->size_real; ++i) {
@@ -56,20 +64,18 @@ void compute_nonlinear(Data_pointers *prog_data, double dt)
                 double *u = prog_data->c_u[i];
                 double *v = prog_data->c_v[i];
 
-                if (i > 2.0/3 * prog_data->size_complex) {
+                if (i >= 2.0/3 * prog_data->size_complex) {
                         *u = 0.0;
                         *(u + 1) = 0.0;
                         *v = 0.0;
                         *(v + 1) = 0.0;
                 } else {
-                        *u /= prog_data->size_real;
-                        *(u + 1) /= prog_data->size_real;
-                        *v /= prog_data->size_real;
-                        *(v + 1) /= prog_data->size_real;
-                        printf("%d %lf %lf\n", i, *u, *(u + 1));
+                        *u /= norm_factor;
+                        *(u + 1) /= norm_factor;
+                        *v /= norm_factor;
+                        *(v + 1) /= norm_factor;
                 }
         }
-        printf("\n");
 }
 
 
@@ -95,7 +101,7 @@ void initialize(Data_pointers *program_data)
         /* Initialize the data, according to the starting conditions
          * from the Physica D 238 paper
          */
-        for (size_t i = 0; i < program_data->size_real; ++i) {
+        for (size_t i = 0; i < program_data->size_real * 2.0/3; ++i) {
                 double x = (double) i / program_data->size_real * domain_size;
                 program_data->u[i] = 2.0 * cos(x) + 0.03 * cos(11.0/12.0 * x);
                 program_data->v[i] = 1.0;
@@ -112,6 +118,10 @@ void initialize(Data_pointers *program_data)
                 double *c_u = program_data->c_u[i];
                 *c_u = domain_size / (i + 1);
                 *(c_u + 1) = *c_u;
+                if (i >= program_data->size_complex * 2.0/3) {
+                    *c_u = 0.0;
+                    *(c_u + 1) = 0.0;
+                }
         }
 }
 
