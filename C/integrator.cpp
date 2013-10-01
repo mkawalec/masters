@@ -148,17 +148,21 @@ int main(int argc, char *argv[])
         initialize(&program_data);   
         printf("done\n");            
 
+#ifdef DEBUG
         // Initialize modes outputs and open the files
         initialize_modes_outputs(&outputs, &program_data);
+#endif
                                      
         for (size_t i = 0; i < steps; ++i) {
                 compute_nonlinear(&program_data, dt);
                 compute_linear(&program_data);
                 double timestamp = (double) end_time/steps * i;
 
+#ifdef DEBUG
                 // Print the modes
                 if (i < 100)
                         print_modes(&outputs, &program_data, timestamp);
+#endif
 
                 // Print the results to the output
                 if (i%1 == 0) {
@@ -178,6 +182,9 @@ int main(int argc, char *argv[])
 
         fclose(output_u);
         fclose(output_v);
+
+#ifdef DEBUG
         for (size_t j = 0; j < program_data.size_complex; ++j)
                 fclose(outputs[j]);
+#endif
 }
