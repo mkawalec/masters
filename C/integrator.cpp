@@ -28,12 +28,12 @@ void compute_nonlinear(Data_pointers *prog_data, double dt)
         double *u = prog_data->u;
         double *v = prog_data->v;
         double *du = prog_data->du;
-        double norm_factor = sqrt(prog_data->size_real);
+        double scale_factor = 1/prog_data->size_real;
 
         for (i = 0; i < prog_data->size_real; ++i) {
-            *(u + i) /= norm_factor;
-            *(v + i) /= norm_factor;
-            *(du + i) /= norm_factor;
+            *(u + i) *= scale_factor;
+            *(v + i) *= scale_factor;
+            *(du + i) *= scale_factor;
         }
 
         // Multiply the parts according to the nonlinear equation
@@ -46,11 +46,11 @@ void compute_nonlinear(Data_pointers *prog_data, double dt)
                  * new value before v is computed
                  */
                 temp_u = (1 - e) *
-                        (a * *(v + i) + b * pow(*(v + i), 2)) * *(u + i) +
-                        *(u + i) * *(du + i);
+                        (a * v[i] + b * pow(v[i], 2)) * u[i] +
+                        u[i] * du[i];
 
                 // Calculating the v term
-                *(v + i) += dt * R * pow(*(u + i), 2);
+                *(v +i) += dt * R * pow(u[i], 2);
 
                 // Saving the results
                 *(u + i) += dt * temp_u;
@@ -69,12 +69,12 @@ void compute_nonlinear(Data_pointers *prog_data, double dt)
                         *(u + 1) = 0.0;
                         *v = 0.0;
                         *(v + 1) = 0.0;
-                } else {
-                        *u /= norm_factor;
-                        *(u + 1) /= norm_factor;
-                        *v /= norm_factor;
-                        *(v + 1) /= norm_factor;
-                }
+                } /*else {
+                        *u *= scale_factor;
+                        *(u + 1) *= scale_factor;
+                        *v *= scale_factor;
+                        *(v + 1) *= scale_factor;
+                }*/
         }
 }
 
@@ -168,7 +168,7 @@ int main(int argc, char *argv[])
                                      
         for (size_t i = 0; i < steps; ++i) {
                 compute_nonlinear(&program_data, dt);
-                compute_linear(&program_data);
+                //compute_linear(&program_data);
                 double timestamp = (double) end_time/steps * i;
 
 #ifdef DEBUG

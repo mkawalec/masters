@@ -25,8 +25,9 @@ double l2_norm(double *array, size_t size)
 
 void normalize(double *array, size_t size)
 {
+        double norm_factor = sqrt(size);
         for (size_t i = 0; i < size; ++i)
-                *(array + i) /= size;
+                *(array + i) /= norm_factor;
 }
 
 Data_pointers allocate_precompute(unsigned long int dim_power, double dt)
