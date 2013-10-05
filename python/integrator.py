@@ -35,11 +35,12 @@ class Integrator(object):
             to be overloaded '''
         
         k = 2 * pi * x
-        Lx = - pow(k, 4) - pow(k, 2) - (1 - self.e)
-        Ly = self.D * pow(k, 2) - 1
+        Lu = - pow(k, 4) - pow(k, 2) - (1 - self.e)
+        Lv = self.D * pow(k, 2) - 1
+        print(k)
 
-        return [(1 + 0.5 * self.dt * Lx) / (1 - 0.5 * self.dt * Lx),
-                (1 + 0.5 * self.dt * Ly) / (1 - 0.5 * self.dt * Ly)]
+        return [(1 + 0.5 * self.dt * Lu) / (1 - 0.5 * self.dt * Lu),
+                (1 + 0.5 * self.dt * Lv) / (1 - 0.5 * self.dt * Lv)]
        
 
     def compute_stuff(self, what, step_scale=1):
@@ -51,13 +52,7 @@ class Integrator(object):
         return reduce(lambda init, vals: (init[0] + [vals[0]], init[1] + [vals[1]]),
                 values, ([], []))
 
-    def linear_step(self):
-        ''' Computes the step of linear simulation '''
-        for i in range(len(self.operators[0])):
-            self.current_values[0][i] *= self.operators[0][i]
-            self.current_values[1][i] *= self.operators[1][i]
-
-    def calculate_derivative(self, init, val):
+    def compute_derivative(self, init, val):
         return init + [complex(-val[1] * 2 * pi / self.max_x * val[0].imag,
                                 val[1] * 2 * pi / self.max_x * val[0].real)]
 
@@ -79,7 +74,7 @@ class Integrator(object):
         return init
 
     def nonlinear_step(self):
-        derivative = reduce(self.calculate_derivative, 
+        derivative = reduce(self.compute_derivative, 
                             zip(self.current_values[0], 
                                 range(len(self.current_values[0]))), 
                             [])
@@ -100,8 +95,14 @@ class Integrator(object):
 
         return transformed
 
+    def linear_step(self):
+        ''' Computes the step of linear simulation '''
+        for i in range(len(self.operators[0])):
+            self.current_values[0][i] *= self.operators[0][i]
+            self.current_values[1][i] *= self.operators[1][i]
+
     def __init__(self, resolution=1024, max_x=40, dt=0.001):
-        ''' Please not that the resolution MUST be even, and
+        ''' Please note that the resolution MUST be even, and
             should be a power of two
         '''
 
@@ -122,7 +123,7 @@ class Integrator(object):
             while current_time < end_time:
                 current_time += self.dt
 
-                self.nonlinear_step()
+                #self.nonlinear_step()
                 self.linear_step()
                 f.write('%s %s\n' % (current_time, 
                     l2_norm(self.current_values[1])))
