@@ -25,7 +25,7 @@ typedef struct Data_pointers {
         size_t size_real, size_complex;
 } Data_pointers;
 
-double l2_norm(double *array, size_t size);
+double l2_norm(fftw_complex *array, size_t size);
 void normalize(double *array, size_t size);
 Data_pointers allocate_precompute(unsigned long int dim_power, double dt);
 void compute_linear_operators(Data_pointers *program_data, double dt);

@@ -12,13 +12,15 @@ const double R = 1;
 const double D = 40;
 double domain_size = 40.0;
 
-double l2_norm(double *array, size_t size)
+double l2_norm(fftw_complex *array, size_t size)
 {
         double norm = 0;
 
         // We only add the numbers that don't belong to the padding
-        for (size_t i = 0; i < size * 2 / 3; ++i) 
-                norm += pow(*(array + i), 2);
+        for (size_t i = 0; i < size * 2 / 3; ++i) {
+                double *el = array[i];
+                norm += sqrt(pow(*el, 2) + pow(*(el + 1), 2));
+        }
 
         return sqrt(norm);
 }

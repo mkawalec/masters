@@ -28,7 +28,7 @@ void compute_nonlinear(Data_pointers *prog_data, double dt)
         double *u = prog_data->u;
         double *v = prog_data->v;
         double *du = prog_data->du;
-        double scale_factor = 1/prog_data->size_real;
+        double scale_factor = 1/(double)prog_data->size_real;
 
         for (i = 0; i < prog_data->size_real; ++i) {
             *(u + i) *= scale_factor;
@@ -45,15 +45,15 @@ void compute_nonlinear(Data_pointers *prog_data, double dt)
                  * as we want to avoid overwriting u with the
                  * new value before v is computed
                  */
-                temp_u = (1 - e) *
+                /*temp_u = (1 - e) *
                         (a * v[i] + b * pow(v[i], 2)) * u[i] +
                         u[i] * du[i];
 
                 // Calculating the v term
-                *(v +i) += dt * R * pow(u[i], 2);
+                *(v + i) += dt * R * pow(u[i], 2);
 
                 // Saving the results
-                *(u + i) += dt * temp_u;
+                *(u + i) += dt * temp_u;*/
         }
 
         fftw_execute(prog_data->b_u);
@@ -180,16 +180,16 @@ int main(int argc, char *argv[])
                 // Print the results to the output
                 if (i%1 == 0) {
                         // Transform to the real basis
-                        fftw_execute(program_data.e_u);
-                        fftw_execute(program_data.e_v);
-                        normalize(program_data.u, program_data.size_real);
-                        normalize(program_data.v, program_data.size_real);
+                        //fftw_execute(program_data.e_u);
+                        //fftw_execute(program_data.e_v);
+                        //normalize(program_data.u, program_data.size_real);
+                        //normalize(program_data.v, program_data.size_real);
 
 
                         fprintf(output_u, "%lf %lf\n", timestamp, 
-                                        l2_norm(program_data.u, program_data.size_real));
+                                        l2_norm(program_data.c_u, program_data.size_complex));
                         fprintf(output_v, "%lf %lf\n", timestamp, 
-                                        l2_norm(program_data.v, program_data.size_real));
+                                        l2_norm(program_data.c_v, program_data.size_complex));
                 }
         }
 
