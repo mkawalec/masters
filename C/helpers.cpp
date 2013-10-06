@@ -12,15 +12,13 @@ const double R = 1;
 const double D = 40;
 double domain_size = 40.0;
 
-double l2_norm(fftw_complex *array, size_t size)
+double l2_norm(double *array, size_t size)
 {
         double norm = 0;
 
         // We only add the numbers that don't belong to the padding
-        for (size_t i = 0; i < size * 2 / 3; ++i) {
-                double *el = array[i];
-                norm += sqrt(pow(*el, 2) + pow(*(el + 1), 2));
-        }
+        for (size_t i = 0; i < size * 2 / 3; ++i) 
+                norm += pow(array[i], 2);
 
         return sqrt(norm);
 }
@@ -44,10 +42,10 @@ Data_pointers allocate_precompute(unsigned long int dim_power, double dt)
 
         program_data.u = (double*) fftw_malloc(program_data.size_real * sizeof(double));
         program_data.v = (double*) fftw_malloc(program_data.size_real * sizeof(double));
-        program_data.c_u = fftw_alloc_complex(program_data.size_complex);
-        program_data.c_v = fftw_alloc_complex(program_data.size_complex);
+        program_data.c_u = fftw_alloc_complex(program_data.size_real);
+        program_data.c_v = fftw_alloc_complex(program_data.size_real);
         // Derivative in Fourier space
-        program_data.dc_u = fftw_alloc_complex(program_data.size_complex);
+        program_data.dc_u = fftw_alloc_complex(program_data.size_real);
         // Real (non-fourier space) derivative
         program_data.du = (double*) fftw_malloc(program_data.size_real * sizeof(double));
 
@@ -74,16 +72,16 @@ Data_pointers allocate_precompute(unsigned long int dim_power, double dt)
                         FFTW_MEASURE | FFTW_PRESERVE_INPUT);
 
         // Forwad plans
-        program_data.f_u = fftw_plan_dft_c2r_1d(program_data.size_complex,
+        program_data.f_u = fftw_plan_dft_c2r_1d(program_data.size_real,
                         program_data.c_u, program_data.u, FFTW_MEASURE);
-        program_data.f_v = fftw_plan_dft_c2r_1d(program_data.size_complex,
+        program_data.f_v = fftw_plan_dft_c2r_1d(program_data.size_real,
                         program_data.c_v, program_data.v, FFTW_MEASURE);
-        program_data.f_du = fftw_plan_dft_c2r_1d(program_data.size_complex,
+        program_data.f_du = fftw_plan_dft_c2r_1d(program_data.size_real,
                         program_data.dc_u, program_data.du, FFTW_MEASURE);
         // Backward plans
-        program_data.b_u = fftw_plan_dft_r2c_1d(program_data.size_complex,
+        program_data.b_u = fftw_plan_dft_r2c_1d(program_data.size_real,
                         program_data.u, program_data.c_u, FFTW_MEASURE);
-        program_data.b_v = fftw_plan_dft_r2c_1d(program_data.size_complex,
+        program_data.b_v = fftw_plan_dft_r2c_1d(program_data.size_real,
                         program_data.v, program_data.c_v, FFTW_MEASURE);
 
         compute_linear_operators(&program_data, dt);
@@ -97,12 +95,12 @@ void compute_linear_operators(Data_pointers *program_data, double dt)
          * of the complex numbers and check how the performance
          * changes.
          */
-        for (size_t i = 0; i < program_data->size_complex; ++i) {
+        for (size_t i = 0; i < program_data->size_complex * 2.0 / 3; ++i) {
                 double k = (double) i * 2 * M_PI / domain_size;
                 double Lx, Ly;
 
-                Lx = - pow(k, 4) - pow(k, 2) - (1 - e);
-                Ly = D * pow(k, 2) - 1;
+                Lx = - pow(k, 4) + pow(k, 2) - (1 - e);
+                Ly = - D * pow(k, 2) - 1;
 
                 *(program_data->Lu + i) = (1 + 0.5 * dt * Lx) / (1 - 0.5 * dt * Lx);
                 *(program_data->Lv + i) = (1 + 0.5 * dt * Ly) / (1 - 0.5 * dt * Ly);
@@ -130,9 +128,8 @@ void initialize_modes_outputs(FILE ***outputs, Data_pointers *program_data)
 void print_modes(FILE ***outputs, Data_pointers *program_data, double timestamp)
 {
         for (size_t j = 0; j < program_data->size_complex * 2.0/3; ++j)
-                fprintf(*(*outputs + j), "%lf %lf %lf\n", timestamp, 
-                                *(double*) program_data->c_u[j],
-                                *(double*) (program_data->c_u[j] + 1));
+                fprintf(*(*outputs + j), "%f %f\n", timestamp, 
+                                *(double*) program_data->c_u[j]);
 }
 
 

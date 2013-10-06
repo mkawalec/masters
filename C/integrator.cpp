@@ -28,7 +28,7 @@ void compute_nonlinear(Data_pointers *prog_data, double dt)
         double *u = prog_data->u;
         double *v = prog_data->v;
         double *du = prog_data->du;
-        double scale_factor = 1/(double)prog_data->size_real;
+        double scale_factor = 1/sqrt(prog_data->size_real);
 
         for (i = 0; i < prog_data->size_real; ++i) {
             *(u + i) *= scale_factor;
@@ -45,43 +45,43 @@ void compute_nonlinear(Data_pointers *prog_data, double dt)
                  * as we want to avoid overwriting u with the
                  * new value before v is computed
                  */
-                /*temp_u = (1 - e) *
+                temp_u = (1 - e) *
                         (a * v[i] + b * pow(v[i], 2)) * u[i] +
                         u[i] * du[i];
 
                 // Calculating the v term
-                *(v + i) += dt * R * pow(u[i], 2);
+                v[i] += dt * R * pow(u[i], 2);
 
                 // Saving the results
-                *(u + i) += dt * temp_u;*/
+                u[i] += dt * temp_u;
         }
 
         fftw_execute(prog_data->b_u);
         fftw_execute(prog_data->b_v);
 
         // Normalize and nullify the padding
-        for (i = 0; i < prog_data->size_complex; ++i) {
+        for (i = 0; i < prog_data->size_real; ++i) {
                 double *u = prog_data->c_u[i];
                 double *v = prog_data->c_v[i];
 
-                if (i >= 2.0/3 * prog_data->size_complex) {
+                if (i >= 2.0 / 3 * prog_data->size_complex) {
                         *u = 0.0;
                         *(u + 1) = 0.0;
                         *v = 0.0;
                         *(v + 1) = 0.0;
-                } /*else {
+                } else {
                         *u *= scale_factor;
                         *(u + 1) *= scale_factor;
                         *v *= scale_factor;
                         *(v + 1) *= scale_factor;
-                }*/
+                }
         }
 }
 
 
 void compute_linear(Data_pointers *prog_data)
 {
-        for (size_t i = 0; i < prog_data->size_complex; ++i) {
+        for (size_t i = 0; i < prog_data->size_complex * 2.0 / 3; ++i) {
                 double *c_u = prog_data->c_u[i];
                 double *c_v = prog_data->c_v[i];
 
@@ -151,7 +151,6 @@ int main(int argc, char *argv[])
         output_u = fopen("output_u", "w");
         output_v = fopen("output_v", "w");
 
-
         // Initialize everything
         printf("Callibrating FFTW...\n");
         Data_pointers program_data = allocate_precompute(dim_power, dt);
@@ -168,28 +167,27 @@ int main(int argc, char *argv[])
                                      
         for (size_t i = 0; i < steps; ++i) {
                 compute_nonlinear(&program_data, dt);
-                //compute_linear(&program_data);
+                compute_linear(&program_data);
                 double timestamp = (double) end_time/steps * i;
 
 #ifdef DEBUG
                 // Print the modes
-                if (i < 100)
-                        print_modes(&outputs, &program_data, timestamp);
+                print_modes(&outputs, &program_data, timestamp);
 #endif
 
                 // Print the results to the output
-                if (i%1 == 0) {
+                if (i%1000 == 0) {
                         // Transform to the real basis
-                        //fftw_execute(program_data.e_u);
-                        //fftw_execute(program_data.e_v);
-                        //normalize(program_data.u, program_data.size_real);
-                        //normalize(program_data.v, program_data.size_real);
+                        fftw_execute(program_data.e_u);
+                        fftw_execute(program_data.e_v);
+                        normalize(program_data.u, program_data.size_real);
+                        normalize(program_data.v, program_data.size_real);
 
 
-                        fprintf(output_u, "%lf %lf\n", timestamp, 
-                                        l2_norm(program_data.c_u, program_data.size_complex));
-                        fprintf(output_v, "%lf %lf\n", timestamp, 
-                                        l2_norm(program_data.c_v, program_data.size_complex));
+                        fprintf(output_u, "%f %f\n", timestamp, 
+                                        l2_norm(program_data.u, program_data.size_real));
+                        fprintf(output_v, "%f %f\n", timestamp, 
+                                        l2_norm(program_data.v, program_data.size_real));
                 }
         }
 
@@ -197,7 +195,7 @@ int main(int argc, char *argv[])
         fclose(output_v);
 
 #ifdef DEBUG
-        for (size_t j = 0; j < program_data.size_complex; ++j)
+        for (size_t j = 0; j < program_data.size_complex * 2.0 / 3; ++j)
                 fclose(outputs[j]);
 #endif
 }

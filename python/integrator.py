@@ -36,12 +36,10 @@ class Integrator(object):
         
         k = 2 * pi * x
         Lu = - pow(k, 4) - pow(k, 2) - (1 - self.e)
-        Lv = self.D * pow(k, 2) - 1
-        print(k)
+        Lv = - self.D * pow(k, 2) - 1
 
         return [(1 + 0.5 * self.dt * Lu) / (1 - 0.5 * self.dt * Lu),
                 (1 + 0.5 * self.dt * Lv) / (1 - 0.5 * self.dt * Lv)]
-       
 
     def compute_stuff(self, what, step_scale=1):
         ''' The loop returning a full list of points
@@ -65,12 +63,12 @@ class Integrator(object):
                 val = (u, v, du)
             '''
         # Compute the u component
-        init[0].append(self.dt * ((1 - self.e) * \
+        init[0].append(val[0] + self.dt * ((1 - self.e) * \
                 (self.a * val[1] + self.b * pow(val[1], 2)) * \
                 val[0] + val[0] * val[2]))
 
         # Compute the v component
-        init[1].append(self.dt * self.R * pow(val[0], 2))
+        init[1].append(val[1] + self.dt * self.R * pow(val[0], 2))
         return init
 
     def nonlinear_step(self):
@@ -118,6 +116,7 @@ class Integrator(object):
 
     def run(self, end_time=1):
         current_time = 0
+        previous = 0
 
         with open('output_v', 'w') as f:
             while current_time < end_time:
@@ -125,8 +124,13 @@ class Integrator(object):
 
                 #self.nonlinear_step()
                 self.linear_step()
-                f.write('%s %s\n' % (current_time, 
-                    l2_norm(self.current_values[1])))
+                f.write("%s " % (current_time))
+
+                if l2_norm(self.current_values[0]) < previous:
+                    f.write("down\n")
+                else:
+                    f.write("up\n")
+                previous = l2_norm(self.current_values[0])
 
 if __name__ == '__main__':
     integrator = Integrator()
