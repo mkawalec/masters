@@ -8,16 +8,16 @@
 const double e = -0.1;
 const double a = 0.125;
 const double b = -0.004;
-const double R = 1;
+const double R = 0.9;
 const double D = 40;
-double domain_size = 40.0;
+double domain_size = 24 * M_PI;
 
 double l2_norm(double *array, size_t size)
 {
         double norm = 0;
 
         // We only add the numbers that don't belong to the padding
-        for (size_t i = 0; i < size * 2 / 3; ++i) 
+        for (size_t i = 0; i < size * 2.0 / 3; ++i) 
                 norm += pow(array[i], 2);
 
         return sqrt(norm);
@@ -25,9 +25,9 @@ double l2_norm(double *array, size_t size)
 
 void normalize(double *array, size_t size)
 {
-        double norm_factor = sqrt(size);
+        double norm_factor = 1 / (double)size;
         for (size_t i = 0; i < size; ++i)
-                *(array + i) /= norm_factor;
+                *(array + i) *= norm_factor;
 }
 
 Data_pointers allocate_precompute(unsigned long int dim_power, double dt)
@@ -42,18 +42,18 @@ Data_pointers allocate_precompute(unsigned long int dim_power, double dt)
 
         program_data.u = (double*) fftw_malloc(program_data.size_real * sizeof(double));
         program_data.v = (double*) fftw_malloc(program_data.size_real * sizeof(double));
-        program_data.c_u = fftw_alloc_complex(program_data.size_real);
-        program_data.c_v = fftw_alloc_complex(program_data.size_real);
+        program_data.c_u = fftw_alloc_complex(program_data.size_complex);
+        program_data.c_v = fftw_alloc_complex(program_data.size_complex);
         // Derivative in Fourier space
-        program_data.dc_u = fftw_alloc_complex(program_data.size_real);
+        program_data.dc_u = fftw_alloc_complex(program_data.size_complex);
         // Real (non-fourier space) derivative
         program_data.du = (double*) fftw_malloc(program_data.size_real * sizeof(double));
 
         // The operators acting on u and v
         program_data.Lu = (double*) fftw_malloc(program_data.size_complex * 
-                                        sizeof(double));
+                                        sizeof(double) * 2.0 / 3);
         program_data.Lv = (double*) fftw_malloc(program_data.size_complex * 
-                                        sizeof(double));
+                                        sizeof(double) * 2.0 / 3);
 
 
         // Initial plans
@@ -110,7 +110,7 @@ void compute_linear_operators(Data_pointers *program_data, double dt)
 void initialize_modes_outputs(FILE ***outputs, Data_pointers *program_data)
 {
         *outputs = (FILE**) malloc(sizeof(FILE*) * program_data->size_complex * 2/3);
-        for (size_t j = 0; j < program_data->size_complex * 2.0/3; ++j) {
+        for (size_t j = 0; j < program_data->size_complex * 2.0 / 3; ++j) {
                 /* Create the filenames output_n where n is
                  * the number of the wave mode height in that 
                  * file
@@ -127,7 +127,7 @@ void initialize_modes_outputs(FILE ***outputs, Data_pointers *program_data)
 
 void print_modes(FILE ***outputs, Data_pointers *program_data, double timestamp)
 {
-        for (size_t j = 0; j < program_data->size_complex * 2.0/3; ++j)
+        for (size_t j = 0; j < program_data->size_complex * 2.0 / 3; ++j)
                 fprintf(*(*outputs + j), "%f %f\n", timestamp, 
                                 *(double*) program_data->c_u[j]);
 }
