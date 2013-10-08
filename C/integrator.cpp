@@ -104,8 +104,8 @@ void initialize(Data_pointers *program_data)
          */
         for (size_t i = 0; i < program_data->size_real; ++i) {
                 double x = (double) i / program_data->size_real * domain_size;
-                program_data->u[i] = 0.0;
-                program_data->v[i] = 1.19 * cos(2.5 * M_PI * x);
+                program_data->u[i] = 2.0 * cos(x) + 0.03 * cos(11 * x / 12.0);
+                program_data->v[i] = 0.0;
         }
 
         /* On every stage we are interested in working

@@ -8,7 +8,7 @@
 const double e = -0.1;
 const double a = 0.125;
 const double b = -0.004;
-const double R = 0.9;
+const double R = 0.95;
 const double D = 40;
 double domain_size = 24 * M_PI;
 
