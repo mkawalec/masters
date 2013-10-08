@@ -107,6 +107,7 @@ void initialize(Data_pointers *program_data)
                 program_data->u[i] = 2.0 * cos(x) + 0.03 * cos(11 * x / 12.0);
                 program_data->v[i] = 0.0;
         }
+        printf("%ld\n", program_data->size_real);
         printf("Initial L2 is: %f\n", l2_norm(program_data->u, program_data->size_real));
 
         /* On every stage we are interested in working
@@ -115,7 +116,7 @@ void initialize(Data_pointers *program_data)
         fftw_execute(program_data->i_u);
         fftw_execute(program_data->i_v);
 
-        double scale_factor = 1 / (double) program_data->size_real;
+        double scale_factor = 1 / sqrt(program_data->size_real);
         // Make the padding be the padding;)
         for (size_t i = 0; i < program_data->size_complex; ++i) {
                 double *c_u = program_data->c_u[i];
@@ -147,8 +148,10 @@ int main(int argc, char *argv[])
 {
         unsigned long int dim_power;
         double end_time, dt, current_time;
-        FILE *output_u, *output_v;
+        FILE *output;
+#ifdef DEBUG
         FILE **outputs = NULL;
+#endif
         char **char_ptr = NULL;
 
         if (argc < 4) {
@@ -163,8 +166,7 @@ int main(int argc, char *argv[])
         end_time = strtod(argv[3], char_ptr);
 
         // Bind the output files
-        output_u = fopen("output_u", "w");
-        output_v = fopen("output_v", "w");
+        output = fopen("output", "w");
 
         // Initialize everything
         printf("Callibrating FFTW...\n");
@@ -196,13 +198,11 @@ int main(int argc, char *argv[])
                         // Transform to the real basis
                         fftw_execute(program_data.e_u);
                         fftw_execute(program_data.e_v);
-                        //normalize(program_data.u, program_data.size_real);
-                        //normalize(program_data.v, program_data.size_real);
+                        normalize(program_data.u, program_data.size_real);
+                        normalize(program_data.v, program_data.size_real);
 
-
-                        fprintf(output_u, "%f %f\n", current_time, 
-                                        l2_norm(program_data.u, program_data.size_real));
-                        fprintf(output_v, "%f %f\n", current_time, 
+                        fprintf(output, "%f %f %f\n", current_time, 
+                                        l2_norm(program_data.u, program_data.size_real),
                                         l2_norm(program_data.v, program_data.size_real));
                 }
 
@@ -210,8 +210,7 @@ int main(int argc, char *argv[])
                 ++i;
         }
 
-        fclose(output_u);
-        fclose(output_v);
+        fclose(output);
 
 #ifdef DEBUG
         for (size_t j = 0; j < program_data.size_complex * 2.0 / 3; ++j)
