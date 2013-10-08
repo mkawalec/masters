@@ -133,13 +133,12 @@ void initialize(Data_pointers *program_data)
                 }
         }
 
-#ifdef DEBUG
         FILE *start = fopen("output_start", "w");
         for (size_t i = 0; i < program_data->size_complex; ++i) {
                 double *c_u = program_data->c_u[i];
                 fprintf(start, "%ld %f %f\n", i, *c_u, *(c_u + 1));
         }
-#endif
+        fclose(start);
 }
 
 
