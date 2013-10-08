@@ -107,6 +107,7 @@ void initialize(Data_pointers *program_data)
                 program_data->u[i] = 2.0 * cos(x) + 0.03 * cos(11 * x / 12.0);
                 program_data->v[i] = 0.0;
         }
+        printf("%f\n", l2_norm(program_data->u, program_data->size_real));
 
         /* On every stage we are interested in working
          * on the Fourier space
@@ -195,8 +196,8 @@ int main(int argc, char *argv[])
                         // Transform to the real basis
                         fftw_execute(program_data.e_u);
                         fftw_execute(program_data.e_v);
-                        normalize(program_data.u, program_data.size_real);
-                        normalize(program_data.v, program_data.size_real);
+                        //normalize(program_data.u, program_data.size_real);
+                        //normalize(program_data.v, program_data.size_real);
 
 
                         fprintf(output_u, "%f %f\n", current_time, 
