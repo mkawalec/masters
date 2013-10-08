@@ -25,7 +25,7 @@ double l2_norm(double *array, size_t size)
 
 void normalize(double *array, size_t size)
 {
-        double norm_factor = 1 / (double)size;
+        double norm_factor = 1 / sqrt(size);
         for (size_t i = 0; i < size; ++i)
                 *(array + i) *= norm_factor;
 }

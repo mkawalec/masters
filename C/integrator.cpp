@@ -114,7 +114,7 @@ void initialize(Data_pointers *program_data)
         fftw_execute(program_data->i_u);
         fftw_execute(program_data->i_v);
 
-        double scale_factor = 1 / sqrt(program_data->size_real);
+        double scale_factor = 1 / (double) program_data->size_real;
         // Make the padding be the padding;)
         for (size_t i = 0; i < program_data->size_complex; ++i) {
                 double *c_u = program_data->c_u[i];
@@ -132,6 +132,14 @@ void initialize(Data_pointers *program_data)
                         *(c_v + 1) *= scale_factor;
                 }
         }
+
+#ifdef DEBUG
+        FILE *start = fopen("output_start", "w");
+        for (size_t i = 0; i < program_data->size_complex; ++i) {
+                double *c_u = program_data->c_u[i];
+                fprintf(start, "%ld %f %f\n", i, *c_u, *(c_u + 1));
+        }
+#endif
 }
 
 
