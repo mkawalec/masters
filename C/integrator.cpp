@@ -107,7 +107,7 @@ void initialize(Data_pointers *program_data)
                 program_data->u[i] = 2.0 * cos(x) + 0.03 * cos(11 * x / 12.0);
                 program_data->v[i] = 0.0;
         }
-        printf("%f\n", l2_norm(program_data->u, program_data->size_real));
+        printf("Initial L2 is: %f\n", l2_norm(program_data->u, program_data->size_real));
 
         /* On every stage we are interested in working
          * on the Fourier space
