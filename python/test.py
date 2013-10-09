@@ -1,11 +1,8 @@
 from math import pi, cos, pow, sqrt
+from functools import reduce
 
 def l2_norm(values):
-    norm = 0.0
-    for value in sorted(values):
-        norm += pow(value, 2)
-
-    return sqrt(norm)
+    return sqrt(reduce(lambda acc, x: acc + pow(x, 2), values, 0))
 
 def print_norm(samples):
     values = []
@@ -15,5 +12,5 @@ def print_norm(samples):
 
     return l2_norm(values)
 
-for i in range(60, 257):
-    print("%s %s" % (str(i), str(print_norm(i))))
+for i, norm in zip(range(60, 257), map(print_norm, range(60, 257))):
+    print("%s %s" % (str(i), str(norm)))

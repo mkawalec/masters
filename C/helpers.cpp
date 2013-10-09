@@ -16,19 +16,21 @@ double domain_size = 24 * M_PI;
 double l2_norm(double *array, size_t size)
 {
         double norm = 0.0;
-
-        // We only add the numbers that don't belong to the padding
         for (size_t i = 0; i < size; ++i) 
                 norm += pow(array[i], 2);
 
         return sqrt(norm);
 }
 
-void normalize(double *array, size_t size)
+double l2_norm_cpx(fftw_complex *array, size_t size)
 {
-        double norm_factor = 1 / sqrt(size);
-        for (size_t i = 0; i < size; ++i)
-                *(array + i) *= norm_factor;
+        double norm = 0.0;
+
+        for (size_t i = 0; i < size; ++i) {
+                double *value = array[i];
+                norm += pow(*value, 2) + pow(*(value + 1), 2);
+        }
+        return sqrt(norm);
 }
 
 Data_pointers allocate_precompute(unsigned long int dim_power, double dt)

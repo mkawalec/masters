@@ -31,6 +31,7 @@ void compute_nonlinear(Data_pointers *prog_data, double dt)
         double *du = prog_data->du;
         double scale_factor = 1/sqrt(prog_data->size_real);
 
+        // Not using normalize for performance reasons
         for (i = 0; i < prog_data->size_real; ++i) {
                 *(u + i) *= scale_factor;
                 *(v + i) *= scale_factor;
@@ -193,8 +194,13 @@ int main(int argc, char *argv[])
                 print_modes(&outputs, &program_data, current_time);
 #endif
 
+                // Print the L2 norm in complex space 
+                fprintf(output, "%f %f %f\n", current_time,
+                                l2_norm_cpx(program_data.c_u, program_data.size_complex),
+                                l2_norm_cpx(program_data.c_v, program_data.size_complex));
+
                 // Print the results to the output
-                if (i%10 == 0) {
+                /*if (i%10 == 0) {
                         // Transform to the real basis
                         fftw_execute(program_data.e_u);
                         fftw_execute(program_data.e_v);
@@ -204,7 +210,7 @@ int main(int argc, char *argv[])
                         fprintf(output, "%f %f %f\n", current_time, 
                                         l2_norm(program_data.u, program_data.size_real),
                                         l2_norm(program_data.v, program_data.size_real));
-                }
+                }*/
 
                 current_time += 2 * dt;
                 ++i;
