@@ -47,7 +47,7 @@ void compute_nonlinear(Data_pointers *prog_data, double dt)
                  * as we want to avoid overwriting u with the
                  * new value before v is computed
                  */
-                temp_u = (1 - e) *
+                /*temp_u = (1 - e) *
                         (a * v[i] + b * pow(v[i], 2)) * u[i] +
                         u[i] * du[i];
 
@@ -55,7 +55,9 @@ void compute_nonlinear(Data_pointers *prog_data, double dt)
                 v[i] += dt * R * pow(u[i], 2);
 
                 // Saving the results
-                u[i] += dt * temp_u;
+                u[i] += dt * temp_u;*/
+
+                u[i] *= v[i];
         }
 
         fftw_execute(prog_data->b_u);
@@ -66,17 +68,10 @@ void compute_nonlinear(Data_pointers *prog_data, double dt)
                 double *u = prog_data->c_u[i];
                 double *v = prog_data->c_v[i];
 
-                if (i >= prog_data->size_complex * 2.0 / 3) {
-                        *u = 0.0;
-                        *(u + 1) = 0.0;
-                        *v = 0.0;
-                        *(v + 1) = 0.0;
-                } else {
                         *u *= scale_factor;
                         *(u + 1) *= scale_factor;
                         *v *= scale_factor;
                         *(v + 1) *= scale_factor;
-                }
         }
 }
 
@@ -123,7 +118,7 @@ void initialize(Data_pointers *program_data)
                 double *c_u = program_data->c_u[i];
                 double *c_v = program_data->c_v[i];
 
-                if (i >= program_data->size_complex * 2.0 / 3) {
+                /*if (i >= program_data->size_complex * 2.0 / 3) {
                         *c_u = 0.0;
                         *(c_u + 1) = 0.0;
                         *c_v = 0.0;
@@ -133,13 +128,33 @@ void initialize(Data_pointers *program_data)
                         *(c_u + 1) *= scale_factor;
                         *c_v *= scale_factor;
                         *(c_v + 1) *= scale_factor;
+                }*/
+                if (i == 1) {
+                        *c_u = 0.1;
+                        *(c_u + 1) = 0.2;
+                } else if (i == 2) {
+                        *c_v = 0.5;
+                        *(c_v + 1) = 0.6;
+                } else if (i == 3) {
+                        *c_u = 0.3;
+                        *(c_u + 1) = 0.4;
+                } else if (i == 6) {
+                        *c_v = 0.7;
+                        *(c_v + 1) = 0.8;
+                } else {
+                        *c_u = 0;
+                        *(c_u + 1) = 0;
+                        *c_v = 0;
+                        *(c_v + 1) = 0;
                 }
         }
 
         FILE *start = fopen("output_start", "w");
         for (size_t i = 0; i < program_data->size_complex; ++i) {
                 double *c_u = program_data->c_u[i];
-                fprintf(start, "%ld %f %f\n", i, *c_u, *(c_u + 1));
+                double *c_v = program_data->c_v[i];
+                fprintf(start, "%ld %f %f    %f %f\n", i, *c_u, *(c_u + 1),
+                                *c_v, *(c_v + 1));
         }
         fclose(start);
 }
@@ -183,11 +198,20 @@ int main(int argc, char *argv[])
         initialize_modes_outputs(&outputs, &program_data);
 #endif
 
+        compute_nonlinear(&program_data, dt);
+
+        FILE *start = fopen("output_after", "w");
+        for (size_t i = 0; i < program_data.size_complex; ++i) {
+                double *c_u = program_data.c_u[i];
+                fprintf(start, "%ld %f %f\n", i, *c_u, *(c_u + 1));
+        }
+        fclose(start);
+
         current_time = 0.0;
         size_t i = 0;
         while(current_time < end_time) {
                 compute_nonlinear(&program_data, dt);
-                compute_linear(&program_data);
+                //compute_linear(&program_data);
 
 #ifdef DEBUG
                 // Print the modes
