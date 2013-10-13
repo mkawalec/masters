@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 project(PUMAS)
 include_directories(src include)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 set(HEADER_FILES include/helpers.hpp include/Simulator.hpp)
 
 message(status "${CMAKE_CURRENT_SOURCE_DIR}")
@@ -36,7 +37,7 @@ LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 target_link_libraries(test-suite ${Boost_LIBRARIES})
 
 find_package(FFTW)
-target_link_libraries(solver -lm ${FFTW_LIBRARIES})
+target_link_libraries(integrator -lm ${FFTW_LIBRARIES})
 
 set(Boost_USE_STATIC_LIBS        OFF)
 set(Boost_USE_MULTITHREADED      ON)
