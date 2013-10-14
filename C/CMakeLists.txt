@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 2.8)
-project(PUMAS)
+project(turb)
 include_directories(src include)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
-set(HEADER_FILES include/helpers.hpp include/Simulator.hpp)
+set(HEADER_FILES include/helpers.hpp include/Integrator.hpp)
 
 message(status "${CMAKE_CURRENT_SOURCE_DIR}")
-add_executable(integrator src/integrator.cpp src/Simulator.cpp ${HEADER_FILES})
-add_executable(test-suite src/test-suite.cpp)
+add_executable(integrator src/integrator.cpp src/Integrator.cpp src/helpers.cpp ${HEADER_FILES})
+add_executable(test-suite src/test-suite.cpp ${HEADER_FILES})
 
 find_package(Doxygen)
 if(DOXYGEN_FOUND)
