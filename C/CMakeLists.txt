@@ -3,10 +3,11 @@ project(turb)
 include_directories(src include)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 set(HEADER_FILES include/helpers.hpp include/Integrator.hpp)
+set(TEST_HEADERS ${HEADER_FILES} include/test_integrators.hpp)
 
 message(status "${CMAKE_CURRENT_SOURCE_DIR}")
 add_executable(integrator src/integrator.cpp src/Integrator.cpp src/helpers.cpp ${HEADER_FILES})
-add_executable(test-suite src/test-suite.cpp ${HEADER_FILES})
+add_executable(test-suite src/test-suite.cpp src/test_integrators.cpp src/Integrator.cpp src/helpers.cpp ${TEST_HEADERS})
 
 find_package(Doxygen)
 if(DOXYGEN_FOUND)
@@ -39,7 +40,7 @@ message(status "** Boost Libraries: ${Boost_LIBRARIES}")
 
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
-target_link_libraries(test-suite ${Boost_LIBRARIES})
+target_link_libraries(test-suite ${Boost_LIBRARIES} -lm ${FFTW_LIBRARIES})
 
 find_package(FFTW)
 target_link_libraries(integrator -lm ${FFTW_LIBRARIES})
