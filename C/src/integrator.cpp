@@ -15,20 +15,25 @@ int main(int argc, char *argv[])
 
     char **null_p = NULL;
     size_t samples = strtoul(argv[1], null_p, 10);
-    double dt = strtod(argv[2], null_p) * 0.5;
+    double dt = strtod(argv[2], null_p);
     double end_time = strtod(argv[3], null_p);
 
-    turb::Integrator main_structure(samples, dt);
+    turb::TestIntegrator main_structure(samples, dt);
+    main_structure.initialize();
 
     double current_time = 0.0;
+    size_t i = 0;
     std::ofstream output;
     output.open("output");
 
     while (current_time < end_time) {
         main_structure.apply_step();
-        main_structure.serialize(&output, current_time);
+        
+        if (i%10 == 0)
+            main_structure.serialize(&output, current_time);
 
-        current_time += 2 * dt;
+        current_time += dt;
+        ++i;
     }
 
     output.close();

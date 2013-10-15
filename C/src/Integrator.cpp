@@ -2,15 +2,17 @@
 #include "helpers.hpp"
 #include <fftw3.h>
 #include <cmath>
+#include <iostream>
+#include <stdio.h>
 
 namespace turb {
 
+        /** Computes the linear operators acting
+         *  on u and v - precomputing saves a lot of
+         *  cycles later on.
+         */
         void Integrator::initialize_operators() 
         {
-            /** Computes the linear operators acting
-             *  on u and v - precomputing saves a lot of
-             *  cycles later on.
-             */
             for (size_t i = 0; i < size_complex * 2.0 / 3; ++i) {
                 double k = (double) i * 2 * M_PI / domain_size;
                 double Lx, Ly;
@@ -18,8 +20,8 @@ namespace turb {
                 Lx = - pow(k, 4) + pow(k, 2) - (1 - e);
                 Ly = - D * pow(k, 2) - 1;
 
-                *(Lu + i) = (1 + 0.5 * dt * Lx) / (1 - 0.5 * dt * Lx);
-                *(Lv + i) = (1 + 0.5 * dt * Ly) / (1 - 0.5 * dt * Ly);
+                Lu[i] = (1 + 0.5 * dt * Lx) / (1 - 0.5 * dt * Lx);
+                Lv[i] = (1 + 0.5 * dt * Ly) / (1 - 0.5 * dt * Ly);
             }
         }
 
@@ -44,25 +46,26 @@ namespace turb {
             fftw_execute(i_u);
             fftw_execute(i_v);
 
-
             /** Make padidng the padding and scale the 
              *  transformed arrays by sqrt(N)
              */
+            override_initialize();
+
             double scale_factor = 1 / sqrt(size_real);
             for (size_t i = 0; i < size_complex; ++i) {
-                double *c_u = &c_u[i];
-                double *c_v = &c_v[i];
+                double *tmp_u = c_u[i];
+                double *tmp_v = c_v[i];
 
                 if (i >= size_complex * 2.0 / 3) {
-                    *c_u = 0.0;
-                    *(c_u + 1) = 0.0;
-                    *c_v = 0.0;
-                    *(c_v + 1) = 0.0;
+                    *tmp_u = 0.0;
+                    *(tmp_u + 1) = 0.0;
+                    *tmp_v = 0.0;
+                    *(tmp_v + 1) = 0.0;
                 } else {
-                    *c_u *= scale_factor;
-                    *(c_u + 1) *= scale_factor;
-                    *c_v *= scale_factor;
-                    *(c_v + 1) *= scale_factor;
+                    *tmp_u *= scale_factor;
+                    *(tmp_u + 1) *= scale_factor;
+                    *tmp_v *= scale_factor;
+                    *(tmp_v + 1) *= scale_factor;
                 }
             }
         }
@@ -74,13 +77,13 @@ namespace turb {
         void Integrator::compute_linear()
         {
             for (size_t i = 0; i < size_complex * 2.0 / 3; ++i) {
-                double *c_u = &c_u[i];
-                double *c_v = &c_v[i];
+                double *tmp_u = c_u[i];
+                double *tmp_v = c_v[i];
 
-                *c_u *= *(Lu + i);
-                *(c_u + 1) *= *(Lu + i);
-                *c_v *= *(Lv + i);
-                *(c_v + 1) *= *(Lv + i);
+                *tmp_u *= *(Lu + i);
+                *(tmp_u + 1) *= *(Lu + i);
+                *tmp_v *= *(Lv + i);
+                *(tmp_v + 1) *= *(Lv + i);
             }
         }
 
@@ -147,7 +150,7 @@ namespace turb {
             }
         }
 
-        Integrator::Integrator(size_t dim_power, double dt) : dt(dt / 2)
+        Integrator::Integrator(size_t dim_power, double timestep) : dt(timestep / 2)
         {
             size_real = pow(2, dim_power);
             size_complex = size_real / 2 + 1;
@@ -192,7 +195,6 @@ namespace turb {
                     FFTW_MEASURE);
 
             initialize_operators();
-            initialize();
         }
 
         Integrator::~Integrator()
@@ -217,5 +219,23 @@ namespace turb {
             *output << current_time << " " << l2_norm(u, size_real) << 
                 " " << l2_norm(v, size_real) << std::endl;
         }
+
+
+        /* *****      TestIntegrator      ***** */
+
+        void TestIntegrator::serialize(std::ofstream *output, double current_time)
+        {
+            fftw_execute(e_u); fftw_execute(e_v);
+            normalize(u, size_real); normalize(v, size_real);
+
+            *output << current_time << " " << *(c_u[0]) << std::endl;
+        }
+
+        void TestIntegrator::apply_step() 
+        {
+            compute_nonlinear();
+            //compute_linear();
+        }
+
 }
 

@@ -11,6 +11,7 @@ namespace turb {
         /** The complex arrays holding the intermediate
          *  and final results of computations
          */
+        protected:
         double *u, *v, *du, *Lu, *Lv;
         double dt;
         fftw_complex *c_u, *c_v, *dc_u;
@@ -22,27 +23,33 @@ namespace turb {
 
         void initialize_operators();
 
-
         /// Computes one timestep of the nonlinear transform
         void compute_nonlinear();
         void compute_linear();
 
-        void initialize();
+        virtual void override_initialize() {};
 
-        protected:
         virtual void initialize_function(double x, double *results);
         /** The overloadable nonlinear transform applied 
          *  in the real (non-Fourier) space
          */
         virtual void nonlinear_transform(size_t i, double *results);
 
-
         public:
-        Integrator(size_t dim_power, double dt);
+        Integrator(size_t dim_power, double timestep);
         ~Integrator();
+        void initialize();
 
-        void apply_step();
+        virtual void apply_step();
+        virtual void serialize(std::ofstream *output, double current_time);
+    };
+
+    class TestIntegrator : public Integrator {
+        public:
+        TestIntegrator(size_t dim_power, double timestep) : Integrator(dim_power, timestep) {};
+
         void serialize(std::ofstream *output, double current_time);
+        void apply_step();
     };
 }
 
