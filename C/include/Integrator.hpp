@@ -12,10 +12,6 @@ namespace turb {
          *  and final results of computations
          */
         protected:
-        double *u, *v, *du, *Lu, *Lv;
-        double dt;
-        fftw_complex *c_u, *c_v, *dc_u;
-
         fftw_plan e_u, e_v, i_u, i_v,
                   f_u, f_v, f_du, b_u, b_v;
 
@@ -42,6 +38,10 @@ namespace turb {
 
         virtual void apply_step();
         virtual void serialize(std::ofstream *output, double current_time);
+
+        double *u, *v, *du, *Lu, *Lv;
+        double dt;
+        fftw_complex *c_u, *c_v, *dc_u;
     };
 
     /** Enables checking of the decay rate on 0-th 
@@ -67,6 +67,16 @@ namespace turb {
         TestMultIntegrator(size_t dim_power, double timestep) : Integrator(dim_power, timestep) {};
 
         void serialize(std::ofstream *output, double current_time);
+        void apply_step();
+    };
+
+    class TestStabilityIntegrator : public Integrator {
+        protected:
+        void nonlinear_transform(size_t i, double *results);
+
+        public:
+        TestStabilityIntegrator(size_t dim_power, double timestep) : Integrator(dim_power, timestep) {};
+
         void apply_step();
     };
         

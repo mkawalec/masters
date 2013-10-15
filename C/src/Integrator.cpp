@@ -38,10 +38,12 @@ namespace turb {
              */
             double *temp = new double[2];
             for (size_t i = 0; i < size_real; ++i) {
-                initialize_function((double) i / size_real * domain_size * 2, temp);
+                initialize_function((double) i / size_real * domain_size, temp);
                 u[i] = temp[0];
                 v[i] = temp[1];
+                //std::cout << i << " " << u[i] << " " << v[i] << std::endl;
             }
+            //std::cout << std::endl;
 
             fftw_execute(i_u);
             fftw_execute(i_v);
@@ -51,6 +53,7 @@ namespace turb {
              */
             override_initialize();
 
+            //double scale_factor = sqrt(2 * M_PI) / size_real;
             double scale_factor = 1 / sqrt(size_real);
             for (size_t i = 0; i < size_complex; ++i) {
                 double *tmp_u = c_u[i];
@@ -66,6 +69,9 @@ namespace turb {
                     *(tmp_u + 1) *= scale_factor;
                     *tmp_v *= scale_factor;
                     *(tmp_v + 1) *= scale_factor;
+
+                    //std::cout << i << " " << *tmp_u << " " << *(tmp_u + 1) << "\t\t" 
+                    //          << *tmp_v << " " << *(tmp_v + 1) << std::endl;
                 }
             }
         }
@@ -122,7 +128,7 @@ namespace turb {
 
             // Multiply the relevant parts according to the nonlinear equation
             double *results = new double[2];
-            for (size_t i = 0; i < size_complex; ++i) {
+            for (size_t i = 0; i < size_real; ++i) {
                 nonlinear_transform(i, results);
                 u[i] = results[0];
                 v[i] = results[1];
@@ -225,9 +231,6 @@ namespace turb {
 
         void TestDecayIntegrator::serialize(std::ofstream *output, double current_time)
         {
-            fftw_execute(e_u); fftw_execute(e_v);
-            normalize(u, size_real); normalize(v, size_real);
-
             *output << current_time << " " << *(c_u[0]) << std::endl;
         }
 
@@ -238,6 +241,9 @@ namespace turb {
 
         void TestDecayIntegrator::override_initialize()
         {
+            fftw_execute(e_u); fftw_execute(e_v);
+            normalize(u, size_real); normalize(v, size_real);
+
             for (size_t i = 0; i < size_complex; ++i) {
                 double *tmp_u = c_u[i];
                 *tmp_u = i + 1;
@@ -249,10 +255,16 @@ namespace turb {
 
         void TestMultIntegrator::serialize(std::ofstream *output, double current_time)
         {
-            for (size_t i = 0; i < size_complex; ++i) {
+            fftw_execute(e_u); fftw_execute(e_v);
+            normalize(u, size_real); normalize(v, size_real);
+            for (size_t i = 0; i < size_real; ++i) 
+                *output << i << " " << u[i] << " " << v[i] << std::endl;
+
+            /*for (size_t i = 0; i < size_complex; ++i) {
                 double *tmp_u = c_u[i];
                 *output << i << " " << *tmp_u << " " << *(tmp_u + 1) << std::endl;
-            }
+            }*/
+
 
             *output << std::endl;
         }
@@ -271,8 +283,19 @@ namespace turb {
 
         void TestMultIntegrator::nonlinear_transform(size_t i, double *results)
         {
-            std::cout << i << " " << u[i] << " " << v[i] << std::endl;
             results[0] = u[i] * v[i];
+            results[1] = v[i];
+        }
+
+        /* *****        TestStabilityIntegrator     ***** */
+        void TestStabilityIntegrator::apply_step()
+        {
+            compute_nonlinear();
+        }
+
+        void TestStabilityIntegrator::nonlinear_transform(size_t i, double *results)
+        {
+            results[0] = u[i];
             results[1] = v[i];
         }
 

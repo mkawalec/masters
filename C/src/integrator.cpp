@@ -31,7 +31,8 @@ int main(int argc, char *argv[])
     std::ofstream output;
     output.open("output");
 
-    /*main_structure.apply_step();
+    /*main_structure.serialize(&output, current_time);
+    main_structure.apply_step();
     main_structure.serialize(&output, current_time);
     return 0;*/
 
