@@ -32,7 +32,7 @@ namespace turb {
         virtual void nonlinear_transform(size_t i, double *results);
 
         public:
-        Integrator(size_t dim_power, double timestep);
+        Integrator(size_t dim_power, double timestep, double domain=2*M_PI);
         ~Integrator();
         void initialize();
 
@@ -40,7 +40,7 @@ namespace turb {
         virtual void serialize(std::ofstream *output, double current_time);
 
         double *u, *v, *du, *Lu, *Lv;
-        double dt;
+        double dt, domain_size;
         fftw_complex *c_u, *c_v, *dc_u;
     };
 }

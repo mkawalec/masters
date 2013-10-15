@@ -12,6 +12,7 @@ namespace turb {
     class TestDecayIntegrator : public Integrator {
         protected:
         void override_initialize();
+        void initialize_function(double x, double *results);
 
         public:
         TestDecayIntegrator(size_t dim_power, double timestep) : Integrator(dim_power, timestep) {};
@@ -35,6 +36,7 @@ namespace turb {
     class TestStabilityIntegrator : public Integrator {
         protected:
         void nonlinear_transform(size_t i, double *results);
+        void initialize_function(double x, double *results);
 
         public:
         TestStabilityIntegrator(size_t dim_power, double timestep) : Integrator(dim_power, timestep) {};

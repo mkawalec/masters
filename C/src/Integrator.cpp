@@ -7,6 +7,62 @@
 
 namespace turb {
 
+        Integrator::Integrator(size_t dim_power, double timestep, double domain) : 
+            dt(timestep / 2), domain_size(domain)
+        {
+            size_real = pow(2, dim_power);
+            size_complex = size_real / 2 + 1;
+
+            u = (double*) fftw_malloc(size_real * sizeof(double));
+            v = (double*) fftw_malloc(size_real * sizeof(double));
+            du = (double*) fftw_malloc(size_real * sizeof(double));
+            c_u = fftw_alloc_complex(size_complex);
+            c_v = fftw_alloc_complex(size_complex);
+            dc_u = fftw_alloc_complex(size_complex);
+
+            // Linear operators acting on u and v
+            Lu = (double*) fftw_malloc(size_complex *
+                    sizeof(double) * 2.0 / 3);
+            Lv = (double*) fftw_malloc(size_complex * 
+                    sizeof(double) * 2.0 / 3);
+
+            // Plans to be applied initially
+            i_u = fftw_plan_dft_r2c_1d(size_real, u, c_u,
+                    FFTW_MEASURE);
+            i_v = fftw_plan_dft_r2c_1d(size_real, v, c_v,
+                    FFTW_MEASURE);
+
+            // Final transformations
+            e_u = fftw_plan_dft_c2r_1d(size_real, c_u, u,
+                    FFTW_MEASURE | FFTW_PRESERVE_INPUT);
+            e_v = fftw_plan_dft_c2r_1d(size_real, c_v, v,
+                    FFTW_MEASURE | FFTW_PRESERVE_INPUT);
+
+            // Forward plans
+            f_u = fftw_plan_dft_c2r_1d(size_real, c_u, u,
+                    FFTW_MEASURE);
+            f_v = fftw_plan_dft_c2r_1d(size_real, c_v, v,
+                    FFTW_MEASURE);
+            f_du = fftw_plan_dft_c2r_1d(size_real, dc_u, du,
+                    FFTW_MEASURE);
+
+            // Backward plans
+            b_u = fftw_plan_dft_r2c_1d(size_real, u, c_u,
+                    FFTW_MEASURE);
+            b_v = fftw_plan_dft_r2c_1d(size_real, v, c_v,
+                    FFTW_MEASURE);
+
+            initialize_operators();
+        }
+
+        Integrator::~Integrator()
+        {
+            fftw_free(u); fftw_free(v); fftw_free(du);
+            fftw_free(c_u); fftw_free(c_v); fftw_free(dc_u);
+
+            fftw_free(Lu); fftw_free(Lv);
+        }
+
         /** Computes the linear operators acting
          *  on u and v - precomputing saves a lot of
          *  cycles later on.
@@ -154,61 +210,6 @@ namespace turb {
                     *(v + 1) *= scale_factor;
                 }
             }
-        }
-
-        Integrator::Integrator(size_t dim_power, double timestep) : dt(timestep / 2)
-        {
-            size_real = pow(2, dim_power);
-            size_complex = size_real / 2 + 1;
-
-            u = (double*) fftw_malloc(size_real * sizeof(double));
-            v = (double*) fftw_malloc(size_real * sizeof(double));
-            du = (double*) fftw_malloc(size_real * sizeof(double));
-            c_u = fftw_alloc_complex(size_complex);
-            c_v = fftw_alloc_complex(size_complex);
-            dc_u = fftw_alloc_complex(size_complex);
-
-            // Linear operators acting on u and v
-            Lu = (double*) fftw_malloc(size_complex *
-                    sizeof(double) * 2.0 / 3);
-            Lv = (double*) fftw_malloc(size_complex * 
-                    sizeof(double) * 2.0 / 3);
-
-            // Plans to be applied initially
-            i_u = fftw_plan_dft_r2c_1d(size_real, u, c_u,
-                    FFTW_MEASURE);
-            i_v = fftw_plan_dft_r2c_1d(size_real, v, c_v,
-                    FFTW_MEASURE);
-
-            // Final transformations
-            e_u = fftw_plan_dft_c2r_1d(size_real, c_u, u,
-                    FFTW_MEASURE | FFTW_PRESERVE_INPUT);
-            e_v = fftw_plan_dft_c2r_1d(size_real, c_v, v,
-                    FFTW_MEASURE | FFTW_PRESERVE_INPUT);
-
-            // Forward plans
-            f_u = fftw_plan_dft_c2r_1d(size_real, c_u, u,
-                    FFTW_MEASURE);
-            f_v = fftw_plan_dft_c2r_1d(size_real, c_v, v,
-                    FFTW_MEASURE);
-            f_du = fftw_plan_dft_c2r_1d(size_real, dc_u, du,
-                    FFTW_MEASURE);
-
-            // Backward plans
-            b_u = fftw_plan_dft_r2c_1d(size_real, u, c_u,
-                    FFTW_MEASURE);
-            b_v = fftw_plan_dft_r2c_1d(size_real, v, c_v,
-                    FFTW_MEASURE);
-
-            initialize_operators();
-        }
-
-        Integrator::~Integrator()
-        {
-            fftw_free(u); fftw_free(v); fftw_free(du);
-            fftw_free(c_u); fftw_free(c_v); fftw_free(dc_u);
-
-            fftw_free(Lu); fftw_free(Lv);
         }
 
         void Integrator::apply_step() 

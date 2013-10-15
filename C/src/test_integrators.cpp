@@ -16,6 +16,12 @@ namespace turb {
             compute_linear();
         }
 
+        void TestDecayIntegrator::initialize_function(double x, double *result)
+        {
+            result[0] = 2.0 * cos(x) + 0.03 * cos(11 * x / 12.0);
+            result[1] = 0.0;
+        }
+
         void TestDecayIntegrator::override_initialize()
         {
             fftw_execute(e_u); fftw_execute(e_v);
@@ -68,5 +74,11 @@ namespace turb {
         {
             results[0] = u[i];
             results[1] = v[i];
+        }
+
+        void TestStabilityIntegrator::initialize_function(double x, double *result)
+        {
+            result[0] = 2.0 * cos(x) + 0.03 * cos(11 * x / 12.0);
+            result[1] = 0.0;
         }
 }

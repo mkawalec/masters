@@ -1,5 +1,4 @@
 #include <fftw3.h>
-#include <complex>
 #include <string.h>
 
 #include "helpers.hpp"
@@ -11,7 +10,6 @@ const double b = -0.004;
 const double D = 40;
 
 const double R = 0.95;
-double domain_size = 24 * M_PI;
 
 double l2_norm(double *array, size_t size)
 {

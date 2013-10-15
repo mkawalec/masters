@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
     double dt = strtod(argv[2], null_p);
     double end_time = strtod(argv[3], null_p);
 
-    turb::Integrator main_structure(samples, dt);
+    turb::Integrator main_structure(samples, dt, 24 * M_PI);
     main_structure.initialize();
 
     double current_time = 0.0;
