@@ -20,11 +20,16 @@ endif(DOXYGEN_FOUND)
 
 if (CMAKE_COMPILER_IS_GNUCXX)
     message(status "Setting GCC flags")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O2 -Wall -Wextra -W -pedantic -std=c++0x")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -Wall -Wextra -W -pedantic -std=c++0x")
 else()
     message(status "gcc not found!")
     return()
 endif()
+
+#add_custom_target(debug ALL
+#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DDEBUG -g")
+#    COMMENT "Compiling in debug mode" VERBATIM
+#    )
 
 find_package(Boost 1.53 COMPONENTS unit_test_framework REQUIRED)
 ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK) 
