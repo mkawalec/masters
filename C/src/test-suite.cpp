@@ -6,6 +6,7 @@
 #include <sstream>
 #include <cfloat>
 #include <cmath>
+#include <stdio.h>
 
 using namespace boost::unit_test;
 using namespace turb;
@@ -59,7 +60,21 @@ BOOST_AUTO_TEST_CASE(test2)
         ++i;
     }
 
+    remove(filename.c_str());
 } 
+
+/** Checks if the L2 norm is stable over long periods,
+ *  does NOT check correctness in any way
+ */
+BOOST_AUTO_TEST_CASE(test3)
+{
+    double dt = 0.001;
+    string filename = "test_output";
+
+    TestStabilityIntegrator tested(7, dt);
+    tested.initialize();
+
+}
     
     
 
