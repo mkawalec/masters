@@ -74,6 +74,44 @@ BOOST_AUTO_TEST_CASE(test3)
     TestStabilityIntegrator tested(7, dt);
     tested.initialize();
 
+    ofstream output;
+    ifstream input;
+    output.open(filename);
+
+    for (size_t i = 0; i < 100; ++i) {
+        tested.apply_step();
+        tested.serialize(&output, dt * i);
+    }
+    output.close();
+
+    input.open(filename);
+    double value1, value2, prev_value1 = DBL_MAX, prev_value2 = DBL_MAX;
+    string temp1, temp2, temp3;
+    stringstream temp;
+
+    for (size_t i = 0; i < 100; ++i) {
+        input >> temp1 >> temp2 >> temp3;
+
+        temp.clear();
+        temp.str(temp2);
+        temp >> value1;
+
+        temp.clear();
+        temp.str(temp3);
+        temp >> value2;
+
+        if (prev_value1 != DBL_MAX) {
+            BOOST_CHECK(abs(value1 - prev_value1) < 1e-05);
+            BOOST_CHECK(abs(value2 - prev_value2) < 1e-05);
+        }
+
+        prev_value1 = value1;
+        prev_value2 = value2;
+        ++i;
+    }
+
+    remove(filename.c_str());
+
 }
     
     
