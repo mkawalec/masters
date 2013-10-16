@@ -97,9 +97,7 @@ namespace turb {
                 initialize_function((double) i / size_real * domain_size, temp);
                 u[i] = temp[0];
                 v[i] = temp[1];
-                //std::cout << i << " " << u[i] << " " << v[i] << std::endl;
             }
-            //std::cout << std::endl;
 
             fftw_execute(i_u);
             fftw_execute(i_v);
@@ -125,9 +123,6 @@ namespace turb {
                     *(tmp_u + 1) *= scale_factor;
                     *tmp_v *= scale_factor;
                     *(tmp_v + 1) *= scale_factor;
-
-                    //std::cout << i << " " << *tmp_u << " " << *(tmp_u + 1) << "\t\t" 
-                    //          << *tmp_v << " " << *(tmp_v + 1) << std::endl;
                 }
             }
         }
