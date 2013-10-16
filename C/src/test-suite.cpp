@@ -29,18 +29,9 @@ BOOST_AUTO_TEST_CASE(test2)
 {
     // Setup
     TestDecayIntegrator tested(7, dt);
-    tested.initialize();
+    setup_test(&tested);
 
-    ofstream output;
     ifstream input;
-    output.open(filename);
-
-    for (size_t i = 0; i < 100; ++i) {
-        tested.apply_step(); 
-        tested.serialize(&output, dt * i);
-    }
-    output.close();
-
     input.open(filename);
     double value, prev_value = DBL_MAX;
     string temp1, temp2;
@@ -63,24 +54,31 @@ BOOST_AUTO_TEST_CASE(test2)
     remove(filename.c_str());
 } 
 
+template <typename T>
+void setup_test(T *instance)
+{
+    instance->initialize();
+
+    ofstream output;
+    output.open(filename);
+
+    for (size_t i = 0; i < 100; ++i) {
+        instance->apply_step();
+        instance->serialize(&output, dt * i);
+    }
+    output.close();
+}
+
+
 /** Checks if the L2 norm is stable over long periods,
  *  does NOT check correctness in any way
  */
 BOOST_AUTO_TEST_CASE(test3)
 {
     TestStabilityIntegrator tested(7, dt);
-    tested.initialize();
+    setup_test(&tested);
 
-    ofstream output;
     ifstream input;
-    output.open(filename);
-
-    for (size_t i = 0; i < 100; ++i) {
-        tested.apply_step();
-        tested.serialize(&output, dt * i);
-    }
-    output.close();
-
     input.open(filename);
     double value1, value2, prev_value1 = DBL_MAX, prev_value2 = DBL_MAX;
     string temp1, temp2, temp3;
@@ -114,6 +112,7 @@ BOOST_AUTO_TEST_CASE(test3)
  *  function, which mostly checks the correctness of the normalization
  *  and of Fourier transforms.
  */
+// TODO: Add a templated setup function
 BOOST_AUTO_TEST_CASE(test4)
 {
 }
