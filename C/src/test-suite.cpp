@@ -12,6 +12,9 @@ using namespace boost::unit_test;
 using namespace turb;
 using namespace std;
 
+const double dt = 0.001;
+const string filename = "test_output";
+
 BOOST_AUTO_TEST_CASE(test1)
 {
     BOOST_CHECK_EQUAL(1, 1);
@@ -25,9 +28,6 @@ BOOST_AUTO_TEST_CASE(test1)
 BOOST_AUTO_TEST_CASE(test2)
 {
     // Setup
-    double dt = 0.001;
-    string filename = "test_output";
-
     TestDecayIntegrator tested(7, dt);
     tested.initialize();
 
@@ -68,9 +68,6 @@ BOOST_AUTO_TEST_CASE(test2)
  */
 BOOST_AUTO_TEST_CASE(test3)
 {
-    double dt = 0.001;
-    string filename = "test_output";
-
     TestStabilityIntegrator tested(7, dt);
     tested.initialize();
 
@@ -111,7 +108,14 @@ BOOST_AUTO_TEST_CASE(test3)
     }
 
     remove(filename.c_str());
+}
 
+/** Checks if the functions get combined to create a correct
+ *  function, which mostly checks the correctness of the normalization
+ *  and of Fourier transforms.
+ */
+BOOST_AUTO_TEST_CASE(test4)
+{
 }
     
     
