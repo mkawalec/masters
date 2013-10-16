@@ -1,4 +1,4 @@
-Maichal's Masters Project
+Michal's Masters Project
 =======
 
 These are the sources for my Masters Project in Physics @ University of Edinburgh. As of the time of writing, the project is a clever integrator for a nonlinear numerical equation, for more info see the paper.
