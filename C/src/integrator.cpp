@@ -12,9 +12,9 @@ int main(int argc, char *argv[])
     // very unpredicatable
     std::ios_base::sync_with_stdio(false);
 
-    if (argc < 3) {
+    if (argc < 4) {
         std::cout << "The correct way to run this program is " <<
-            argv[0] << " samples_power dt end_time" << std::endl;
+            argv[0] << " samples_power dt end_time runs_number" << std::endl;
         return -1;
     }
 
@@ -22,10 +22,11 @@ int main(int argc, char *argv[])
     size_t samples = strtoul(argv[1], null_p, 10);
     double dt = strtod(argv[2], null_p);
     double end_time = strtod(argv[3], null_p);
+    size_t runs = strtoul(argv[4], null_p, 10);
     std::ofstream output;
     output.open("output");
 
-    for (size_t i = 0; i < 1000000; ++i) {
+    for (size_t i = 0; i < runs; ++i) {
         srand(i + 1);
 
         turb::Integrator main_structure(samples, dt, 24 * M_PI);
