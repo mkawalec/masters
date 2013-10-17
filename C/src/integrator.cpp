@@ -25,10 +25,9 @@ int main(int argc, char *argv[])
     size_t runs = strtoul(argv[4], null_p, 10);
     std::ofstream output;
     output.open("output");
-
+    
+    srand(time(NULL));
     for (size_t i = 0; i < runs; ++i) {
-        srand(i + 1);
-
         turb::Integrator main_structure(samples, dt, 24 * M_PI);
         main_structure.initialize();
 
