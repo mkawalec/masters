@@ -4,12 +4,14 @@
 #include <cmath>
 #include <iostream>
 #include <stdio.h>
+#include <stdlib.h>
 
 namespace turb {
 
         Integrator::Integrator(size_t dim_power, double timestep, double domain) : 
             dt(timestep / 2), domain_size(domain)
         {
+            srand(112233);
             size_real = pow(2, dim_power);
             size_complex = size_real / 2 + 1;
 
@@ -73,7 +75,7 @@ namespace turb {
                 double k = (double) i * 2 * M_PI / domain_size;
                 double Lx, Ly;
 
-                Lx = - pow(k, 4) + pow(k, 2) - (1 - e);
+                Lx = - pow(k, 4) + 2*pow(k, 2) - (1 - e);
                 Ly = - D * pow(k, 2) - 1;
 
                 Lu[i] = (1 + 0.5 * dt * Lx) / (1 - 0.5 * dt * Lx);
@@ -126,6 +128,16 @@ namespace turb {
                 }
             }
         }
+
+        /*void Integrator::override_initialize()
+        {
+            for (size_t i = 0; i < size_complex; ++i) {
+                double *tmp_u = c_u[i];
+
+                *tmp_u = rand();
+                *(tmp_u + 1) = rand();
+            }
+        }*/
 
         /** Computes the linear transformation, which is
          *  essencially just a multiplication by a precomputed
