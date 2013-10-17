@@ -40,7 +40,7 @@ message(status "** Boost Libraries: ${Boost_LIBRARIES}")
 
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
-target_link_libraries(test-suite ${Boost_LIBRARIES} -lm ${FFTW_LIBRARIES})
+target_link_libraries(test-suite -lm ${FFTW_LIBRARIES} ${Boost_LIBRARIES})
 
 find_package(FFTW)
 target_link_libraries(integrator -lm ${FFTW_LIBRARIES})
