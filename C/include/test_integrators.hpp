@@ -31,6 +31,7 @@ namespace turb {
 
         void serialize(std::ofstream *output, double current_time);
         void apply_step();
+        void override_initialize() {};
     };
 
     class TestStabilityIntegrator : public Integrator {

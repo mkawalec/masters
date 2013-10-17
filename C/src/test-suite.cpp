@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE(test2)
         temp >> value;
 
         if (prev_value != DBL_MAX) 
-            BOOST_CHECK(abs(value - (1 - (1 + e)*dt/2)*prev_value) < 1e-05);
+            BOOST_CHECK(abs(value - (1 - (1 - e)*dt/2)*prev_value) < 1e-05);
 
         prev_value = value;
     }
