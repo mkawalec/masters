@@ -11,6 +11,8 @@ namespace turb {
         Integrator::Integrator(size_t dim_power, double timestep, double domain) : 
             dt(timestep / 2), domain_size(domain)
         {
+            fftw_import_wisdom_from_filename(".wisdom");
+
             size_real = pow(2, dim_power);
             size_complex = size_real / 2 + 1;
 
@@ -31,31 +33,31 @@ namespace turb {
 
             // Plans to be applied initially
             i_u = fftw_plan_dft_r2c_1d(size_real, u, c_u,
-                    FFTW_MEASURE);
+                    FFTW_PATIENT);
             i_v = fftw_plan_dft_r2c_1d(size_real, v, c_v,
-                    FFTW_MEASURE);
+                    FFTW_PATIENT);
 
             // Final transformations
             e_u = fftw_plan_dft_c2r_1d(size_real, c_u, u,
-                    FFTW_MEASURE | FFTW_PRESERVE_INPUT);
+                    FFTW_PATIENT | FFTW_PRESERVE_INPUT);
             e_v = fftw_plan_dft_c2r_1d(size_real, c_v, v,
-                    FFTW_MEASURE | FFTW_PRESERVE_INPUT);
+                    FFTW_PATIENT | FFTW_PRESERVE_INPUT);
 
             // Forward plans
             f_u = fftw_plan_dft_c2r_1d(size_real, c_u, u,
-                    FFTW_MEASURE);
+                    FFTW_PATIENT);
             f_v = fftw_plan_dft_c2r_1d(size_real, c_v, v,
-                    FFTW_MEASURE);
+                    FFTW_PATIENT);
             f_du = fftw_plan_dft_c2r_1d(size_real, dc_u, du,
-                    FFTW_MEASURE);
+                    FFTW_PATIENT);
 
             // Backward plans
             b_u = fftw_plan_dft_r2c_1d(size_real, u, c_u,
-                    FFTW_MEASURE);
+                    FFTW_PATIENT);
             b_v = fftw_plan_dft_r2c_1d(size_real, v, c_v,
-                    FFTW_MEASURE);
+                    FFTW_PATIENT);
 
-            initialize_operators();
+            fftw_export_wisdom_to_filename(".wisdom");
         }
 
         Integrator::~Integrator()
@@ -128,6 +130,8 @@ namespace turb {
                     *(tmp_v + 1) *= scale_factor;
                 }
             }
+
+            initialize_operators();
         }
 
         void Integrator::override_initialize()
