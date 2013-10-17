@@ -14,7 +14,7 @@ namespace turb {
             size_real = pow(2, dim_power);
             size_complex = size_real / 2 + 1;
 
-            temp = fftw_malloc(2 * sizeof(double));
+            temp_array = (double*) fftw_malloc(2 * sizeof(double));
 
             u = (double*) fftw_malloc(size_real * sizeof(double));
             v = (double*) fftw_malloc(size_real * sizeof(double));
@@ -64,7 +64,7 @@ namespace turb {
             fftw_free(c_u); fftw_free(c_v); fftw_free(dc_u);
 
             fftw_free(Lu); fftw_free(Lv);
-            fftw_free(temp);
+            fftw_free(temp_array);
         }
 
         /** Computes the linear operators acting
