@@ -15,7 +15,6 @@ namespace turb {
         fftw_plan e_u, e_v, i_u, i_v,
                   f_u, f_v, f_du, b_u, b_v;
 
-        size_t size_real, size_complex;
 
         void initialize_operators();
 
@@ -23,7 +22,7 @@ namespace turb {
         void compute_nonlinear();
         void compute_linear();
 
-        virtual void override_initialize() {};
+        virtual void override_initialize();
 
         virtual void initialize_function(double x, double *results);
         /** The overloadable nonlinear transform applied 
@@ -37,11 +36,13 @@ namespace turb {
         void initialize();
 
         virtual void apply_step();
+        void forward_transform();
         virtual void serialize(std::ofstream *output, double current_time);
 
         double *u, *v, *du, *Lu, *Lv;
         double dt, domain_size;
         fftw_complex *c_u, *c_v, *dc_u;
+        size_t size_real, size_complex;
     };
 }
 

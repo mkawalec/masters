@@ -11,7 +11,6 @@ namespace turb {
         Integrator::Integrator(size_t dim_power, double timestep, double domain) : 
             dt(timestep / 2), domain_size(domain)
         {
-            srand(112233);
             size_real = pow(2, dim_power);
             size_complex = size_real / 2 + 1;
 
@@ -100,6 +99,7 @@ namespace turb {
                 u[i] = temp[0];
                 v[i] = temp[1];
             }
+            delete(temp);
 
             fftw_execute(i_u);
             fftw_execute(i_v);
@@ -129,15 +129,17 @@ namespace turb {
             }
         }
 
-        /*void Integrator::override_initialize()
+        void Integrator::override_initialize()
         {
             for (size_t i = 0; i < size_complex; ++i) {
                 double *tmp_u = c_u[i];
 
-                *tmp_u = rand();
-                *(tmp_u + 1) = rand();
+                // The multiplication must be after division
+                // as RAND_MAX is of order of MAX_INT
+                *tmp_u = rand()/(double) RAND_MAX * 200;
+                *(tmp_u + 1) = rand()/(double) RAND_MAX * 200;
             }
-        }*/
+        }
 
         /** Computes the linear transformation, which is
          *  essencially just a multiplication by a precomputed
@@ -196,6 +198,7 @@ namespace turb {
                 u[i] = results[0];
                 v[i] = results[1];
             }
+            delete(results);
 
             fftw_execute(b_u);
             fftw_execute(b_v);
@@ -225,11 +228,15 @@ namespace turb {
             compute_linear();
         }
 
-        void Integrator::serialize(std::ofstream *output, double current_time) 
+        void Integrator::forward_transform()
         {
             fftw_execute(e_u); fftw_execute(e_v);
             normalize(u, size_real); normalize(v, size_real);
+        }
 
+        void Integrator::serialize(std::ofstream *output, double current_time) 
+        {
+            forward_transform();
             *output << current_time << " " << l2_norm(u, size_real) << 
                 " " << l2_norm(v, size_real) << std::endl;
         }

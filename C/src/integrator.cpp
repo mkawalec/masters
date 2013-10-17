@@ -3,7 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <stdio.h>
-#include <stdlib.h>
+#include <cstdlib>
 
 int main(int argc, char *argv[])
 {
@@ -22,23 +22,30 @@ int main(int argc, char *argv[])
     size_t samples = strtoul(argv[1], null_p, 10);
     double dt = strtod(argv[2], null_p);
     double end_time = strtod(argv[3], null_p);
-
-    turb::Integrator main_structure(samples, dt, 24 * M_PI);
-    main_structure.initialize();
-
-    double current_time = 0.0;
-    size_t i = 0;
     std::ofstream output;
     output.open("output");
 
-    while (current_time < end_time) {
-        main_structure.apply_step();
-        
-        if (i%10 == 0)
-            main_structure.serialize(&output, current_time);
+    for (size_t i = 0; i < 1000; ++i) {
+        srand(i + 1);
 
-        current_time += dt;
-        ++i;
+        turb::Integrator main_structure(samples, dt, 24 * M_PI);
+        main_structure.initialize();
+
+        double current_time = 0.0;
+        size_t i = 0;
+
+        while (current_time < end_time) {
+            main_structure.apply_step();
+            main_structure.forward_transform();
+            
+            if (l2_norm(main_structure.u, main_structure.size_real) < 5) {
+                output << current_time << std::endl;
+                break;
+            }
+
+            current_time += dt;
+            ++i;
+        }
     }
 
     output.close();

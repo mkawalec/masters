@@ -9,7 +9,7 @@ const double a = 0.125;
 const double b = -0.004;
 const double D = 40;
 
-const double R = 0.95;
+const double R = 1;
 
 double l2_norm(double *array, size_t size)
 {
