@@ -30,6 +30,9 @@ namespace turb {
          */
         virtual void nonlinear_transform(size_t i, double *results);
 
+        // The much needed temprorary array of two doubles
+        double *temp_array;
+
         public:
         Integrator(size_t dim_power, double timestep, double domain=2*M_PI);
         ~Integrator();

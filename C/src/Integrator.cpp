@@ -14,6 +14,8 @@ namespace turb {
             size_real = pow(2, dim_power);
             size_complex = size_real / 2 + 1;
 
+            temp = fftw_malloc(2 * sizeof(double));
+
             u = (double*) fftw_malloc(size_real * sizeof(double));
             v = (double*) fftw_malloc(size_real * sizeof(double));
             du = (double*) fftw_malloc(size_real * sizeof(double));
@@ -62,6 +64,7 @@ namespace turb {
             fftw_free(c_u); fftw_free(c_v); fftw_free(dc_u);
 
             fftw_free(Lu); fftw_free(Lv);
+            fftw_free(temp);
         }
 
         /** Computes the linear operators acting
@@ -93,13 +96,11 @@ namespace turb {
             /** The outer wrapper for initializing, calls the
              *  initialize_function to get the actual values it sets
              */
-            double *temp = new double[2];
             for (size_t i = 0; i < size_real; ++i) {
-                initialize_function((double) i / size_real * domain_size, temp);
-                u[i] = temp[0];
-                v[i] = temp[1];
+                initialize_function((double) i / size_real * domain_size, temp_array);
+                u[i] = temp_array[0];
+                v[i] = temp_array[1];
             }
-            delete(temp);
 
             fftw_execute(i_u);
             fftw_execute(i_v);
@@ -192,13 +193,11 @@ namespace turb {
             }
 
             // Multiply the relevant parts according to the nonlinear equation
-            double *results = new double[2];
             for (size_t i = 0; i < size_real; ++i) {
-                nonlinear_transform(i, results);
-                u[i] = results[0];
-                v[i] = results[1];
+                nonlinear_transform(i, temp_array);
+                u[i] = temp_array[0];
+                v[i] = temp_array[1];
             }
-            delete(results);
 
             fftw_execute(b_u);
             fftw_execute(b_v);
