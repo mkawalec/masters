@@ -34,7 +34,7 @@ endif()
 
 find_package(FFTW)
 
-find_package(Boost 1.41 COMPONENTS unit_test_framework REQUIRED)
+find_package(Boost 1.53 COMPONENTS unit_test_framework REQUIRED)
 ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK) 
 message(status "** Boost Include: ${Boost_INCLUDE_DIR}")
 message(status "** Boost Libraries: ${Boost_LIBRARY_DIRS}")
