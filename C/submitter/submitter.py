@@ -20,7 +20,7 @@ def setup_remote(host):
           stdout=devnull, stderr=devnull)
     call(["scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "
           "s0905879@%(host)s:/dev/shm/turb/C/build/output %(host)s.out" % \
-            dict(host=host)], shell=True, stdout=devnull)
+            dict(host=host)], shell=True, stderr=devnull, stdout=devnull)
 
 
 if __name__ == '__main__':
