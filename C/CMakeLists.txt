@@ -32,16 +32,17 @@ endif()
 #    COMMENT "Compiling in debug mode" VERBATIM
 #    )
 
+find_package(FFTW)
+
 find_package(Boost 1.41 COMPONENTS unit_test_framework REQUIRED)
 ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK) 
 message(status "** Boost Include: ${Boost_INCLUDE_DIR}")
 message(status "** Boost Libraries: ${Boost_LIBRARY_DIRS}")
 message(status "** Boost Libraries: ${Boost_LIBRARIES}")
 
-INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
-LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
+INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR} ${FFTW_INCLUDE_DIR})
+LINK_DIRECTORIES(${Boost_LIBRARY_DIRS} ${FFTW_INCLUDE_DIR})
 
-find_package(FFTW)
 target_link_libraries(integrator -lm ${FFTW_LIBRARIES})
 #target_link_libraries(test-suite -lm ${FFTW_LIBRARIES} ${Boost_LIBRARIES})
 
