@@ -32,15 +32,26 @@ endif()
 #    COMMENT "Compiling in debug mode" VERBATIM
 #    )
 
+<<<<<<< HEAD
+=======
+find_package(FFTW)
+
+>>>>>>> ssh_bomb
 find_package(Boost 1.41 COMPONENTS unit_test_framework REQUIRED)
 ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK) 
 message(status "** Boost Include: ${Boost_INCLUDE_DIR}")
 message(status "** Boost Libraries: ${Boost_LIBRARY_DIRS}")
 message(status "** Boost Libraries: ${Boost_LIBRARIES}")
 
-INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
+message(status "** FFTW Include: ${FFTW_INCLUDE_DIR}")
+message(status "** FFTW Libraries: ${FFTW_LIBRARY_D}")
+
+INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR} ${FFTW_INCLUDES})
 LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
+<<<<<<< HEAD
 find_package(FFTW)
+=======
+>>>>>>> ssh_bomb
 
 target_link_libraries(integrator -lm ${FFTW_LIBRARIES})
 target_link_libraries(test-suite -lm ${FFTW_LIBRARIES} ${Boost_LIBRARIES})
