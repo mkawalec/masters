@@ -17,15 +17,8 @@ def setup_remote(host, runs):
           "s0905879@%(host)s \' cd /dev/shm; rm -rf turb ;"
           "git clone -b ssh_bomb https://github.com/mkawalec/masters turb; "
           "cd turb/C; mkdir build; cd build; cmake ..; make -j3; "
-<<<<<<< HEAD
-          "./integrator 7 0.0005 1000 10\'" % dict(host=host)], shell=True)
-    call(["scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "
-          "s0905879@%(host)s:/dev/shm/turb/C/build/output %(host)s.out" % \
-            dict(host=host)], shell=True)
-=======
           "./integrator 7 0.0005 1000 %(runs)d\'" % dict(host=host, runs=runs)], 
           shell=True, stdout=devnull, stderr=devnull)
->>>>>>> ssh_bomb
 
     call(["scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "
           "s0905879@%(host)s:/dev/shm/turb/C/build/output %(host)s.out" % \
