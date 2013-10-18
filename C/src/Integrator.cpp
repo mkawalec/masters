@@ -11,7 +11,13 @@ namespace turb {
         Integrator::Integrator(size_t dim_power, double timestep, double domain) : 
             dt(timestep / 2), domain_size(domain)
         {
-            fftw_import_wisdom_from_filename(".wisdom");
+            // Making the code compatible with the
+            // ancient FFTW version on cplab computers
+            FILE *f = fopen(".wisdom", "r");
+            if (f) {
+                fftw_import_wisdom_from_file(f);
+                fclose(f);
+            }
 
             size_real = pow(2, dim_power);
             size_complex = size_real / 2 + 1;
@@ -57,7 +63,9 @@ namespace turb {
             b_v = fftw_plan_dft_r2c_1d(size_real, v, c_v,
                     FFTW_PATIENT);
 
-            fftw_export_wisdom_to_filename(".wisdom");
+            f = fopen(".wisdom", "w");
+            fftw_export_wisdom_to_file(f);
+            fclose(f);
         }
 
         Integrator::~Integrator()
