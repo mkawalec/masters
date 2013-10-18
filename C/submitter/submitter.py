@@ -41,5 +41,5 @@ if __name__ == '__main__':
         for process in processes:
             if not process.is_alive():
                 counter += 1
-            pbar.update(counter)
-        pbar.finish()
+        pbar.update(counter)
+    pbar.finish()
