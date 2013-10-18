@@ -5,6 +5,10 @@
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/time.h>
+
+#include <boost/random/mersenne_twister.hpp>
+#include <boost/random/uniform_real_distribution.hpp>
 
 namespace turb {
 
@@ -144,13 +148,19 @@ namespace turb {
 
         void Integrator::override_initialize()
         {
+            boost::random::mt19937 rng;
+            timeval tv;
+            gettimeofday(&tv, NULL);
+            rng.seed(1000000 * tv.tv_sec + tv.tv_usec);
+
+            boost::random::uniform_real_distribution<> random_data(0, 200);
             for (size_t i = 0; i < size_complex; ++i) {
                 double *tmp_u = c_u[i];
 
                 // The multiplication must be after division
                 // as RAND_MAX is of order of MAX_INT
-                *tmp_u = rand()/(double) RAND_MAX * 200;
-                *(tmp_u + 1) = rand()/(double) RAND_MAX * 200;
+                *tmp_u = random_data(rng);
+                *(tmp_u + 1) = random_data(rng);
             }
         }
 

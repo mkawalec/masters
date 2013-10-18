@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include <fstream>
-#include <stdio.h>
+#include <cstdio>
 #include <cstdlib>
 
 int main(int argc, char *argv[])
@@ -26,7 +26,6 @@ int main(int argc, char *argv[])
     std::ofstream output;
     output.open("output");
     
-    srand(time(NULL));
     for (size_t i = 0; i < runs; ++i) {
         turb::Integrator main_structure(samples, dt, 24 * M_PI);
         main_structure.initialize();
