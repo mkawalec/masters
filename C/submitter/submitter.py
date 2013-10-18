@@ -25,7 +25,7 @@ def setup_remote(host):
 
 if __name__ == '__main__':
     processes = []
-    for i in range(10):
+    for i in range(20):
         processes.append(Process(target=setup_remote, args=["cplab%03d" % (i,)]))
 
     for process in processes:
@@ -41,5 +41,5 @@ if __name__ == '__main__':
         for process in processes:
             if not process.is_alive():
                 counter += 1
-            pbar.update(counter)
-        pbar.finish()
+        pbar.update(counter)
+    pbar.finish()
