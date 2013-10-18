@@ -16,7 +16,7 @@ def setup_remote(host):
           "cd turb/C; mkdir build; cd build; cmake ..; make -j3; "
           "./integrator 7 0.0005 1000 10\'" % dict(host=host)], shell=True)
     call(["scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "
-          "s0905879@%(host)s:/dev/shm/turb/build/output %(host)s.out" % \
+          "s0905879@%(host)s:/dev/shm/turb/C/build/output %(host)s.out" % \
             dict(host=host)], shell=True)
 
 
