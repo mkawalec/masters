@@ -43,8 +43,8 @@ message(status "** Boost Libraries: ${Boost_LIBRARIES}")
 message(status "** FFTW Include: ${FFTW_INCLUDE_DIR}")
 message(status "** FFTW Libraries: ${FFTW_LIBRARY_D}")
 
-INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR} ${FFTW_INCLUDE_DIR})
-LINK_DIRECTORIES(${Boost_LIBRARY_DIRS} ${FFTW_LIBRARY_D})
+INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR} ${FFTW_INCLUDES})
+LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 
 target_link_libraries(integrator -lm ${FFTW_LIBRARIES})
 target_link_libraries(test-suite -lm ${FFTW_LIBRARIES} ${Boost_LIBRARIES})

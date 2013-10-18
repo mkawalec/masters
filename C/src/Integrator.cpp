@@ -21,9 +21,9 @@ namespace turb {
             u = (double*) fftw_malloc(size_real * sizeof(double));
             v = (double*) fftw_malloc(size_real * sizeof(double));
             du = (double*) fftw_malloc(size_real * sizeof(double));
-            c_u = fftw_alloc_complex(size_complex);
-            c_v = fftw_alloc_complex(size_complex);
-            dc_u = fftw_alloc_complex(size_complex);
+            c_u = (fftw_complex*) fftw_malloc(size_complex * sizeof(fftw_complex));
+            c_v = (fftw_complex*) fftw_malloc(size_complex * sizeof(fftw_complex));
+            dc_u = (fftw_complex*) fftw_malloc(size_complex * sizeof(fftw_complex));
 
             // Linear operators acting on u and v
             Lu = (double*) fftw_malloc(size_complex *
