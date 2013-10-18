@@ -15,7 +15,7 @@ devnull = open("/dev/null", "w")
 def setup_remote(host, runs):
     call(["ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "
           "s0905879@%(host)s \' cd /dev/shm; rm -rf turb ;"
-          "git clone -b ssh_bomb https://github.com/mkawalec/masters turb; "
+          "git clone https://github.com/mkawalec/masters turb; "
           "cd turb/C; mkdir build; cd build; cmake ..; make -j3; "
           "./integrator 7 0.0005 1000 %(runs)d\'" % dict(host=host, runs=runs)], 
           shell=True, stdout=devnull, stderr=devnull)
