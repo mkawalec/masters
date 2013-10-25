@@ -11,20 +11,21 @@ from time import sleep
 from sys import argv
 
 devnull = open("/dev/null", "w")
+errlog = open("errlog", "w")
 
 def setup_remote(host, runs):
     call(["scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "
          "integrator s0905879@%(host)s:/dev/shm" % dict(host=host)], 
-         shell=True, stdout=devnull, stderr=devnull)
+         shell=True, stdout=devnull, stderr=errlog)
     call(["ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "
           "s0905879@%(host)s \' cd /dev/shm; rm -rf turb ;"
           "mkdir turb; mv integrator turb; cd turb; "
           "./integrator 7 0.0005 2000 %(runs)d\'" % dict(host=host, runs=runs)], 
-          shell=True, stdout=devnull, stderr=devnull)
+          shell=True, stdout=devnull, stderr=errlo)
 
     call(["scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "
           "s0905879@%(host)s:/dev/shm/turb/output %(host)s.out" % \
-            dict(host=host)], shell=True, stderr=devnull, stdout=devnull)
+            dict(host=host)], shell=True, stderr=errlog, stdout=devnull)
 
 if __name__ == '__main__':
     hosts = int(argv[1])
