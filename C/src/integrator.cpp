@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
     std::ofstream output;
     output.open("output");
     
-    for (size_t i = 0; i < runs; ++i) {
+    for (size_t j = 0; j < runs; ++j) {
         turb::Integrator main_structure(samples, dt, 24 * M_PI);
         main_structure.initialize();
 
