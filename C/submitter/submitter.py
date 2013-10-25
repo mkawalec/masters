@@ -19,7 +19,7 @@ def setup_remote(host, runs):
     call(["ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "
           "s0905879@%(host)s \' cd /dev/shm; rm -rf turb ;"
           "mkdir turb; mv integrator turb; cd turb; "
-          "./integrator 7 0.0005 1000 %(runs)d\'" % dict(host=host, runs=runs)], 
+          "./integrator 7 0.0005 2000 %(runs)d\'" % dict(host=host, runs=runs)], 
           shell=True, stdout=devnull, stderr=devnull)
 
     call(["scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "
