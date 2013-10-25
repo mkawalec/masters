@@ -21,7 +21,7 @@ def setup_remote(host, runs):
           "s0905879@%(host)s \' cd /dev/shm; rm -rf turb ;"
           "mkdir turb; mv integrator turb; cd turb; "
           "./integrator 7 0.0005 2000 %(runs)d\'" % dict(host=host, runs=runs)], 
-          shell=True, stdout=devnull, stderr=errlo)
+          shell=True, stdout=devnull, stderr=errlog)
 
     call(["scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "
           "s0905879@%(host)s:/dev/shm/turb/output %(host)s.out" % \
