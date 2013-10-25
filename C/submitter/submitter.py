@@ -15,11 +15,11 @@ errlog = open("errlog", "w")
 
 def setup_remote(host, runs):
     call(["scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "
-         "integrator s0905879@%(host)s:/dev/shm" % dict(host=host)], 
+         "integrator s0905879@%(host)s:~" % dict(host=host)], 
          shell=True, stdout=devnull, stderr=errlog)
     call(["ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "
           "s0905879@%(host)s \' cd /dev/shm; rm -rf turb ;"
-          "mkdir turb; mv integrator turb; cd turb; "
+          "mkdir turb; mv ~/integrator turb; cd turb; "
           "./integrator 7 0.0005 2000 %(runs)d\'" % dict(host=host, runs=runs)], 
           shell=True, stdout=devnull, stderr=errlog)
 
@@ -35,7 +35,6 @@ if __name__ == '__main__':
 
     # Spawning two threads per host
     for i in range(hosts):
-        processes.append(Process(target=setup_remote, args=["cplab%03d" % (i,), runs]))
         processes.append(Process(target=setup_remote, args=["cplab%03d" % (i,), runs]))
 
     for process in processes:
