@@ -13,16 +13,18 @@ from sys import argv
 devnull = open("/dev/null", "w")
 errlog = open("errlog", "w")
 
-def setup_remote(host, runs):
+def setup_remote(host, runs, folder):
     call(["ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "
-          "s0905879@%(host)s \' cd /dev/shm; rm -rf turb ;"
-          "mkdir turb; cp ~/integrator turb; cd turb; "
-          "./integrator 7 0.0005 2000 %(runs)d\'" % dict(host=host, runs=runs)], 
+          "s0905879@%(host)s \' cd /dev/shm; rm -rf %(folder)s ;"
+          "mkdir %(folder)s; cp ~/integrator %(folder)s; cd %(folder)s; "
+          "./integrator 7 0.0005 2000 %(runs)d\'" 
+          % dict(host=host, runs=runs, folder=folder)], 
           shell=True, stdout=devnull, stderr=errlog)
 
     call(["scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "
-          "s0905879@%(host)s:/dev/shm/turb/output %(host)s.out" % \
-            dict(host=host)], shell=True, stderr=errlog, stdout=devnull)
+          "s0905879@%(host)s:/dev/shm/%(folder)s/output %(host)s-%(folder)s.out" 
+          % dict(host=host, folder=folder)], 
+            shell=True, stderr=errlog, stdout=devnull)
 
 if __name__ == '__main__':
     hosts = int(argv[1])
@@ -32,7 +34,8 @@ if __name__ == '__main__':
 
     # Spawning two threads per host
     for i in range(hosts):
-        processes.append(Process(target=setup_remote, args=["cplab%03d" % (i,), runs]))
+        processes.append(Process(target=setup_remote, args=["cplab%03d" % (i,), runs, 'turb1']))
+        processes.append(Process(target=setup_remote, args=["cplab%03d" % (i,), runs, 'turb2']))
 
     for process in processes:
         process.start()
