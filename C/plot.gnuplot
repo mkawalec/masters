@@ -1,6 +1,6 @@
 reset
-n=50 #number of intervals
-max=1000. #max value
+n=100 #number of intervals
+max=2000. #max value
 min=0. #min value
 width=(max-min)/n #interval width
 #function used to map a value to the intervals

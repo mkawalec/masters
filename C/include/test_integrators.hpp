@@ -50,12 +50,11 @@ namespace turb {
         void initialize_function(double x, double *results);
 
         public:
-        TestNonLinear(size_t dim_power, double timestep) : Integrator(dim_power, timestep) {};
+        TestNonLinear(size_t dim_power, double timestep, double domain) : Integrator(dim_power, timestep, domain) {};
         void serialize(std::ofstream *output, double current_time);
         void apply_step();
         void override_initialize() {};
     };
-
 
 }
 
