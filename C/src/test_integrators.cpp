@@ -81,4 +81,31 @@ namespace turb {
             result[0] = 2.0 * cos(x) + 0.03 * cos(11 * x / 12.0);
             result[1] = 0.0;
         }
+
+        /* *****        TestNonLiner            ***** */
+        void TestNonLinear::serialize(std::ofstream *output, double current_time)
+        {
+            double sum_u=0, sum_v=0;
+            for (size_t i = 0; i < 5; ++i) {
+                double *temp_u = c_u[i];
+                double *temp_v = c_v[i];
+
+                sum_u += sqrt(pow(*temp_u, 2) + pow(*(temp_u + 1), 2));
+                sum_v += sqrt(pow(*temp_v, 2) + pow(*(temp_v + 1), 2));
+            }
+
+            *output << current_time << " " << sum_u << " " << sum_v << std::endl;
+        }
+
+        void TestNonLinear::apply_step()
+        {
+            compute_nonlinear();
+        }
+
+        void TestNonLinear::initialize_function(double x, double *result)
+        {
+            result[0] = 2.0 * cos(x) * cos(11 * x / 12.0);
+            result[1] = sin(2 * x);
+        }
+
 }

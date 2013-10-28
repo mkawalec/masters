@@ -149,6 +149,21 @@ BOOST_AUTO_TEST_CASE(test4)
 
     remove(filename.c_str());
 }
+
+BOOST_AUTO_TEST_CASE(step)
+{
+    TestNonLinear tested(7, dt);
+    tested.initialize();
+
+    ofstream output;
+    output.open("step_output");
+
+    tested.apply_step();
+    tested.serialize(&output, dt);
+    output.close();
+
+    BOOST_CHECK(true);
+}
     
     
 
