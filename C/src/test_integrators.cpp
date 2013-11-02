@@ -37,7 +37,7 @@ namespace turb {
 
         /* *****        TestMultIntegrator      ***** */
 
-        void TestMultIntegrator::serialize(std::ofstream *output, double current_time)
+        void TestMultIntegrator::serialize(std::ofstream *output)
         {
             fftw_execute(e_u); fftw_execute(e_v);
             normalize(u, size_real); normalize(v, size_real);
@@ -90,20 +90,16 @@ namespace turb {
             for (size_t i = 0; i < 15; ++i) {
                 double *temp_u = c_u[i];
                 double *temp_v = c_v[i];
-                std::cout << i << " " << *temp_u << " " << *(temp_u + 1) << "\t\t" 
-                    << *temp_v << " " << *(temp_v + 1) << std::endl;
 
                 sum_u += sqrt(pow(*temp_u, 2) + pow(*(temp_u + 1), 2));
                 sum_v += sqrt(pow(*temp_v, 2) + pow(*(temp_v + 1), 2));
             }
-            std::cout << "\n\n";
 
             *output << current_time << " " << sum_u << " " << sum_v << std::endl;
         }
 
         void TestNonLinear::apply_step()
         {
-            std::cout << "Applting a step" << std::endl;
             compute_nonlinear();
         }
 

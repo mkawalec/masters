@@ -13,7 +13,7 @@
 namespace turb {
 
         Integrator::Integrator(size_t dim_power, double timestep, double domain) : 
-            dt(timestep / 2), domain_size(domain)
+            dt(timestep), domain_size(domain)
         {
             // Making the code compatible with the
             // ancient FFTW version on cplab computers
@@ -140,7 +140,6 @@ namespace turb {
                     *(tmp_u + 1) *= scale_factor;
                     *tmp_v *= scale_factor;
                     *(tmp_v + 1) *= scale_factor;
-                    std::cout << i << " " << *tmp_u << " " << *(tmp_u + 1) << std::endl;
                 }
             }
 
@@ -188,8 +187,8 @@ namespace turb {
                 (a * v[i] + b * pow(v[i], 2)) * u[i] +
                 u[i] * du[i];
 
-            result[0] = temp_u;
-            result[1] = R * pow(u[i], 2);
+            result[0] = u[i] + dt * temp_u;
+            result[1] = v[i] + dt * R * pow(u[i], 2);
         }
 
         void Integrator::compute_nonlinear()

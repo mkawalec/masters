@@ -29,7 +29,7 @@ namespace turb {
         public:
         TestMultIntegrator(size_t dim_power, double timestep) : Integrator(dim_power, timestep) {};
 
-        void serialize(std::ofstream *output, double current_time);
+        void serialize(std::ofstream *output);
         void apply_step();
         void override_initialize() {};
     };

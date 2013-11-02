@@ -113,7 +113,7 @@ BOOST_AUTO_TEST_CASE(test4)
     output.open(filename);
 
     tested.apply_step();
-    tested.serialize(&output, dt);
+    tested.serialize(&output);
     output.close();
 
     // The actual testing
@@ -152,7 +152,6 @@ BOOST_AUTO_TEST_CASE(test4)
 
 BOOST_AUTO_TEST_CASE(step)
 {
-    cout << "Starting our test" << endl;
     TestNonLinear tested(7, dt, 24 * M_PI);
     tested.initialize();
 

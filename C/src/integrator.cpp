@@ -27,6 +27,7 @@ int main(int argc, char *argv[])
     output.open("output");
     
     for (size_t j = 0; j < runs; ++j) {
+        std::cout << "Run " << j << std::endl;
         turb::Integrator main_structure(samples, dt, 24 * M_PI);
         main_structure.initialize();
 

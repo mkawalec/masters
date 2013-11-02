@@ -13,12 +13,12 @@ from sys import argv
 devnull = open("/dev/null", "w")
 errlog = open("errlog", "w")
 
-def setup_remote(host, runs, folder):
+def setup_remote(host, runs, folder, dt=0.0005, samples=7):
     call(["ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "
           "s0905879@%(host)s \' cd /dev/shm; rm -rf %(folder)s ;"
           "mkdir %(folder)s; cp ~/integrator %(folder)s; cd %(folder)s; "
-          "./integrator 7 0.0005 2000 %(runs)d\'" 
-          % dict(host=host, runs=runs, folder=folder)], 
+          "./integrator %(samples)s %(dt)s 2000 %(runs)d\'" 
+          % dict(host=host, runs=runs, folder=folder, dt=dt, samples=samples)], 
           shell=True, stdout=devnull, stderr=errlog)
 
     call(["scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "
@@ -26,16 +26,19 @@ def setup_remote(host, runs, folder):
           % dict(host=host, folder=folder)], 
             shell=True, stderr=errlog, stdout=devnull)
 
-if __name__ == '__main__':
+def run_set(dt, samples):    
     hosts = int(argv[1])
     runs = int(argv[2])
 
     processes = []
+    print("Starting dt = %d, samples = %d", dt, samples)
 
     # Spawning two threads per host
     for i in range(hosts):
-        processes.append(Process(target=setup_remote, args=["cplab%03d" % (i,), runs, 'turb1']))
-        processes.append(Process(target=setup_remote, args=["cplab%03d" % (i,), runs, 'turb2']))
+        processes.append(Process(target=setup_remote, 
+            args=["cplab%03d" % (i,), runs, 'turb1', dt, samples]))
+        processes.append(Process(target=setup_remote, 
+            args=["cplab%03d" % (i,), runs, 'turb2', dt, samples]))
 
     for process in processes:
         process.start()
@@ -52,3 +55,9 @@ if __name__ == '__main__':
                 counter += 1
         pbar.update(counter)
     pbar.finish()
+
+if __name__ == '__main__':
+    s_dt = 0.0005
+    for dt in [2 * s_dt, s_dt, s_dt / 2, s_dt / 4]:
+        for samples in range(7, 11):
+            run_set(dt, samples)
