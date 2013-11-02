@@ -33,7 +33,7 @@ def run_set(dt, samples):
     runs = int(argv[2])
 
     processes = []
-    print("Starting dt = %d, samples = %d", dt, samples)
+    print("Starting dt = %s, samples = %s" % (dt, samples))
 
     # Spawning two threads per host
     for i in range(hosts):
@@ -63,7 +63,7 @@ if __name__ == '__main__':
     for dt in [2 * s_dt, s_dt, s_dt / 2, s_dt / 4]:
         for samples in range(7, 11):
             run_set(dt, samples)
-            with open('output_' + samples + '_' + dt, 'w') as f:
+            with open('output_' + str(samples) + '_' + str(dt), 'w') as f:
                 for filename in glob('*.out'):
                     with open(filename, 'r') as input_f:
                         f.write(input_f.read())
