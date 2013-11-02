@@ -9,6 +9,8 @@ from subprocess import call
 from progressbar import Bar, ETA, Percentage, ProgressBar
 from time import sleep
 from sys import argv
+from glob import glob
+import os
 
 devnull = open("/dev/null", "w")
 errlog = open("errlog", "w")
@@ -17,7 +19,7 @@ def setup_remote(host, runs, folder, dt=0.0005, samples=7):
     call(["ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "
           "s0905879@%(host)s \' cd /dev/shm; rm -rf %(folder)s ;"
           "mkdir %(folder)s; cp ~/integrator %(folder)s; cd %(folder)s; "
-          "./integrator %(samples)s %(dt)s 2000 %(runs)d\'" 
+          "./integrator %(samples)s %(dt)s 10000 %(runs)d\'" 
           % dict(host=host, runs=runs, folder=folder, dt=dt, samples=samples)], 
           shell=True, stdout=devnull, stderr=errlog)
 
@@ -61,3 +63,10 @@ if __name__ == '__main__':
     for dt in [2 * s_dt, s_dt, s_dt / 2, s_dt / 4]:
         for samples in range(7, 11):
             run_set(dt, samples)
+            with open('output_' + samples + '_' + dt, 'w') as f:
+                for filename in glob('*.out'):
+                    with open(filename, 'r') as input_f:
+                        f.write(input_f.read())
+                    os.remove(filename)
+
+
