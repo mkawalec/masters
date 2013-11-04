@@ -60,8 +60,11 @@ def run_set(dt, samples):
 
 if __name__ == '__main__':
     s_dt = 0.0005
-    for dt in [2 * s_dt, s_dt, s_dt / 2, s_dt / 4]:
+    for dt in [s_dt, s_dt / 2, s_dt / 4, s_dt / 8]:
         for samples in range(7, 11):
+            if samples == 10 and dt == s_dt:
+                continue
+
             run_set(dt, samples)
             with open('output_' + samples + '_' + dt, 'w') as f:
                 for filename in glob('*.out'):
