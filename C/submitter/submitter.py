@@ -71,13 +71,13 @@ if __name__ == '__main__':
             if samples == 10 and (n == 0 or n == 1):
                 continue
 
-            directory = samples + '_' + dt
+            directory = str(samples) + '_' + str(dt)
             os.mkdir(directory)
 
             run_set(dt, samples, directory)
             print("Combining dt = %s, samples = %s" % (dt, samples))
             with open(directory + '/output', 'w') as f:
-                for filename in glob('*.out'):
+                for filename in glob(directory + '/*.out'):
                     with open(filename, 'r') as input_f:
                         f.write(input_f.read())
 
