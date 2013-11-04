@@ -57,7 +57,7 @@ def run_set(dt, samples, directory):
                 counter += 1
         pbar.update(counter)
 
-        if counter > 0.9 * len(process):
+        if counter > 0.9 * len(processes):
             for process in processes:
                 if process.is_alive():
                     process.terminate()
