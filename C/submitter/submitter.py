@@ -12,11 +12,15 @@ from sys import argv
 from glob import glob
 import os
 
+processes = []
+hosts = int(argv[1])
+runs = int(argv[2])
+
 devnull = open("/dev/null", "w")
 errlog = open("errlog", "w")
 
 def setup_remote(host, runs, folder, dt=0.0005, samples=7, directory='.'):
-    call(["ssh -t -t -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "
+    call(["ssh -tt -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "
           "s0905879@%(host)s \' cd /dev/shm; rm -rf %(folder)s ;"
           "mkdir %(folder)s; cp ~/integrator %(folder)s; cd %(folder)s; "
           "./integrator %(samples)s %(dt)s 2000 %(runs)d\'" 
@@ -28,11 +32,31 @@ def setup_remote(host, runs, folder, dt=0.0005, samples=7, directory='.'):
           % dict(host=host, folder=folder, directory=directory)], 
             shell=True, stderr=errlog, stdout=devnull)
 
-def run_set(dt, samples, directory):    
-    hosts = int(argv[1])
-    runs = int(argv[2])
+def kill(host):
+    call(["ssh -tt -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "
+          "s0905879@%(host)s \' pkill -u s0905879 \'" % dict(host=host)],
+          shell=True, stdout=devnull, stderr=errlog)
 
+def kill_all():
+    procs = []
+    for i in range(hosts):
+        procs.append(Process(target=kill,
+            args=["cplab%03d" % (i,)]))
+
+    for process in procs:
+        process.start()
+
+    counter = 0
+    while counter < len(procs):
+        sleep(1)
+        counter = 0
+        for process in procs:
+            if not process.is_alive():
+                counter += 1
+
+def run_set(dt, samples, directory):    
     processes = []
+
     print("Starting dt = %s, samples = %s" % (dt, samples))
 
     # Spawning two threads per host
@@ -58,9 +82,7 @@ def run_set(dt, samples, directory):
         pbar.update(counter)
 
         if counter > 0.9 * len(processes):
-            for process in processes:
-                if process.is_alive():
-                    process.terminate()
+            kill_all()
             break
     pbar.finish()
 
