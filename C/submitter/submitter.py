@@ -60,9 +60,9 @@ def run_set(dt, samples):
 
 if __name__ == '__main__':
     s_dt = 0.0005
-    for dt in [s_dt, s_dt / 2, s_dt / 4, s_dt / 8]:
+    for n, dt in enumerate([s_dt, s_dt / 2, s_dt / 4, s_dt / 8]):
         for samples in range(7, 11):
-            if samples == 10 and dt == s_dt:
+            if samples == 10 and (n == 0 or n == 1):
                 continue
 
             run_set(dt, samples)
