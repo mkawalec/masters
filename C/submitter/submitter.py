@@ -66,6 +66,7 @@ if __name__ == '__main__':
                 continue
 
             run_set(dt, samples)
+            print("Combining dt = %s, samples = %s" % (dt, samples))
             with open('output_' + str(samples) + '_' + str(dt), 'w') as f:
                 for filename in glob('*.out'):
                     with open(filename, 'r') as input_f:
