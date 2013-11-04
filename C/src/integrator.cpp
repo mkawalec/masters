@@ -23,8 +23,7 @@ int main(int argc, char *argv[])
     double dt = strtod(argv[2], null_p);
     double end_time = strtod(argv[3], null_p);
     size_t runs = strtoul(argv[4], null_p, 10);
-    std::ofstream output;
-    output.open("output");
+    std::ofstream output("output");
     
     for (size_t j = 0; j < runs; ++j) {
         std::cout << "Run " << j << std::endl;
@@ -37,8 +36,9 @@ int main(int argc, char *argv[])
         while (current_time < end_time) {
             main_structure.apply_step();
             main_structure.forward_transform();
-            
-            if (l2_norm(main_structure.u, main_structure.size_real) < 5) {
+            double norm = l2_norm(main_structure.u, main_structure.size_real);
+
+            if (norm < 5) {
                 output << current_time << std::endl;
                 break;
             }
