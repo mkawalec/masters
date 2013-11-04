@@ -15,8 +15,8 @@ import os
 devnull = open("/dev/null", "w")
 errlog = open("errlog", "w")
 
-def setup_remote(host, runs, folder, dt=0.0005, samples=7):
-    call(["ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "
+def setup_remote(host, runs, folder, dt=0.0005, samples=7, directory='.'):
+    call(["ssh -t -t -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "
           "s0905879@%(host)s \' cd /dev/shm; rm -rf %(folder)s ;"
           "mkdir %(folder)s; cp ~/integrator %(folder)s; cd %(folder)s; "
           "./integrator %(samples)s %(dt)s 2000 %(runs)d\'" 
@@ -24,11 +24,11 @@ def setup_remote(host, runs, folder, dt=0.0005, samples=7):
           shell=True, stdout=devnull, stderr=errlog)
 
     call(["scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "
-          "s0905879@%(host)s:/dev/shm/%(folder)s/output %(host)s-%(folder)s.out" 
-          % dict(host=host, folder=folder)], 
+          "s0905879@%(host)s:/dev/shm/%(folder)s/output %(directory)s/%(host)s-%(folder)s.out" 
+          % dict(host=host, folder=folder, directory=directory)], 
             shell=True, stderr=errlog, stdout=devnull)
 
-def run_set(dt, samples):    
+def run_set(dt, samples, directory):    
     hosts = int(argv[1])
     runs = int(argv[2])
 
@@ -38,9 +38,9 @@ def run_set(dt, samples):
     # Spawning two threads per host
     for i in range(hosts):
         processes.append(Process(target=setup_remote, 
-            args=["cplab%03d" % (i,), runs, 'turb1', dt, samples]))
+            args=["cplab%03d" % (i,), runs, 'turb1', dt, samples, directory]))
         processes.append(Process(target=setup_remote, 
-            args=["cplab%03d" % (i,), runs, 'turb2', dt, samples]))
+            args=["cplab%03d" % (i,), runs, 'turb2', dt, samples, directory]))
 
     for process in processes:
         process.start()
@@ -56,6 +56,12 @@ def run_set(dt, samples):
             if not process.is_alive():
                 counter += 1
         pbar.update(counter)
+
+        if counter > 0.9 * len(process):
+            for process in processes:
+                if process.is_alive():
+                    process.terminate()
+            break
     pbar.finish()
 
 if __name__ == '__main__':
@@ -65,12 +71,14 @@ if __name__ == '__main__':
             if samples == 10 and (n == 0 or n == 1):
                 continue
 
-            run_set(dt, samples)
+            directory = samples + '_' + dt
+            os.mkdir(directory)
+
+            run_set(dt, samples, directory)
             print("Combining dt = %s, samples = %s" % (dt, samples))
-            with open('output_' + str(samples) + '_' + str(dt), 'w') as f:
+            with open(directory + '/output', 'w') as f:
                 for filename in glob('*.out'):
                     with open(filename, 'r') as input_f:
                         f.write(input_f.read())
-                    os.remove(filename)
 
 
