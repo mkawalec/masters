@@ -19,7 +19,7 @@ def setup_remote(host, runs, folder, dt=0.0005, samples=7):
     call(["ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "
           "s0905879@%(host)s \' cd /dev/shm; rm -rf %(folder)s ;"
           "mkdir %(folder)s; cp ~/integrator %(folder)s; cd %(folder)s; "
-          "./integrator %(samples)s %(dt)s 10000 %(runs)d\'" 
+          "./integrator %(samples)s %(dt)s 2000 %(runs)d\'" 
           % dict(host=host, runs=runs, folder=folder, dt=dt, samples=samples)], 
           shell=True, stdout=devnull, stderr=errlog)
 
