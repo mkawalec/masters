@@ -21,7 +21,7 @@ endif(DOXYGEN_FOUND)
 
 if (CMAKE_COMPILER_IS_GNUCXX)
     message(status "Setting GCC flags")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -Wall -Wextra -W -pedantic -std=c++0x")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static -O2 -Wall -Wextra -W -pedantic -std=c++0x")
 else()
     message(status "gcc not found!")
     return()
@@ -31,8 +31,17 @@ endif()
 #    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DDEBUG -g")
 #    COMMENT "Compiling in debug mode" VERBATIM
 #    )
+unset(Boost_INCLUDE_DIR CACHE)
+unset(Boost_LIBRARY_DIRS CACHE)
+unset(FFTW_INCLUDES CACHE)
+unset(FFTW_LIBRARIES CACHE)
 
 find_package(FFTW)
+
+set(Boost_USE_STATIC_LIBS        OFF)
+set(Boost_USE_MULTITHREADED      ON)
+set(Boost_USE_STATIC_RUNTIME     OFF)
+set(BOOST_ALL_DYN_LINK           ON)   # force dynamic linking for all libraries
 
 find_package(Boost 1.53 COMPONENTS unit_test_framework REQUIRED)
 ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK) 
@@ -40,16 +49,11 @@ message(status "** Boost Include: ${Boost_INCLUDE_DIR}")
 message(status "** Boost Libraries: ${Boost_LIBRARY_DIRS}")
 message(status "** Boost Libraries: ${Boost_LIBRARIES}")
 
-message(status "** FFTW Include: ${FFTW_INCLUDE_DIR}")
-message(status "** FFTW Libraries: ${FFTW_LIBRARY_D}")
+message(status "** FFTW Include: ${FFTW_INCLUDES}")
+message(status "** FFTW Libraries: ${FFTW_LIBRARIES}")
 
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR} ${FFTW_INCLUDES})
-LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
+LINK_DIRECTORIES(${Boost_LIBRARY_DIRS} ${FFTW_LIBRARIES})
 
 target_link_libraries(integrator -lm ${FFTW_LIBRARIES})
 target_link_libraries(test-suite -lm ${FFTW_LIBRARIES} ${Boost_LIBRARIES})
-
-set(Boost_USE_STATIC_LIBS        OFF)
-set(Boost_USE_MULTITHREADED      ON)
-set(Boost_USE_STATIC_RUNTIME     OFF)
-set(BOOST_ALL_DYN_LINK           ON)   # force dynamic linking for all libraries

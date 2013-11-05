@@ -19,12 +19,13 @@ runs = int(argv[2])
 devnull = open("/dev/null", "w")
 errlog = open("errlog", "w")
 
-def setup_remote(host, runs, folder, dt=0.0005, samples=7, directory='.'):
+def setup_remote(host, runs, folder, dt=0.0005, samples=7, directory='.', tmax=2000):
     call(["ssh -tt -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "
           "s0905879@%(host)s \' cd /dev/shm; rm -rf %(folder)s ;"
           "mkdir %(folder)s; cp ~/integrator %(folder)s; cd %(folder)s; "
-          "./integrator %(samples)s %(dt)s 2000 %(runs)d\'" 
-          % dict(host=host, runs=runs, folder=folder, dt=dt, samples=samples)], 
+          "./integrator %(samples)s %(dt)s %(tmax)s %(runs)d\'" 
+          % dict(host=host, runs=runs, folder=folder, dt=dt, samples=samples,
+              tmax=tmax)], 
           shell=True, stdout=devnull, stderr=errlog)
 
     call(["scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "
@@ -54,7 +55,7 @@ def kill_all():
             if not process.is_alive():
                 counter += 1
 
-def run_set(dt, samples, directory):    
+def run_set(dt, samples, directory, tmax):    
     processes = []
 
     print("Starting dt = %s, samples = %s" % (dt, samples))
@@ -62,9 +63,9 @@ def run_set(dt, samples, directory):
     # Spawning two threads per host
     for i in range(hosts):
         processes.append(Process(target=setup_remote, 
-            args=["cplab%03d" % (i,), runs, 'turb1', dt, samples, directory]))
+            args=["cplab%03d" % (i,), runs, 'turb1', dt, samples, directory, tmax]))
         processes.append(Process(target=setup_remote, 
-            args=["cplab%03d" % (i,), runs, 'turb2', dt, samples, directory]))
+            args=["cplab%03d" % (i,), runs, 'turb2', dt, samples, directory, tmax]))
 
     for process in processes:
         process.start()
@@ -81,26 +82,19 @@ def run_set(dt, samples, directory):
                 counter += 1
         pbar.update(counter)
 
-        if counter > 0.9 * len(processes):
-            kill_all()
-            break
+
+    kill_all()
     pbar.finish()
 
 if __name__ == '__main__':
-    s_dt = 0.0005
-    for n, dt in enumerate([s_dt, s_dt / 2, s_dt / 4, s_dt / 8]):
-        for samples in range(7, 11):
-            if samples == 10 and (n == 0 or n == 1):
-                continue
+    for maxt in [2000, 3000, 5000, 7000, 10000, 15000]:
+        directory = str(maxt)
+        os.mkdir(directory)
 
-            directory = str(samples) + '_' + str(dt)
-            os.mkdir(directory)
-
-            run_set(dt, samples, directory)
-            print("Combining dt = %s, samples = %s" % (dt, samples))
-            with open(directory + '/output', 'w') as f:
-                for filename in glob(directory + '/*.out'):
-                    with open(filename, 'r') as input_f:
-                        f.write(input_f.read())
+        run_set(0.0005, 7, directory, maxt)
+        with open(directory + '/output', 'w') as f:
+            for filename in glob(directory + '/*.out'):
+                with open(filename, 'r') as input_f:
+                    f.write(input_f.read())
 
 
