@@ -56,6 +56,7 @@ def kill_all():
                 counter += 1
 
 def run_set(dt, samples, directory, tmax):    
+    kill_all()
     processes = []
 
     print("Starting dt = %s, samples = %s" % (dt, samples))
@@ -87,14 +88,20 @@ def run_set(dt, samples, directory, tmax):
     pbar.finish()
 
 if __name__ == '__main__':
-    for maxt in [2000, 3000, 5000, 7000, 10000, 15000]:
-        directory = str(maxt)
-        os.mkdir(directory)
+    maxt = 7000
+    s_dt = 0.0005
+    for n,dt in enumerate([s_dt, s_dt/2, s_dt/4, s_dt/8]):
+        for samples in [7, 8, 9, 10]:
+            if samples == 10 and (n == 0 or n == 1):
+                continue
 
-        run_set(0.0005, 7, directory, maxt)
-        with open(directory + '/output', 'w') as f:
-            for filename in glob(directory + '/*.out'):
-                with open(filename, 'r') as input_f:
-                    f.write(input_f.read())
+            directory = 'new_' + str(samples) + '_' + str(dt)
+            os.mkdir(directory)
+
+            run_set(dt, samples, directory, maxt)
+            with open(directory + '/output', 'w') as f:
+                for filename in glob(directory + '/*.out'):
+                    with open(filename, 'r') as input_f:
+                        f.write(input_f.read())
 
 
