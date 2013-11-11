@@ -5,6 +5,12 @@
 #include <cstdio>
 #include <cstdlib>
 
+#include <boost/program_options/options_description.hpp>
+#include <boost/program_options/variables_map.hpp>
+#include <boost/program_options/parsers.hpp>
+#include <boost/program_options/positional_options.hpp>
+namespace po = boost::program_options;
+
 int main(int argc, char *argv[])
 {
     // Speeds up the performance for large
@@ -36,7 +42,7 @@ int main(int argc, char *argv[])
         while (current_time < end_time) {
             main_structure.apply_step();
             main_structure.forward_transform();
-            double norm = l2_norm(main_structure.u, main_structure.size_real);
+            double norm = turb::l2_norm(main_structure.u, main_structure.size_real);
 
             if (norm < 5) {
                 output << current_time << std::endl;

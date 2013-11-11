@@ -1,4 +1,5 @@
 #include "serializers/NormSerializer.hpp"
+#include "Integrator.cpp"
 #include "helpers.hpp"
 
 #include <fftw3.h>
@@ -6,6 +7,8 @@
 #include <list>
 
 namespace turb {
+    template <typename T>
+    std::list<T*> Base<T>::available;
 
     NormSerializer::NormSerializer()
     {

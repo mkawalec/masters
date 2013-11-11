@@ -7,16 +7,17 @@ set(HEADER_FILES
     include/exceptions.hpp
     include/Integrator.hpp 
     include/Serializer.hpp
+    include/Computer.hpp
     include/serializers/NormSerializer.hpp
     include/serializers/ComponentSerializer.hpp
+    include/computers/SimpleComputer.hpp
     )
 set(CPP_FILES
-    src/integrator.cpp 
-    src/Integrator.cpp 
     src/helpers.cpp
-    src/Serializer.cpp
+    src/integrator.cpp 
     src/serializers/NormSerializer.cpp
     src/serializers/ComponentSerializer.cpp
+    src/computers/SimpleComputer.cpp
     ${HEADER_FILES}
     )
 
@@ -60,7 +61,7 @@ set(Boost_USE_MULTITHREADED      ON)
 set(Boost_USE_STATIC_RUNTIME     OFF)
 set(BOOST_ALL_DYN_LINK           ON)   # force dynamic linking for all libraries
 
-find_package(Boost 1.53 COMPONENTS unit_test_framework random REQUIRED)
+find_package(Boost 1.53 COMPONENTS unit_test_framework random program_options REQUIRED)
 ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK) 
 message(status "** Boost Include: ${Boost_INCLUDE_DIR}")
 message(status "** Boost Libraries: ${Boost_LIBRARY_DIRS}")
