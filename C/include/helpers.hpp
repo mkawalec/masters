@@ -21,4 +21,6 @@ inline void normalize(double *array, size_t size)
                 *(array + i) *= norm_factor;
 }
 
+template <typename T>
+void unused(T &&) { }
 #endif

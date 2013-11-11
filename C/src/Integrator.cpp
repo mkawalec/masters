@@ -1,5 +1,6 @@
 #include "Integrator.hpp"
 #include "helpers.hpp"
+
 #include <fftw3.h>
 #include <cmath>
 #include <iostream>

@@ -2,12 +2,29 @@ cmake_minimum_required(VERSION 2.6)
 project(turb)
 include_directories(src include)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
-set(HEADER_FILES include/helpers.hpp include/Integrator.hpp)
+set(HEADER_FILES 
+    include/helpers.hpp 
+    include/exceptions.hpp
+    include/Integrator.hpp 
+    include/Serializer.hpp
+    include/serializers/NormSerializer.hpp
+    include/serializers/ComponentSerializer.hpp
+    )
+set(CPP_FILES
+    src/integrator.cpp 
+    src/Integrator.cpp 
+    src/helpers.cpp
+    src/Serializer.cpp
+    src/serializers/NormSerializer.cpp
+    src/serializers/ComponentSerializer.cpp
+    ${HEADER_FILES}
+    )
+
 set(TEST_HEADERS ${HEADER_FILES} include/test_integrators.hpp)
 
 message(status "${CMAKE_CURRENT_SOURCE_DIR}")
-add_executable(integrator src/integrator.cpp src/Integrator.cpp src/helpers.cpp ${HEADER_FILES})
-add_executable(test-suite src/test-suite.cpp src/test_integrators.cpp src/Integrator.cpp src/helpers.cpp ${TEST_HEADERS})
+add_executable(integrator ${CPP_FILES})
+add_executable(test-suite ${CPP_FILES})
 
 find_package(Doxygen)
 if(DOXYGEN_FOUND)
@@ -43,7 +60,7 @@ set(Boost_USE_MULTITHREADED      ON)
 set(Boost_USE_STATIC_RUNTIME     OFF)
 set(BOOST_ALL_DYN_LINK           ON)   # force dynamic linking for all libraries
 
-find_package(Boost 1.53 COMPONENTS unit_test_framework REQUIRED)
+find_package(Boost 1.53 COMPONENTS unit_test_framework random REQUIRED)
 ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK) 
 message(status "** Boost Include: ${Boost_INCLUDE_DIR}")
 message(status "** Boost Libraries: ${Boost_LIBRARY_DIRS}")

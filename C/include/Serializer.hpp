@@ -1,18 +1,29 @@
-#include <memory>
+#ifndef turb_Serializer_h
+#define turb_Serializer_h
 
-#include "Computer.hpp"
+#include "Integrator.hpp"
+
+#include <memory>
+#include <fstream>
+#include <list>
+#include <string>
 
 namespace turb {
 
     class Serializer {
     protected:
-        std::shared_ptr<Computer> bound_instance;
+        void unregister(Serializer *instance);
 
     public:
-        Serializer(const std::shared_ptr<Computer> instance);
-        Serializer(const Serializer &instance);
+        static std::list<Serializer*> available;
+        std::string name;
+        std::string description;
 
-        virtual void serialize(double time) = 0;
+        static Serializer* choose_serializer(std::string name);
+
+        virtual void serialize(Integrator *integrator, 
+                std::ofstream *output, double time) = 0;
     };
 }
 
+#endif
