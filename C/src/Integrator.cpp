@@ -257,14 +257,5 @@ namespace turb {
             fftw_execute(e_u); fftw_execute(e_v);
             normalize(u, size_real); normalize(v, size_real);
         }
-
-        void Integrator::serialize(std::ofstream *output, double current_time) 
-        {
-            forward_transform();
-            *output << current_time << " " << l2_norm(u, size_real) << 
-                " " << l2_norm(v, size_real) << std::endl;
-        }
-
-
 }
 

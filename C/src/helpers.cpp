@@ -50,7 +50,7 @@ namespace turb {
                 return *it;
         }
 
-        throw SerializerNotFound("Serializer " + name + 
+        throw InstanceNotFound(T::class_name + " " + name + 
                                  "is not currently available");
     }
 }

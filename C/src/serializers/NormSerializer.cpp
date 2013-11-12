@@ -5,6 +5,7 @@
 #include <fftw3.h>
 #include <fstream>
 #include <list>
+#include <iostream>
 
 namespace turb {
     template <typename T>
@@ -13,6 +14,7 @@ namespace turb {
     NormSerializer::NormSerializer()
     {
         name = "norm";
+        class_name = "Serializer";
         description = "Prints current time and then norm "
                       "real(u) and norm real(v)";
         Serializer::available.push_back(this);
@@ -29,7 +31,7 @@ namespace turb {
             std::endl;
     }
 
-    NormSerializer norm_serializer_instance();
+    NormSerializer *norm_serializer_instance = new NormSerializer();
 }
 
         

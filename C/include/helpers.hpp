@@ -36,6 +36,7 @@ namespace turb {
         static std::list<T*> available;
         std::string name;
         std::string description;
+        std::string class_name;
 
         static T* choose(std::string name);
     };

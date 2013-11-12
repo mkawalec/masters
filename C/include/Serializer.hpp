@@ -2,6 +2,7 @@
 #define turb_Serializer_h
 
 #include "Integrator.hpp"
+#include "helpers.hpp"
 
 #include <fstream>
 

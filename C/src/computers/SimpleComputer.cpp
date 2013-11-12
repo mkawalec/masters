@@ -1,7 +1,11 @@
 #include "helpers.hpp"
-#include "Serializer.hpp"
 #include "computers/SimpleComputer.hpp"
+#include "Integrator.hpp"
+#include "helpers.hpp"
 
+
+#include <fstream>
+#include <iostream>
 
 namespace turb {
 
@@ -11,19 +15,30 @@ namespace turb {
     SimpleComputer::SimpleComputer()
     {
         name = "simple";
+        class_name = "Computer";
         description = "Runs Integrator a certain number of times "
                       "and serializes the results every few frames";
+        serializer = NULL;
+
         Computer::available.push_back(this);
     }
 
-    SimpleComputer::SimpleComputer(Serializer *serializer) :
-        SimpleComputer::SimpleComputer() 
+    void SimpleComputer::compute()
     {
-        serializer = serializer;
+        integrator = new Integrator(samples, dt, domain_size);
+        std::ofstream output(output_filename);
+
+        for (size_t i = 0; i * dt < end_time; ++i) {
+           integrator->apply_step();
+           if (i%print_every == 0)
+               serializer->serialize(integrator, &output,
+                       i * dt);
+        }
+
+        output.close();
+        delete integrator;
     }
 
-    std::thread SimpleComputer::run()
-    {
-    }
+    SimpleComputer *simple_computer_instance = new SimpleComputer();
 }
 

@@ -11,6 +11,7 @@ namespace turb {
     ComponentSerializer::ComponentSerializer()
     {
         name = "cpt";
+        class_name = "Serializer";
         description = "Prints all the nonzero components of "
                       "u in Fourier space";
         Serializer::available.push_back(this);
@@ -29,7 +30,7 @@ namespace turb {
         *output << std::endl;
     }
 
-    ComponentSerializer cpt_serializer_instance();
+    ComponentSerializer *cpt_serializer_instance = new ComponentSerializer();
 }
 
         

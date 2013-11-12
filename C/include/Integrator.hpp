@@ -35,12 +35,11 @@ namespace turb {
 
         public:
         Integrator(size_t dim_power, double timestep, double domain=2*M_PI);
-        ~Integrator();
+        virtual ~Integrator();
         void initialize();
 
         virtual void apply_step();
         void forward_transform();
-        virtual void serialize(std::ofstream *output, double current_time);
 
         double *u, *v, *du, *Lu, *Lv;
         double dt, domain_size;

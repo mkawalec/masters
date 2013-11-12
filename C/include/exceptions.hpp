@@ -15,7 +15,7 @@ namespace turb {
         Exception() { message = ""; }
     };
 
-    struct SerializerNotFound : public Exception {
+    struct InstanceNotFound : public Exception {
         using Exception::Exception;
     };
 }
