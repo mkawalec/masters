@@ -3,7 +3,6 @@
 
 #include "Serializer.hpp"
 #include "Integrator.hpp"
-#include "helpers.hpp"
 
 #include <fstream>
 

@@ -3,21 +3,22 @@ project(turb)
 include_directories(src include)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 set(HEADER_FILES 
+    include/helpers.hpp 
+    include/exceptions.hpp
+    include/Base.hpp
     include/Integrator.hpp 
     include/Serializer.hpp
     include/serializers/NormSerializer.hpp
     include/serializers/ComponentSerializer.hpp
     include/Computer.hpp
     include/computers/SimpleComputer.hpp
-    include/helpers.hpp 
-    include/exceptions.hpp
     )
 set(CPP_FILES
-    src/helpers.cpp
-    src/integrator.cpp 
+    src/integrator.cpp
     src/serializers/NormSerializer.cpp
     src/serializers/ComponentSerializer.cpp
     src/computers/SimpleComputer.cpp
+    src/helpers.cpp
     ${HEADER_FILES}
     )
 

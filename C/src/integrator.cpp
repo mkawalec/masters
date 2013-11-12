@@ -1,7 +1,6 @@
-#include "helpers.hpp"
 #include "Serializer.hpp"
 #include "Computer.hpp"
-#include "computers/SimpleComputer.hpp"
+#include "helpers.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -15,15 +14,10 @@
 #include <boost/program_options/positional_options.hpp>
 namespace po = boost::program_options;
 
+
 void initialize()
 {
-    std::string output_methods_desc;
-    std::list<turb::Serializer*>::iterator it;
-    for (it = turb::Serializer::available.begin();
-         it != turb::Serializer::available.end(); ++it) {
-        output_methods_desc += (*it)->name + ": \t" +
-            (*it)->description + "\n\n";
-    }
+    std::string output_methods_desc = turb::Base<turb::Computer>::list_available();
     std::cout << "methods: " << output_methods_desc << std::endl;
 }
 

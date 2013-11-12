@@ -3,14 +3,10 @@
 #include "Integrator.hpp"
 #include "helpers.hpp"
 
-
 #include <fstream>
-#include <iostream>
+
 
 namespace turb {
-
-    template <typename T>
-    std::list<T*> Base<T>::available;
 
     SimpleComputer::SimpleComputer()
     {

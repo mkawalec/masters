@@ -5,11 +5,9 @@
 #include <fftw3.h>
 #include <fstream>
 #include <list>
-#include <iostream>
+
 
 namespace turb {
-    template <typename T>
-    std::list<T*> Base<T>::available;
 
     NormSerializer::NormSerializer()
     {

@@ -3,8 +3,6 @@
 
 #include <fftw3.h>
 #include <cmath>
-#include <list>
-#include <string>
 
 namespace turb {
     extern const double e;
@@ -24,22 +22,6 @@ namespace turb {
             *(array + i) *= norm_factor;
     }
 
-    template <typename T>
-    void unused(T &&) { }
-
-    template <typename T>
-    class Base {
-    protected:
-        void unregister(T *instance);
-
-    public:
-        static std::list<T*> available;
-        std::string name;
-        std::string description;
-        std::string class_name;
-
-        static T* choose(std::string name);
-    };
 }
 
 #endif
