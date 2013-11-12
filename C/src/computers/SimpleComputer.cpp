@@ -22,8 +22,9 @@ namespace turb {
     void SimpleComputer::compute()
     {
         integrator = new Integrator(samples, dt, domain_size);
-        std::ofstream output(output_filename);
+        set_constants();
 
+        std::ofstream output(output_filename);
         for (size_t i = 0; i * dt < end_time; ++i) {
            integrator->apply_step();
            if (i%print_every == 0)

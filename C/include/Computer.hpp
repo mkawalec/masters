@@ -13,16 +13,14 @@ namespace turb {
     protected:
         Integrator *integrator;
         virtual void compute() = 0;
+        void set_constants();
 
     public:
         std::thread run() { return std::thread(&Computer::compute, this); }
         Serializer *serializer;
 
-        size_t print_every;
-        double end_time;
-        double dt;
-        size_t samples;
-        size_t domain_size;
+        size_t print_every, samples, domain_size;
+        double end_time, dt, e, a, b, D, R;
         std::string output_filename;
         bool split_files;
 

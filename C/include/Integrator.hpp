@@ -42,7 +42,7 @@ namespace turb {
         void forward_transform();
 
         double *u, *v, *du, *Lu, *Lv;
-        double dt, domain_size;
+        double dt, domain_size, e, a, b, D, R;
         fftw_complex *c_u, *c_v, *dc_u;
         size_t size_real, size_complex;
     };

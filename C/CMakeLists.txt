@@ -15,6 +15,7 @@ set(HEADER_FILES
     )
 set(CPP_FILES
     src/integrator.cpp
+    src/Computer.cpp
     src/serializers/NormSerializer.cpp
     src/serializers/ComponentSerializer.cpp
     src/computers/SimpleComputer.cpp

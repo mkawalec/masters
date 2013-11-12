@@ -111,6 +111,20 @@ turb::Computer* initialize(int argc, char *argv[])
     turb::Computer *computer = turb::Computer::choose(computer_name)->clone();
     computer->serializer = turb::Serializer::choose(serializer_name);
 
+    // Setting the params
+    computer->print_every = print_every;
+    computer->end_time = end_time;
+    computer->dt = dt;
+    computer->samples = samples;
+    computer->domain_size = domain_size;
+    computer->output_filename = output_filename;
+    computer->split_files = split_files;
+    computer->e = e;
+    computer->a = a;
+    computer->b = b;
+    computer->D = D;
+    computer->R = R;
+
     return computer;
 }
 
@@ -121,11 +135,15 @@ int main(int argc, char *argv[])
     // inputs and outputs. Makes using printf and scanf
     // very unpredicatable
     std::ios_base::sync_with_stdio(false);
+    turb::Computer *computer = NULL;
 
     try{
-        turb::Computer *computer = initialize(argc, argv);
+        computer = initialize(argc, argv);
     } catch (const turb::ProgramDeathRequest& e) {
         std::cerr << e.what() << std::endl;
     }
+
+    std::thread comp = computer->run();
+    comp.join();
     return 0;
 }
