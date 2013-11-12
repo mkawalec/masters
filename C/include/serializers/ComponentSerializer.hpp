@@ -15,6 +15,8 @@ namespace turb {
 
         void serialize(Integrator *instance, 
                 std::ofstream *output, double time);
+
+        Serializer* clone() const { return new ComponentSerializer(*this); }
     };
 }
 

@@ -12,6 +12,8 @@ namespace turb {
     public:
         virtual void serialize(Integrator *integrator, 
                 std::ofstream *output, double time) = 0;
+
+        virtual Serializer* clone() const = 0;
     };
 }
 

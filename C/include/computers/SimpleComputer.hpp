@@ -17,6 +17,7 @@ namespace turb {
         ~SimpleComputer() { unregister(this); }
 
         std::thread run();
+        Computer* clone() const { return new SimpleComputer(*this); }
     };
 }
         

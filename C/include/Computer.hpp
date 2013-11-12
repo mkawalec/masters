@@ -11,12 +11,12 @@ namespace turb {
 
     class Computer : public Base<Computer> {
     protected:
-        Serializer *serializer;
         Integrator *integrator;
         virtual void compute() = 0;
 
     public:
         std::thread run() { return std::thread(&Computer::compute, this); }
+        Serializer *serializer;
 
         size_t print_every;
         double end_time;
@@ -24,6 +24,9 @@ namespace turb {
         size_t samples;
         size_t domain_size;
         std::string output_filename;
+        bool split_files;
+
+        virtual Computer* clone() const = 0;
     };
 }
 

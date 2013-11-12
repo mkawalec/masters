@@ -21,7 +21,9 @@ namespace turb {
 
         std::string name;
         std::string description;
-        std::string class_name;
+        static std::string class_name;
+
+        virtual Base<T>* clone() const = 0;
     };
 }
 

@@ -2,6 +2,7 @@
 #define turb_exceptions_h
 
 #include <string>
+#include <sstream>
 
 namespace turb {
 
@@ -10,12 +11,18 @@ namespace turb {
         std::string message;
 
     public:
-        std::string what() { return message;}
-        Exception(std::string msg) { message = msg; }
         Exception() { message = ""; }
+        Exception(std::string msg) { message = msg; }
+        Exception(std::stringstream *output) { message = output->str();}
+
+        std::string what() const { return message;}
     };
 
     struct InstanceNotFound : public Exception {
+        using Exception::Exception;
+    };
+
+    struct ProgramDeathRequest : public Exception {
         using Exception::Exception;
     };
 }
