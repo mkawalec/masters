@@ -23,6 +23,8 @@ namespace turb {
     template <typename T>
     T* Base<T>::choose(std::string name)
     {
+        if (name.length() == 0) return NULL;
+
         for(typename std::list<T*>::iterator it = T::available.begin();
             it != T::available.end(); ++it) {
             if ((*it)->name == name) {
@@ -41,7 +43,7 @@ namespace turb {
         for (typename std::list<T*>::iterator it = T::available.begin();
              it != T::available.end(); ++it) {
             output_methods_desc += (*it)->name + ": \t" +
-                (*it)->description + "\n\n";
+                (*it)->description + ". " + (*it)->additional_info() + "\n\n";
         }
 
         return output_methods_desc;

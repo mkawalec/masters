@@ -44,8 +44,10 @@ turb::Computer* initialize(int argc, char *argv[])
 
     po::options_description modules_opts("Modules options");
     modules_opts.add_options()
-        ("serializer,s", po::value<std::string>(&serializer_name)->default_value("norm"),
-         ("name of a selected Serializer. Available are:\n\n" + 
+        ("serializer,s", po::value<std::string>(&serializer_name),
+         ("name of a selected Serializer. If not specified, "
+          "the default Serializer specified by a selected "
+          "Computer will be used. Available are:\n\n" + 
          turb::Serializer::list_available()).c_str())
         ("computer,c", po::value<std::string>(&computer_name)->default_value("simple"),
          ("name of a selected Computer. Available are:\n\n" +
@@ -141,6 +143,7 @@ int main(int argc, char *argv[])
         computer = initialize(argc, argv);
     } catch (const turb::ProgramDeathRequest& e) {
         std::cerr << e.what() << std::endl;
+        return 0;
     }
 
     std::thread comp = computer->run();

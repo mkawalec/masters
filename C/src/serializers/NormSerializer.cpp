@@ -19,11 +19,11 @@ namespace turb {
     }
 
     void NormSerializer::serialize(Integrator *instance, 
-            std::ofstream *output, double time)
+            std::ofstream *output, void *time)
     {
         instance->forward_transform();
 
-        *output << time << " " << l2_norm(instance->u,
+        *output << *static_cast<double*>(time) << " " << l2_norm(instance->u,
                 instance->size_real) << " " <<
             l2_norm(instance->v, instance->size_real) <<
             std::endl;

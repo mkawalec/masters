@@ -10,6 +10,7 @@ set(HEADER_FILES
     include/Serializer.hpp
     include/serializers/NormSerializer.hpp
     include/serializers/ComponentSerializer.hpp
+    include/serializers/GenericSerializer.hpp
     include/Computer.hpp
     include/computers/SimpleComputer.hpp
     )
@@ -18,6 +19,7 @@ set(CPP_FILES
     src/Computer.cpp
     src/serializers/NormSerializer.cpp
     src/serializers/ComponentSerializer.cpp
+    src/serializers/GenericSerializer.cpp
     src/computers/SimpleComputer.cpp
     src/helpers.cpp
     ${HEADER_FILES}

@@ -18,7 +18,7 @@ namespace turb {
     }
 
     void ComponentSerializer::serialize(Integrator *instance, 
-            std::ofstream *output, double time)
+            std::ofstream *output, void *time)
     {
         unused(time);
 

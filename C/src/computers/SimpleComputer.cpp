@@ -15,22 +15,24 @@ namespace turb {
         description = "Runs Integrator a certain number of times "
                       "and serializes the results every few frames";
         serializer = NULL;
+        suggested_serializer = "norm";
 
         Computer::available.push_back(this);
     }
 
     void SimpleComputer::compute()
     {
+        set_serializer();
         integrator = new Integrator(samples, dt, domain_size);
         set_constants();
-        integrator->initialize();
 
         std::ofstream output(output_filename);
         for (size_t i = 0; i * dt < end_time; ++i) {
-           integrator->apply_step();
-           if (i%print_every == 0)
-               serializer->serialize(integrator, &output,
-                       i * dt);
+            double current_time = i * dt;
+            integrator->apply_step();
+            if (i%print_every == 0)
+                serializer->serialize(integrator, &output,
+                       &current_time);
         }
 
         output.close();

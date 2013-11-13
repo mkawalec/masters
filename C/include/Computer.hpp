@@ -16,6 +16,8 @@ namespace turb {
         void set_constants();
 
     public:
+        typedef Base<Computer> super;
+
         std::thread run() { return std::thread(&Computer::compute, this); }
         Serializer *serializer;
 
@@ -23,6 +25,10 @@ namespace turb {
         double end_time, dt, e, a, b, D, R, domain_size;
         std::string output_filename;
         bool split_files;
+
+        std::string suggested_serializer;
+        std::string additional_info();
+        void set_serializer();
 
         virtual Computer* clone() const = 0;
     };

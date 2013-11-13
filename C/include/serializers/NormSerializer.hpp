@@ -14,7 +14,7 @@ namespace turb {
         ~NormSerializer() { unregister(this); }
 
         void serialize(Integrator *instance, 
-                std::ofstream *output, double time);
+                std::ofstream *output, void *time);
         Serializer* clone() const { return new NormSerializer(*this); }
     };
 }

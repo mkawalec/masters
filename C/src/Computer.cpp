@@ -1,5 +1,6 @@
 #include "Computer.hpp"
 #include "exceptions.hpp"
+#include "Serializer.hpp"
 
 #include <list>
 
@@ -12,6 +13,18 @@ namespace turb {
         integrator->b = b;
         integrator->D = D;
         integrator->R = R;
+        integrator->initialize();
+    }
+
+    std::string Computer::additional_info()
+    {
+        return "The default Serializer is '" + suggested_serializer + "'.";
+    }
+
+    void Computer::set_serializer()
+    {
+        if (serializer == NULL)
+            serializer = Serializer::choose(suggested_serializer);
     }
 }
 

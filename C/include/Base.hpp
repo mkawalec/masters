@@ -16,8 +16,10 @@ namespace turb {
 
     public:
         static std::list<T*> available;
-        static std::string list_available();
         static T* choose(std::string name);
+
+        static std::string list_available();
+        virtual std::string additional_info() { return "";}
 
         std::string name;
         std::string description;
