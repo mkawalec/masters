@@ -13,7 +13,7 @@ namespace turb {
         void compute();
 
     public:
-        virtual void compute_single(std::ofstream *output) = 0;
+        virtual double compute_single(std::ofstream *output) = 0;
 
     };
 }

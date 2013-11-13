@@ -21,7 +21,7 @@ namespace turb {
         Computer::available.push_back(this);
     }
 
-    void DecayMultirunComputer::compute_single(std::ofstream *output)
+    double DecayMultirunComputer::compute_single(std::ofstream *output)
     {
         set_serializer();
         integrator = new Integrator(samples, dt, domain_size);
@@ -40,12 +40,13 @@ namespace turb {
 
                     std::cerr << "Finished run at time " << i * dt << 
                         " with norm " << norm << std::endl;
-                    return;
+                    return i * dt;
                 }
             }
         }
 
         delete integrator;
+        throw NoResult();
     }
 
     DecayMultirunComputer *decay_mult_instance = new DecayMultirunComputer();

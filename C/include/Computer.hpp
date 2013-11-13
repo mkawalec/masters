@@ -25,7 +25,7 @@ namespace turb {
         double end_time, dt, e, a, b, D, 
                R, domain_size, threshold;
         std::string output_filename;
-        bool split_files;
+        bool split_files, fit;
 
         std::string suggested_serializer;
         std::string additional_info();

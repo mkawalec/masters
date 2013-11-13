@@ -29,6 +29,10 @@ namespace turb {
     struct RemoveOutput : public Exception {
         using Exception::Exception;
     };
+
+    struct NoResult : public Exception {
+        using Exception::Exception;
+    };
 }
 
 #endif

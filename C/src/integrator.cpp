@@ -24,7 +24,7 @@ turb::Computer* initialize(int argc, char *argv[])
     double end_time, dt, e, a, b, D, 
            R, domain_size, threshold;
     size_t print_every, samples, runs;
-    bool split_files;
+    bool split_files, fit;
 
     po::options_description generic_opts("Generic options");
     generic_opts.add_options()
@@ -46,9 +46,9 @@ turb::Computer* initialize(int argc, char *argv[])
     po::options_description modules_opts("Modules options");
     modules_opts.add_options()
         ("serializer,s", po::value<std::string>(&serializer_name),
-         ("name of a selected Serializer. If not specified, "
-          "the default Serializer specified by a selected "
-          "Computer will be used. Available are:\n\n" + 
+        ("name of a selected Serializer. If not specified, "
+         "the default Serializer specified by a selected "
+         "Computer will be used. Available are:\n\n" + 
          turb::Serializer::list_available()).c_str())
         ("computer,c", po::value<std::string>(&computer_name)->default_value("simple"),
          ("name of a selected Computer. Available are:\n\n" +
@@ -69,6 +69,10 @@ turb::Computer* initialize(int argc, char *argv[])
          "threshold value. Action depends on Computer used")
         ("runs,r", po::value<size_t>(&runs)->default_value(2000),
          "total number of runs, used with multirun computers")
+        ("fit,f", po::value<bool>(&fit)->default_value(false),
+         "ff specified, the MultirunComputers will try to fit"
+         " returned values of u to an exponential curve and print"
+         " results to stdlib")
         ("e,e", po::value<double>(&e)->default_value(-0.1),
          "an integration parameter")
         ("a,a", po::value<double>(&a)->default_value(0.125),
@@ -133,6 +137,7 @@ turb::Computer* initialize(int argc, char *argv[])
     computer->b = b;
     computer->D = D;
     computer->R = R;
+    computer->fit = fit;
     computer->threshold = threshold;
     computer->runs = runs;
 

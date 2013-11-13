@@ -24,7 +24,7 @@ namespace turb {
         Computer::available.push_back(this);
     }
 
-    void DecayPathComputer::compute_single(std::ofstream *output)
+    double DecayPathComputer::compute_single(std::ofstream *output)
     {
         set_serializer();
         integrator = new Integrator(samples, dt, domain_size);
@@ -62,7 +62,7 @@ namespace turb {
                     serializer->serialize(NULL, output, &output_data);
                     std::cerr << "Run decayed fast at t = " << i * dt 
                         << std::endl;
-                    return;
+                    return i * dt;
                 }
             }
         }

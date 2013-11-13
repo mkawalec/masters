@@ -16,7 +16,7 @@ namespace turb {
         DecayPathComputer();
         virtual ~DecayPathComputer() { unregister(this); }
 
-        void compute_single(std::ofstream *output);
+        double compute_single(std::ofstream *output);
         Computer* clone() const { return new DecayPathComputer(*this); }
     };
 }
