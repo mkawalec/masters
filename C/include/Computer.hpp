@@ -21,8 +21,9 @@ namespace turb {
         std::thread run() { return std::thread(&Computer::compute, this); }
         Serializer *serializer;
 
-        size_t print_every, samples;
-        double end_time, dt, e, a, b, D, R, domain_size;
+        size_t print_every, samples, runs;
+        double end_time, dt, e, a, b, D, 
+               R, domain_size, threshold;
         std::string output_filename;
         bool split_files;
 

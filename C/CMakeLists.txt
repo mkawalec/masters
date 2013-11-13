@@ -13,15 +13,17 @@ set(HEADER_FILES
     include/serializers/GenericSerializer.hpp
     include/Computer.hpp
     include/computers/SimpleComputer.hpp
+    include/computers/MultirunComputer.hpp
     )
 set(CPP_FILES
+    src/helpers.cpp
     src/integrator.cpp
     src/Computer.cpp
     src/serializers/NormSerializer.cpp
     src/serializers/ComponentSerializer.cpp
     src/serializers/GenericSerializer.cpp
     src/computers/SimpleComputer.cpp
-    src/helpers.cpp
+    src/computers/MultirunComputer.cpp
     ${HEADER_FILES}
     )
 

@@ -21,8 +21,9 @@ turb::Computer* initialize(int argc, char *argv[])
 {
     std::string output_filename, config_filename, 
         serializer_name, computer_name;
-    double end_time, dt, e, a, b, D, R, domain_size;
-    size_t print_every, samples;
+    double end_time, dt, e, a, b, D, 
+           R, domain_size, threshold;
+    size_t print_every, samples, runs;
     bool split_files;
 
     po::options_description generic_opts("Generic options");
@@ -63,7 +64,11 @@ turb::Computer* initialize(int argc, char *argv[])
         ("samples", po::value<size_t>(&samples)->default_value(7),
          "log[base 2] of the number of samples in real space")
         ("domain-size,d", po::value<double>(&domain_size)->default_value(24 * M_PI),
-         "size of integration domain (assumed cyclic)")
+         "size of integration domain")
+        ("threshold,t", po::value<double>(&threshold)->default_value(300),
+         "threshold value. Action depends on Computer used")
+        ("runs,r", po::value<size_t>(&runs)->default_value(2000),
+         "total number of runs, used with multirun computers")
         ("e,e", po::value<double>(&e)->default_value(-0.1),
          "an integration parameter")
         ("a,a", po::value<double>(&a)->default_value(0.125),
@@ -126,6 +131,8 @@ turb::Computer* initialize(int argc, char *argv[])
     computer->b = b;
     computer->D = D;
     computer->R = R;
+    computer->threshold = threshold;
+    computer->runs = runs;
 
     return computer;
 }
