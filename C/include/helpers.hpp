@@ -5,13 +5,6 @@
 #include <cmath>
 
 namespace turb {
-    extern const double e;
-    extern const double a;
-    extern const double b;
-    extern const double R;
-    extern const double D;
-    extern double domain_size;
-
     double l2_norm(double *array, size_t size);
     double l2_norm_cpx(fftw_complex *array, size_t size, size_t start_i=0);
 

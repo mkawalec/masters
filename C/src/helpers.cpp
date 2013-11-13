@@ -5,12 +5,6 @@
 #include "exceptions.hpp"
 
 namespace turb {
-    const double e = -0.1;
-    const double a = 0.125;
-    const double b = -0.004;
-    const double D = 40;
-
-    const double R = 1.04;
 
     double l2_norm(double *array, size_t size)
     {

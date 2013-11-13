@@ -23,6 +23,7 @@ namespace turb {
     {
         integrator = new Integrator(samples, dt, domain_size);
         set_constants();
+        integrator->initialize();
 
         std::ofstream output(output_filename);
         for (size_t i = 0; i * dt < end_time; ++i) {
