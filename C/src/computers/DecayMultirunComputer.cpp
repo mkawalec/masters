@@ -36,7 +36,7 @@ namespace turb {
 
                 if (norm < decay_threshold) {
                     std::string current_time = std::to_string(i * dt);
-                    serializer->serialize(NULL, output, &current_time);
+                    serializer->serialize(integrator, output, &current_time);
 
                     std::cerr << "Finished run at time " << i * dt << 
                         " with norm " << norm << std::endl;
@@ -44,6 +44,8 @@ namespace turb {
                 }
             }
         }
+
+        delete integrator;
     }
 
     DecayMultirunComputer *decay_mult_instance = new DecayMultirunComputer();
