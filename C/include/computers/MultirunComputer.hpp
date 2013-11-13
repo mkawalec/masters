@@ -7,12 +7,17 @@
 
 namespace turb {
 
+    template <typename T>
     class MultirunComputer : public Computer {
     protected:
-        virtual void run_single(std::ofstream *output) = 0;
         void compute();
+
+    public:
+        virtual void compute_single(std::ofstream *output) = 0;
 
     };
 }
+
+#include "computers/MultirunComputer.cpp"
 
 #endif

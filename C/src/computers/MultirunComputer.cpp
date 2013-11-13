@@ -1,13 +1,16 @@
-#include "computers/MultirunComputer.hpp"
+#ifndef turb_MultirunComputer_cpp
+#define turb_MultirunComputer_cpp
 
 #include <fstream>
 #include <sstream>
 #include <iomanip>
 #include <cmath>
+#include <iostream>
 
 namespace turb {
 
-    void MultirunComputer::compute()
+    template <typename T>
+    void MultirunComputer<T>::compute()
     {
         for (size_t i = 0; i < runs; ++i) {
             std::string current_filename = output_filename;
@@ -19,9 +22,15 @@ namespace turb {
                 current_filename += output_number.str();
             }
 
-            std::ofstream output(current_filename);
-            run_single(&output);
+            std::ofstream output(current_filename, std::ios::app);
+
+            T* instance = static_cast<T*>(clone());
+            instance->compute_single(&output);
+
+            delete instance;
+            output.close();
         }
     }
 }
 
+#endif

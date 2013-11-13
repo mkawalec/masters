@@ -11,7 +11,7 @@ namespace turb {
     class NormSerializer : public Serializer {
     public:
         NormSerializer();
-        ~NormSerializer() { unregister(this); }
+        virtual ~NormSerializer() { unregister(this); }
 
         void serialize(Integrator *instance, 
                 std::ofstream *output, void *time);

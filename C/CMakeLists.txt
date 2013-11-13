@@ -14,6 +14,7 @@ set(HEADER_FILES
     include/Computer.hpp
     include/computers/SimpleComputer.hpp
     include/computers/MultirunComputer.hpp
+    include/computers/DecayMultirunComputer.hpp
     )
 set(CPP_FILES
     src/helpers.cpp
@@ -23,7 +24,7 @@ set(CPP_FILES
     src/serializers/ComponentSerializer.cpp
     src/serializers/GenericSerializer.cpp
     src/computers/SimpleComputer.cpp
-    src/computers/MultirunComputer.cpp
+    src/computers/DecayMultirunComputer.cpp
     ${HEADER_FILES}
     )
 

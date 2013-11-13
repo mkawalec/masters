@@ -60,7 +60,7 @@ turb::Computer* initialize(int argc, char *argv[])
         ("dt,t", po::value<double>(&dt)->default_value(0.0005),
          "timestep size")
         ("end-time", po::value<double>(&end_time)->default_value(2000),
-         "time when simulation ends")
+         "local simulation time when integration of a single run ends")
         ("samples", po::value<size_t>(&samples)->default_value(7),
          "log[base 2] of the number of samples in real space")
         ("domain-size,d", po::value<double>(&domain_size)->default_value(24 * M_PI),
@@ -110,7 +110,8 @@ turb::Computer* initialize(int argc, char *argv[])
 
     if (vm.count("help")) {
         std::stringstream output;
-        output << cmdline_opts;
+        output << "Called as: " << argv[0] << " [config_file] [params]" 
+            << std::endl << cmdline_opts;
         throw turb::ProgramDeathRequest(&output);
     }
     
