@@ -4,7 +4,6 @@
 
 #include <fstream>
 #include <string>
-#include <iostream>
 
 namespace turb {
     
@@ -24,7 +23,6 @@ namespace turb {
     {
         unused(nothing);
 
-        std::cout << "in generic " << *static_cast<std::string*>(output_data) << std::endl;
         *output << *static_cast<std::string*>(output_data) << std::endl;
     }
 
