@@ -9,7 +9,7 @@ namespace turb {
 
     DecayMultirunComputer::DecayMultirunComputer()
     {
-        name = "decay_mult";
+        name = "decay-mult";
         class_name = "Computer";
         description = "Runs the integrator loop many times"
             " and outputs the times to decay for each run";

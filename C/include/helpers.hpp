@@ -15,6 +15,10 @@ namespace turb {
             *(array + i) *= norm_factor;
     }
 
+    struct history {
+        double time, u, v;
+    };
+
 }
 
 #endif

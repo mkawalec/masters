@@ -1,6 +1,8 @@
 #ifndef turb_MultirunComputer_cpp
 #define turb_MultirunComputer_cpp
 
+#include "exceptions.hpp"
+
 #include <fstream>
 #include <sstream>
 #include <iomanip>
@@ -25,10 +27,15 @@ namespace turb {
             std::ofstream output(current_filename, std::ios::app);
 
             T* instance = static_cast<T*>(clone());
-            instance->compute_single(&output);
+            try {
+                instance->compute_single(&output);
+                output.close();
+            } catch (const RemoveOutput &e) {
+                output.close();
+                remove(current_filename.c_str());
+            }
 
             delete instance;
-            output.close();
         }
     }
 }

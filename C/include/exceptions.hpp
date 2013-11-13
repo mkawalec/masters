@@ -25,6 +25,10 @@ namespace turb {
     struct ProgramDeathRequest : public Exception {
         using Exception::Exception;
     };
+
+    struct RemoveOutput : public Exception {
+        using Exception::Exception;
+    };
 }
 
 #endif

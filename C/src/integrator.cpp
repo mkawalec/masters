@@ -126,7 +126,8 @@ turb::Computer* initialize(int argc, char *argv[])
     computer->samples = samples;
     computer->domain_size = domain_size;
     computer->output_filename = output_filename;
-    computer->split_files = split_files;
+    if (!computer->split_files)
+        computer->split_files = split_files;
     computer->e = e;
     computer->a = a;
     computer->b = b;
