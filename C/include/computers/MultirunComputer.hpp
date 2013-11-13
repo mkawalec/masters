@@ -4,11 +4,15 @@
 #include "Computer.hpp"
 
 #include <fstream>
+#include <vector>
 
 namespace turb {
 
     template <typename T>
     class MultirunComputer : public Computer {
+    private:
+        void fit_it(std::vector<double> *decay_times);
+
     protected:
         void compute();
 

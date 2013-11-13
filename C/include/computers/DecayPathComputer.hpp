@@ -18,6 +18,8 @@ namespace turb {
 
         double compute_single(std::ofstream *output);
         Computer* clone() const { return new DecayPathComputer(*this); }
+
+        void set_options();
     };
 }
 

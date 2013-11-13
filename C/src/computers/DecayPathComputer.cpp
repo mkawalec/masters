@@ -5,6 +5,8 @@
 #include <fstream>
 #include <string>
 #include <iostream>
+#include <boost/program_options.hpp>
+namespace po = boost::program_options;
 
 namespace turb {
 
@@ -13,19 +15,32 @@ namespace turb {
         name = "decay-path";
         class_name = "Computer";
         description = "Prints decay paths for fast-decaying runs."
-            "Will break your program if ran with different Serializer!";
+            " Will break your program if ran with different Serializer!";
         serializer = NULL;
         suggested_serializer = "generic";
 
-        decay_threshold = 5.0;
-        fast_threshold = 50.0;
         split_files = true;
 
         Computer::available.push_back(this);
     }
 
+    void DecayPathComputer::set_options()
+    {
+
+        options.reset(new po::options_description(name + " options"));
+        options->add_options()
+            ("decay-threshold", po::value<double>(&decay_threshold)->default_value(5.0),
+             "Specifies a value which, when reached by u, will"
+             " indicate that u had decayed")
+            ("fast-threshold", po::value<double>(&fast_threshold)->default_value(50.0),
+             "If a run decays before reaching t = fast_threshold"
+             " it will be counted as fast-decaying")
+            ;
+    }
+
     double DecayPathComputer::compute_single(std::ofstream *output)
     {
+        std::cout << fast_threshold << std::endl;
         set_serializer();
         integrator = new Integrator(samples, dt, domain_size);
         set_constants();

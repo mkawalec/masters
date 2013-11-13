@@ -7,9 +7,6 @@
 namespace turb {
 
     template <typename T>
-    void unused(T &&) { }
-
-    template <typename T>
     class Base {
     protected:
         void unregister(T *instance);
@@ -20,6 +17,7 @@ namespace turb {
 
         static std::string list_available();
         virtual std::string additional_info() { return "";}
+        virtual void parse_params(int argc, char *argv[]) { unused(argc); unused(argv);}
 
         std::string name;
         std::string description;

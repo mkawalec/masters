@@ -10,14 +10,11 @@
 #include <list>
 #include <sstream>
 
-#include <boost/program_options/options_description.hpp>
-#include <boost/program_options/variables_map.hpp>
-#include <boost/program_options/parsers.hpp>
-#include <boost/program_options/positional_options.hpp>
+#include <boost/program_options.hpp>
 namespace po = boost::program_options;
 
 
-turb::Computer* initialize(int argc, char *argv[])
+turb::Computer* initialize(int argc, const char *argv[])
 {
     std::string output_filename, config_filename, 
         serializer_name, computer_name;
@@ -93,12 +90,9 @@ turb::Computer* initialize(int argc, char *argv[])
     config_file_opts.add(file_opts).add(modules_opts).
         add(simulation_opts);
 
-    po::positional_options_description p;
-    p.add("config", -1);
-
     po::variables_map vm;
     po::store(po::command_line_parser(argc, argv).
-            options(cmdline_opts).positional(p).run(), vm);
+            options(cmdline_opts).allow_unregistered().run(), vm);
     po::notify(vm);
 
     if (vm.count("config")) {
@@ -114,7 +108,7 @@ turb::Computer* initialize(int argc, char *argv[])
 
     if (vm.count("help")) {
         std::stringstream output;
-        output << "Called as: " << argv[0] << " [config_file] [params]" 
+        output << "Called as: " << argv[0] << " [params]" 
             << std::endl << cmdline_opts;
         throw turb::ProgramDeathRequest(&output);
     }
@@ -122,6 +116,7 @@ turb::Computer* initialize(int argc, char *argv[])
 
     turb::Computer *computer = turb::Computer::choose(computer_name)->clone();
     computer->serializer = turb::Serializer::choose(serializer_name);
+    computer->parse_params(argc, argv);
 
     // Setting the params
     computer->print_every = print_every;
@@ -145,7 +140,7 @@ turb::Computer* initialize(int argc, char *argv[])
 }
 
 
-int main(int argc, char *argv[])
+int main(int argc, const char *argv[])
 {
     // Speeds up the performance for large
     // inputs and outputs. Makes using printf and scanf

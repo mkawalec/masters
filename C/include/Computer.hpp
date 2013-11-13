@@ -6,6 +6,9 @@
 #include "Base.hpp"
 
 #include <thread>
+#include <memory>
+#include <boost/program_options/options_description.hpp>
+namespace po = boost::program_options;
 
 namespace turb {
 
@@ -14,6 +17,8 @@ namespace turb {
         Integrator *integrator;
         virtual void compute() = 0;
         void set_constants();
+
+        std::shared_ptr<po::options_description> options = NULL;
 
     public:
         typedef Base<Computer> super;
@@ -30,6 +35,9 @@ namespace turb {
         std::string suggested_serializer;
         std::string additional_info();
         void set_serializer();
+
+        virtual void parse_params(int argc, const char *argv[]);
+        virtual void set_options() { };
 
         virtual Computer* clone() const = 0;
     };

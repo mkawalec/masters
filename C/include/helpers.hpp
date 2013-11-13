@@ -19,6 +19,8 @@ namespace turb {
         double time, u, v;
     };
 
+    template <typename T>
+    void unused(T &&) { }
 }
 
 #endif

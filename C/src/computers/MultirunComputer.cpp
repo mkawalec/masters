@@ -43,7 +43,12 @@ namespace turb {
 
             delete instance;
         }
+
+        if (fit) fit_it(&decay_times);
     }
+
+    template <typename T>
+    void MultirunComputer<T>::fit_it(std::vector<double> *decay_times) { }
 }
 
 #endif
