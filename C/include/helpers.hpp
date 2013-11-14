@@ -6,9 +6,32 @@
 #include <ap.h>
 
 namespace turb {
-    double l2_norm(double *array, size_t size);
-    double l2_norm_cpx(fftw_complex *array, size_t size, size_t start_i=0);
 
+    /*! \brief Returns L2 norm of a real array.
+     *  \param array an array of real numbers
+     *  \param size array size, can be smaller than
+     *      the size of a complete array
+     *  \param start_i start the norm computation
+     *      at i-th element
+     *
+     *  \return L2 norm(array)
+     */
+    double l2_norm(double *array, size_t size, size_t start_i=0);
+
+    /*! \brief Returns L2 norm of a complex array
+     *  \param array a complex-numbered array
+     *  \param size array length
+     *  \param start_i start the norm computation at i-th
+     *      element
+     *
+     *  \return L2 norm(array)
+     */
+    double l2_norm(fftw_complex *array, size_t size, size_t start_i=0);
+
+    /*! \brief Normalizes a FFT-transformed array
+     *  \param array array of numbers
+     *  \param size size of the array
+     */
     inline void normalize(double *array, size_t size)
     {
         double norm_factor = 1 / sqrt(size);
@@ -16,13 +39,25 @@ namespace turb {
             *(array + i) *= norm_factor;
     }
 
+    /*! \brief Holds information about values of
+     *      u and v at a given time.
+     */
     struct history {
         double time, u, v;
     };
 
+    /*! \brief Used to explicitly mark parameters
+     *      as unused and mute compiler warnings.
+     */
     template <typename T>
     void unused(T &&) { }
 
+    /*! \brief Returns values of e^-cx
+     *  \param c array of parameters
+     *  \param x array of values
+     *  \param func function value
+     *  \param ptr an unused pointer
+     */
     void e_x(const alglib::real_1d_array &c, const alglib::real_1d_array &x, 
             double &func, void *ptr);
 
