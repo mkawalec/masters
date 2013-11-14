@@ -2,6 +2,12 @@ cmake_minimum_required(VERSION 2.8)
 project(turb)
 include_directories(src include)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+#set(alglib
+#    src/alglib/interpolation.cpp
+#    include/alglib/interpolation.h
+#    include/alglib/stdafx.h
+#    )
+
 set(HEADER_FILES 
     include/helpers.hpp 
     include/exceptions.hpp
@@ -28,6 +34,7 @@ set(CPP_FILES
     src/computers/DecayMultirunComputer.cpp
     src/computers/DecayPathComputer.cpp
     ${HEADER_FILES}
+    #    ${alglib}
     )
 
 set(TEST_HEADERS ${HEADER_FILES} include/test_integrators.hpp)
@@ -38,7 +45,7 @@ add_executable(test-suite ${CPP_FILES})
 
 if (CMAKE_COMPILER_IS_GNUCXX)
     message(status "Setting GCC flags")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -Wall -Wextra -W -pedantic -std=c++0x")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -Wall -Wextra -pedantic -W -std=c++0x")
 else()
     message(status "gcc not found!")
     return()
@@ -54,6 +61,7 @@ unset(FFTW_INCLUDES CACHE)
 unset(FFTW_LIBRARIES CACHE)
 
 find_package(FFTW)
+find_package(ALGLIB)
 
 set(Boost_USE_STATIC_LIBS        OFF)
 set(Boost_USE_MULTITHREADED      ON)
@@ -69,11 +77,15 @@ message(status "** Boost Libraries: ${Boost_LIBRARIES}")
 message(status "** FFTW Include: ${FFTW_INCLUDES}")
 message(status "** FFTW Libraries: ${FFTW_LIBRARIES}")
 
-INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR} ${FFTW_INCLUDES})
-LINK_DIRECTORIES(${Boost_LIBRARY_DIRS} ${FFTW_LIBRARIES})
 
-target_link_libraries(integrator -lm ${FFTW_LIBRARIES} ${Boost_LIBRARIES})
-target_link_libraries(test-suite -lm ${FFTW_LIBRARIES} ${Boost_LIBRARIES})
+message(status "** FFTW Include: ${ALGLIB_INCLUDES}")
+message(status "** FFTW Libraries: ${ALGLIB_LIBRARIES}")
+
+INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR} ${FFTW_INCLUDES} ${ALGLIB_INCLUDES})
+LINK_DIRECTORIES(${Boost_LIBRARY_DIRS} ${FFTW_LIBRARIES} ${ALGLIB_INCLUDES})
+
+target_link_libraries(integrator -lm ${FFTW_LIBRARIES} ${Boost_LIBRARIES} ${ALGLIB_LIBRARIES})
+target_link_libraries(test-suite -lm ${FFTW_LIBRARIES} ${Boost_LIBRARIES} ${ALGLIB_LIBRARIES})
 
 find_package(Doxygen)
 if(DOXYGEN_FOUND)

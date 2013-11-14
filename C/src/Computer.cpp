@@ -42,12 +42,13 @@ namespace turb {
     void Computer::parse_params(int argc, const char *argv[])
     {
         set_options();
-        std::cout << "inhere" << std::endl;
-        po::variables_map vm;
-        po::store(po::command_line_parser(argc, argv).
-            options(*options).allow_unregistered().run(), 
-            vm);
-        po::notify(vm);
+        if (options) {
+            po::variables_map vm;
+            po::store(po::command_line_parser(argc, argv).
+                options(*options).allow_unregistered().run(), 
+                vm);
+            po::notify(vm);
+        }
     }
 
 }

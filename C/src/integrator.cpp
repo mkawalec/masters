@@ -66,10 +66,10 @@ turb::Computer* initialize(int argc, const char *argv[])
          "threshold value. Action depends on Computer used")
         ("runs,r", po::value<size_t>(&runs)->default_value(2000),
          "total number of runs, used with multirun computers")
-        ("fit,f", po::value<bool>(&fit)->default_value(false),
-         "ff specified, the MultirunComputers will try to fit"
+        ("fit,f", po::value<bool>(&fit)->default_value(true),
+         "if specified, the MultirunComputers will try to fit"
          " returned values of u to an exponential curve and print"
-         " results to stdlib")
+         " results to stdout")
         ("e,e", po::value<double>(&e)->default_value(-0.1),
          "an integration parameter")
         ("a,a", po::value<double>(&a)->default_value(0.125),

@@ -12,6 +12,7 @@ namespace turb {
     class MultirunComputer : public Computer {
     private:
         void fit_it(std::vector<double> *decay_times);
+        double fit_part = 0.3;
 
     protected:
         void compute();

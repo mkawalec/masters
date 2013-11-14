@@ -11,7 +11,7 @@ namespace turb {
     class ComponentSerializer : public Serializer {
     public:
         ComponentSerializer();
-        virtual ~ComponentSerializer() { unregister(this); }
+        virtual ~ComponentSerializer() { unregister(); }
 
         void serialize(Integrator *instance, 
                 std::ofstream *output, void *time);

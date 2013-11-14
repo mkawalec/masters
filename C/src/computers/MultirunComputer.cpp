@@ -2,6 +2,7 @@
 #define turb_MultirunComputer_cpp
 
 #include "exceptions.hpp"
+#include "helpers.hpp"
 
 #include <fstream>
 #include <sstream>
@@ -9,6 +10,13 @@
 #include <cmath>
 #include <iostream>
 #include <vector>
+#include <algorithm>
+
+// ALGLIB
+#include <stdafx.h>
+#include <interpolation.h>
+#include <ap.h>
+
 
 namespace turb {
 
@@ -48,7 +56,44 @@ namespace turb {
     }
 
     template <typename T>
-    void MultirunComputer<T>::fit_it(std::vector<double> *decay_times) { }
+    void MultirunComputer<T>::fit_it(std::vector<double> *decay_times) 
+    {
+        std::cerr << "Fitting starting... " << std::flush;
+
+        std::sort(decay_times->begin(), decay_times->end());
+
+        alglib::real_2d_array x;
+        alglib::real_1d_array y, c = "[0]";
+
+        size_t start = (1 - fit_part) * decay_times->size();
+        size_t points_no = decay_times->size() - start;
+        double *values = new double[points_no];
+        double *points = new double[points_no];
+
+        for (size_t i = start; i < decay_times->size(); ++i) {
+            values[(int)(i - start)] = (decay_times->size() - i) / (double) decay_times->size();
+            points[(int)(i - start)] = decay_times->at(i);
+        }
+
+        x.setcontent(points_no, 1, points);
+        y.setcontent(points_no, values);
+
+        double epsf = 0, epsx = 0.000001, diffstep = 0.0001;
+        alglib::ae_int_t maxits = 0, info;
+        alglib::lsfitstate state;
+        alglib::lsfitreport rep;
+
+        alglib::lsfitcreatef(x, y, c, diffstep, state);
+        alglib::lsfitsetcond(state, epsf, epsx, maxits);
+        alglib::lsfitfit(state, e_x);
+        alglib::lsfitresults(state, info, c, rep);
+        std::cerr << "done" << std::endl;
+        std::cout << c[0] << " " << rep.rmserror << std::endl;
+
+        delete[] values;
+        delete[] points;
+
+    }
 }
 
 #endif

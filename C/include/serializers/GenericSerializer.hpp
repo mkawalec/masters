@@ -11,7 +11,7 @@ namespace turb {
     class GenericSerializer : public Serializer {
     public:
         GenericSerializer();
-        virtual ~GenericSerializer() { unregister(this); }
+        virtual ~GenericSerializer() { unregister(); }
 
         void serialize(Integrator *nothing,
                 std::ofstream *output, void *output_data);

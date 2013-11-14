@@ -3,6 +3,7 @@
 
 #include <fftw3.h>
 #include <cmath>
+#include <ap.h>
 
 namespace turb {
     double l2_norm(double *array, size_t size);
@@ -21,6 +22,10 @@ namespace turb {
 
     template <typename T>
     void unused(T &&) { }
+
+    void e_x(const alglib::real_1d_array &c, const alglib::real_1d_array &x, 
+            double &func, void *ptr);
+
 }
 
 #endif

@@ -1,8 +1,10 @@
-#include <fftw3.h>
-#include <string>
-
 #include "helpers.hpp"
 #include "exceptions.hpp"
+
+#include <fftw3.h>
+#include <string>
+#include <ap.h>
+
 
 namespace turb {
 
@@ -25,4 +27,14 @@ namespace turb {
         }
         return sqrt(norm);
     }
+
+    void e_x(const alglib::real_1d_array &c, const alglib::real_1d_array &x, 
+            double &func, void *ptr) 
+    {
+        // this callback calculates f(c,x)=exp(-c0*sqr(x0))
+        // where x is a position on X-axis and c is adjustable parameter
+        func = exp(-c[0] * x[0]);
+        unused(ptr);
+    }
+
 }

@@ -15,9 +15,9 @@ namespace turb {
     std::string Base<T>::class_name;
 
     template <typename T>
-    void Base<T>::unregister(T *instance)
+    void Base<T>::unregister()
     {
-        Base::available.remove(instance);
+        Base<T>::available.remove(static_cast<T*>(this));
     }
 
     template <typename T>

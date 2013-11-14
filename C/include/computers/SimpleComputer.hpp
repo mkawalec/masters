@@ -14,7 +14,7 @@ namespace turb {
 
     public:
         SimpleComputer();
-        virtual ~SimpleComputer() { unregister(this); }
+        virtual ~SimpleComputer() { unregister(); }
 
         Computer* clone() const { return new SimpleComputer(*this); }
     };
