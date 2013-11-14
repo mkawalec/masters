@@ -6,8 +6,8 @@
 
 namespace turb {
 
-    /** Enables checking of the decay rate on 0-th 
-     *  component of u (which should be 2 * (1 + e))
+    /*! \brief Enables checking of the decay rate on 0-th 
+     *      component of u (which should be 2 * (1 + e))
      */
     class TestDecayIntegrator : public Integrator {
         protected:
@@ -21,6 +21,9 @@ namespace turb {
         void apply_step();
     };
 
+    /*! \brief Checks if function multiplication behaves
+     *      correctly under Fourier transform
+     */
     class TestMultIntegrator : public Integrator {
         protected:
         void nonlinear_transform(size_t i, double *results);
@@ -34,6 +37,9 @@ namespace turb {
         void override_initialize() {};
     };
 
+    /*! \brief Checks if functions stay stable under Fourier
+     *      transform.
+     */
     class TestStabilityIntegrator : public Integrator {
         protected:
         void nonlinear_transform(size_t i, double *results);
@@ -45,6 +51,9 @@ namespace turb {
         void apply_step();
     };
 
+    /*! \brief Checks if the non-linear part of the integrator
+     *      behaves correctly.
+     */
     class TestNonLinear : public Integrator {
         protected:
         void initialize_function(double x, double *results);
