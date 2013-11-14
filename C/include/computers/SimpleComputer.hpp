@@ -8,6 +8,9 @@
 
 namespace turb {
     
+    /*! \brief Runs the integrator for one full cycle
+     *      output data that is Serializer-dependent
+     */
     class SimpleComputer : public Computer {
     protected:
         void compute();

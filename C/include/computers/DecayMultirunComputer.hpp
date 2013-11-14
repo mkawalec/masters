@@ -8,6 +8,9 @@
 
 namespace turb {
 
+    /*! \brief Runs the integrator fully many times
+     *      and output the decay times for each run
+     */
     class DecayMultirunComputer : public MultirunComputer<DecayMultirunComputer> {
     private:
         double decay_threshold;

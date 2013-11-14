@@ -8,6 +8,10 @@
 
 namespace turb {
 
+    /*! \brief Runs the integrator many times and 
+     *      output decay paths for the runs that decayed
+     *      before a certain time.
+     */
     class DecayPathComputer : public MultirunComputer<DecayPathComputer> {
     private:
         double decay_threshold, fast_threshold;
