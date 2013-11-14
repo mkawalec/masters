@@ -7,9 +7,15 @@
 
 namespace turb {
 
+    /*! \brief The class doing actual computation through
+     *      integrating a non-linear PDE
+     *
+     *  It is NOT thread-safe, don't try to use the same
+     *  Integrator instance in multiple threads.
+     */
     class Integrator {
-        /** The complex arrays holding the intermediate
-         *  and final results of computations
+        /*! \brief The complex arrays holding the intermediate
+         *      and final results of computations
          */
         protected:
         fftw_plan e_u, e_v, i_u, i_v,
@@ -25,8 +31,8 @@ namespace turb {
         virtual void override_initialize();
 
         virtual void initialize_function(double x, double *results);
-        /** The overloadable nonlinear transform applied 
-         *  in the real (non-Fourier) space
+        /*! \brief The overloadable nonlinear transform applied 
+         *      in the real (non-Fourier) space
          */
         virtual void nonlinear_transform(size_t i, double *results);
 
