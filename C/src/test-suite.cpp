@@ -45,6 +45,7 @@ BOOST_AUTO_TEST_CASE(test2)
     double value, prev_value = DBL_MAX;
     string temp1, temp2;
     stringstream temp;
+    BOOST_CHECK(false);
 
     for (size_t i = 0; i < 100; ++i) {
         input >> temp1 >> temp2;
@@ -54,7 +55,7 @@ BOOST_AUTO_TEST_CASE(test2)
         temp >> value;
 
         if (prev_value != DBL_MAX) 
-            BOOST_CHECK(abs(value - (1 - (1 - e)*dt/2)*prev_value) < 1e-05);
+            BOOST_CHECK(abs(value - (1 - (1 - tested.e)*dt/2)*prev_value) < 1e-05);
 
         prev_value = value;
     }

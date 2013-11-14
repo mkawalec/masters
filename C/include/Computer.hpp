@@ -72,11 +72,11 @@ namespace turb {
         Serializer *serializer = NULL;
 
         /// \brief Parameters needing to be set before run
-        size_t print_every, samples, runs;
-        double end_time, dt, e, a, b, D, 
-               R, domain_size, threshold;
+        size_t print_every=100, samples=7, runs=2000;
+        double end_time=2000, dt=0.0005, e, a, b, D, 
+               R, domain_size=20*M_PI, threshold=300;
         std::string output_filename;
-        bool split_files, fit;
+        bool split_files, fit=true;
 
         /*! \brief Produces additional information about
          *      current instance
