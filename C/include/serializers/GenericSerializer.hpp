@@ -8,6 +8,9 @@
 
 namespace turb {
 
+    /*! \brief Outputs arbitrary data to an
+     *      output stream
+     */
     class GenericSerializer : public Serializer {
     public:
         GenericSerializer();

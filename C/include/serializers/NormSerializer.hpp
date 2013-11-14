@@ -8,6 +8,8 @@
 
 namespace turb {
 
+    /*! \brief Outputs L2(u) to the output stream
+     */
     class NormSerializer : public Serializer {
     public:
         NormSerializer();

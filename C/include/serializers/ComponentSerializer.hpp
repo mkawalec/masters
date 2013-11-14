@@ -8,6 +8,9 @@
 
 namespace turb {
 
+    /*! \brief Dumps Fourier components of u
+     *      to the specified output file.
+     */
     class ComponentSerializer : public Serializer {
     public:
         ComponentSerializer();
