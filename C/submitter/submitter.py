@@ -126,7 +126,8 @@ def finalize(directory):
         for filename in glob(directory + '/*.out'):
             with open(filename, 'r') as input_f:
                 lines = input_f.read()
-                values.extend(map(lambda x: float(x), lines.split('\n')))
+                values.extend(map(lambda x: float(x), 
+                    filter(lambda x: len(x) > 0, lines.split('\n'))))
                 f.write(lines)
 
             os.remove(filename)
