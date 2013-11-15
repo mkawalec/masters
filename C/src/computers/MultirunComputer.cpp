@@ -41,6 +41,8 @@ namespace turb {
             T* instance = static_cast<T*>(clone());
             try {
                 decay_times.push_back(instance->compute_single(&output));
+                output << std::endl << std::endl;
+
                 output.close();
             } catch (const RemoveOutput &e) {
                 output.close();

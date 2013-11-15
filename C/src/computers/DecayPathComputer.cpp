@@ -41,7 +41,6 @@ namespace turb {
 
     double DecayPathComputer::compute_single(std::ofstream *output)
     {
-        std::cout << fast_threshold << std::endl;
         set_serializer();
         integrator = new Integrator(samples, dt, domain_size);
         set_constants();
