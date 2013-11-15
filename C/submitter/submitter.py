@@ -12,6 +12,9 @@ from sys import argv
 from glob import glob
 import os
 
+import numpy as np
+from scipy.optimize import curve_fit
+
 processes = []
 hosts = int(argv[1])
 runs = int(argv[2])
@@ -87,6 +90,25 @@ def run_set(dt, samples, directory, tmax):
     kill_all()
     pbar.finish()
 
+def fit_func(x, a, c):
+    ''' Example function used for curve fitting '''
+    return a * np.exp(c * x)
+
+def fit(values, func):
+    ''' Fit the values to the function '''
+
+    # Decay probabilities
+    y = np.empty([len(values)])
+
+    # Points at which we have decay measurements
+    x = np.empty([len(values)])
+    for i, time in enumerate(values):
+        y[i] = (len(values) - i) / len(values)
+        x[i] = time
+
+    popt, pcov = curve_fit(func, x, y)
+    print("Parameter values are", popt)
+
 if __name__ == '__main__':
     maxt = 7000
     s_dt = 0.0005
@@ -100,8 +122,15 @@ if __name__ == '__main__':
 
             run_set(dt, samples, directory, maxt)
             with open(directory + '/output', 'w') as f:
+                values = []
+
                 for filename in glob(directory + '/*.out'):
                     with open(filename, 'r') as input_f:
-                        f.write(input_f.read())
+                        lines = input_f.read()
+                        values.extend(map(lambda x: int(x), lines.split('\n')))
+                        f.write(lines)
+
+                    os.remove(filename)
+                fit(values, fit_func)
 
 
