@@ -155,7 +155,6 @@ int main(int argc, const char *argv[])
         return 0;
     }
 
-    std::thread comp = computer->run();
-    comp.join();
+    computer->run();
     return 0;
 }

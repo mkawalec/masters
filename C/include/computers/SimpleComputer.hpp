@@ -4,8 +4,6 @@
 #include "Serializer.hpp"
 #include "Computer.hpp"
 
-#include <thread>
-
 namespace turb {
     
     /*! \brief Runs the integrator for one full cycle

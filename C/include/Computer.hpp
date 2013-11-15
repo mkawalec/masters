@@ -5,7 +5,6 @@
 #include "Integrator.hpp"
 #include "Base.hpp"
 
-#include <thread>
 #include <memory>
 #include <boost/program_options/options_description.hpp>
 namespace po = boost::program_options;
@@ -66,7 +65,8 @@ namespace turb {
          *  Note that you will want to call join() on the returned
          *  thread to actually do any computation whatsoever
          */
-        std::thread run() { return std::thread(&Computer::compute, this); }
+        //std::thread run() { return std::thread(&Computer::compute, this); }
+        void run() { compute(); }
 
         /// \brief Currently used Serializer
         Serializer *serializer = NULL;
