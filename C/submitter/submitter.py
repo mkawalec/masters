@@ -27,13 +27,16 @@ current_dir = ""
 devnull = open("/dev/null", "w")
 errlog = open("errlog", "w")
 
-def setup_remote(host, runs, folder, dt=0.0005, samples=7, directory='.', tmax=2000):
+def setup_remote(host, runs, folder, dt=0.0005, 
+        samples=7, directory='.', tmax=2000, R=1.0):
+
     call(["ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "
           "s0905879@%(host)s \' cd /dev/shm; rm -rf %(folder)s ;"
           "mkdir %(folder)s; cp ~/integrator %(folder)s; cd %(folder)s; "
-          "./integrator %(samples)s %(dt)s %(tmax)s %(runs)d\'" 
+          "./integrator --samples %(samples)s --dt %(dt)s "
+          "--end-time %(tmax)s --runs %(runs)s -R %(R)s\'" 
           % dict(host=host, runs=runs, folder=folder, dt=dt, samples=samples,
-              tmax=tmax)], 
+              tmax=tmax, R=R)], 
           shell=True, stdout=devnull, stderr=errlog)
 
     call(["scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "
@@ -63,7 +66,7 @@ def kill_all():
             if not process.is_alive():
                 counter += 1
 
-def run_set(dt, samples, directory, tmax):    
+def run_set(dt, samples, directory, tmax, R):    
     kill_all()
     processes = []
 
@@ -72,9 +75,9 @@ def run_set(dt, samples, directory, tmax):
     # Spawning two threads per host
     for i in range(hosts):
         processes.append(Process(target=setup_remote, 
-            args=["cplab%03d" % (i,), runs, 'turb1', dt, samples, directory, tmax]))
+            args=["cplab%03d" % (i,), runs, 'turb1', dt, samples, directory, tmax, R]))
         processes.append(Process(target=setup_remote, 
-            args=["cplab%03d" % (i,), runs, 'turb2', dt, samples, directory, tmax]))
+            args=["cplab%03d" % (i,), runs, 'turb2', dt, samples, directory, tmax, R]))
 
     for process in processes:
         process.start()
@@ -143,16 +146,18 @@ if __name__ == '__main__':
 
     maxt = 7000
     s_dt = 0.0005
-    for n,dt in enumerate([s_dt, s_dt/2, s_dt/4, s_dt/8]):
-        for samples in [7, 8, 9, 10]:
-            if samples == 10 and (n == 0 or n == 1):
-                continue
+    dt = 0.0005
+    samples = 7
+    R = 1.0
 
-            directory = 'new_' + str(samples) + '_' + str(dt)
-            current_dir = directory
-            os.mkdir(directory)
+    while R < 1.08:
+        directory = 'R_' + str(R)
+        current_dir = directory
+        os.mkdir(directory)
 
-            run_set(dt, samples, directory, maxt)
-            finalize(directory)
+        run_set(dt, samples, directory, maxt, R)
+        finalize(directory)
+
+        R += 0.1
 
 
