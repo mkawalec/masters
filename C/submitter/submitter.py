@@ -70,8 +70,6 @@ def run_set(dt, samples, directory, tmax, R):
     kill_all()
     processes = []
 
-    print("Starting dt = %s, samples = %s" % (dt, samples))
-
     # Spawning two threads per host
     for i in range(hosts):
         processes.append(Process(target=setup_remote, 
@@ -95,7 +93,6 @@ def run_set(dt, samples, directory, tmax, R):
         pbar.update(counter)
 
         if counter > 0.9 * len(processes):
-            print("Finishing")
             break
 
     kill_all()
@@ -122,6 +119,7 @@ def fit(values, func):
 
 def finalize(directory):
     ''' Finalize computation inside a dir '''
+    print("Finishing")
     with open(directory + '/output', 'w') as f:
         values = []
 
