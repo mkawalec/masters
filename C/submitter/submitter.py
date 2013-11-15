@@ -111,13 +111,13 @@ def fit(values, func):
 
     # Points at which we have decay measurements
     x = np.empty([len(values)])
+    values = sorted(values)
+
     for i, time in enumerate(values):
         y[i] = (len(values) - i) / len(values)
         x[i] = time
 
     start = 2 * len(values) / 3
-    print("fitted x", x[start:])
-    print("fitted y" y[start:])
     popt, pcov = curve_fit(func, x[start:], y[start:], [100, 0.01])
     print("Parameter values are", popt)
 
