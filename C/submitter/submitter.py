@@ -136,6 +136,7 @@ def finalize(directory):
 
 def signal_handler(signal, frame):
     ''' Handle ctrl-c '''
+    kill_all()
     finalize(current_dir) if len(current_dir) > 0 else None
     sys.exit(0)
 
