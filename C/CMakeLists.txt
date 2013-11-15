@@ -40,7 +40,7 @@ add_executable(integrator ${CPP_FILES})
 
 if (CMAKE_COMPILER_IS_GNUCXX)
     message(status "Setting GCC flags")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -Wall -Wextra -Wno-ignored-qualifiers -pedantic -W -std=c++0x")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -pthread -lpthread -static -Wall -Wextra -Wno-ignored-qualifiers -pedantic -W -std=c++0x")
 else()
     message(status "gcc not found!")
     return()
@@ -58,13 +58,13 @@ unset(FFTW_LIBRARIES CACHE)
 find_package(FFTW)
 find_package(ALGLIB)
 
-set(Boost_USE_STATIC_LIBS        OFF)
+set(Boost_USE_STATIC_LIBS        ON)
 set(Boost_USE_MULTITHREADED      ON)
-set(Boost_USE_STATIC_RUNTIME     OFF)
-set(BOOST_ALL_DYN_LINK           ON)   # force dynamic linking for all libraries
+set(Boost_USE_STATIC_RUNTIME     ON)
+set(BOOST_ALL_DYN_LINK           OFF)   # force dynamic linking for all libraries
 
 find_package(Boost 1.53 COMPONENTS unit_test_framework program_options random REQUIRED)
-ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK) 
+#ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK) 
 message(status "** Boost Include: ${Boost_INCLUDE_DIR}")
 message(status "** Boost Libraries: ${Boost_LIBRARY_DIRS}")
 message(status "** Boost Libraries: ${Boost_LIBRARIES}")
@@ -79,7 +79,7 @@ message(status "** FFTW Libraries: ${ALGLIB_LIBRARIES}")
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR} ${FFTW_INCLUDES} ${ALGLIB_INCLUDES})
 LINK_DIRECTORIES(${Boost_LIBRARY_DIRS} ${FFTW_LIBRARIES} ${ALGLIB_INCLUDES})
 
-target_link_libraries(integrator -lm ${FFTW_LIBRARIES} ${Boost_LIBRARIES} ${ALGLIB_LIBRARIES})
+target_link_libraries(integrator -lm -pthread ${FFTW_LIBRARIES} ${Boost_LIBRARIES} ${ALGLIB_LIBRARIES})
 #target_link_libraries(test-suite -lm ${FFTW_LIBRARIES} ${Boost_LIBRARIES} ${ALGLIB_LIBRARIES})
 
 find_package(Doxygen)

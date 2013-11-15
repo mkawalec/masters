@@ -33,7 +33,7 @@ def setup_remote(host, runs, folder, dt=0.0005,
     call(["ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "
           "s0905879@%(host)s \' cd /dev/shm; rm -rf %(folder)s ;"
           "mkdir %(folder)s; cp ~/integrator %(folder)s; cd %(folder)s; "
-          "./integrator --samples %(samples)s --dt %(dt)s "
+          "./integrator -c decay-mult --samples %(samples)s --dt %(dt)s "
           "--end-time %(tmax)s --runs %(runs)s -R %(R)s\'" 
           % dict(host=host, runs=runs, folder=folder, dt=dt, samples=samples,
               tmax=tmax, R=R)], 
