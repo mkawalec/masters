@@ -4,6 +4,7 @@
 Logs in to cplab computers and launches jobs in parallel
 """
 
+from __future__ import division
 from multiprocessing import Process
 from subprocess import call
 from progressbar import Bar, ETA, Percentage, ProgressBar
