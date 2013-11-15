@@ -15,15 +15,20 @@ import os
 import numpy as np
 from scipy.optimize import curve_fit
 
+import signal
+import sys
+
+
 processes = []
 hosts = int(argv[1])
 runs = int(argv[2])
+current_dir = ""
 
 devnull = open("/dev/null", "w")
 errlog = open("errlog", "w")
 
 def setup_remote(host, runs, folder, dt=0.0005, samples=7, directory='.', tmax=2000):
-    call(["ssh -tt -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "
+    call(["ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "
           "s0905879@%(host)s \' cd /dev/shm; rm -rf %(folder)s ;"
           "mkdir %(folder)s; cp ~/integrator %(folder)s; cd %(folder)s; "
           "./integrator %(samples)s %(dt)s %(tmax)s %(runs)d\'" 
@@ -37,7 +42,7 @@ def setup_remote(host, runs, folder, dt=0.0005, samples=7, directory='.', tmax=2
             shell=True, stderr=errlog, stdout=devnull)
 
 def kill(host):
-    call(["ssh -tt -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "
+    call(["ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "
           "s0905879@%(host)s \' pkill -u s0905879 \'" % dict(host=host)],
           shell=True, stdout=devnull, stderr=errlog)
 
@@ -86,6 +91,9 @@ def run_set(dt, samples, directory, tmax):
                 counter += 1
         pbar.update(counter)
 
+        if counter > 0.9 * len(processes):
+            print("Finishing")
+            break
 
     kill_all()
     pbar.finish()
@@ -109,7 +117,30 @@ def fit(values, func):
     popt, pcov = curve_fit(func, x, y)
     print("Parameter values are", popt)
 
+def finalize(directory):
+    ''' Finalize computation inside a dir '''
+    with open(directory + '/output', 'w') as f:
+        values = []
+
+        for filename in glob(directory + '/*.out'):
+            with open(filename, 'r') as input_f:
+                lines = input_f.read()
+                values.extend(map(lambda x: int(x), lines.split('\n')))
+                f.write(lines)
+
+            os.remove(filename)
+        fit(values, fit_func)
+
+def signal_handler(signal, frame):
+    ''' Handle ctrl-c '''
+    finalize(current_dir) if len(current_dir) > 0 else None
+    sys.exit(0)
+
+
 if __name__ == '__main__':
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.pause()
+
     maxt = 7000
     s_dt = 0.0005
     for n,dt in enumerate([s_dt, s_dt/2, s_dt/4, s_dt/8]):
@@ -118,19 +149,10 @@ if __name__ == '__main__':
                 continue
 
             directory = 'new_' + str(samples) + '_' + str(dt)
+            current_dir = directory
             os.mkdir(directory)
 
             run_set(dt, samples, directory, maxt)
-            with open(directory + '/output', 'w') as f:
-                values = []
-
-                for filename in glob(directory + '/*.out'):
-                    with open(filename, 'r') as input_f:
-                        lines = input_f.read()
-                        values.extend(map(lambda x: int(x), lines.split('\n')))
-                        f.write(lines)
-
-                    os.remove(filename)
-                fit(values, fit_func)
+            finalize(directory)
 
 
