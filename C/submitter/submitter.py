@@ -159,6 +159,6 @@ if __name__ == '__main__':
         run_set(dt, samples, directory, maxt, R)
         finalize(directory)
 
-        R += 0.1
+        R += 0.01
 
 
