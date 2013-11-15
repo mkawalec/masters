@@ -142,7 +142,6 @@ def signal_handler(signal, frame):
 
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, signal_handler)
-    signal.pause()
 
     maxt = 7000
     s_dt = 0.0005
@@ -151,6 +150,7 @@ if __name__ == '__main__':
     R = 1.0
 
     while R < 1.08:
+        print "starting at R =", R
         directory = 'R_' + str(R)
         current_dir = directory
         os.mkdir(directory)
