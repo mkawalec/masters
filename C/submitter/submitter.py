@@ -116,6 +116,8 @@ def fit(values, func):
         x[i] = time
 
     start = 2 * len(values) / 3
+    print("fitted x", x[start:])
+    print("fitted y" y[start:])
     popt, pcov = curve_fit(func, x[start:], y[start:], [100, 0.01])
     print("Parameter values are", popt)
 
