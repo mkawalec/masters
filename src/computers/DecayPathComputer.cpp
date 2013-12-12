@@ -1,10 +1,13 @@
 #include "computers/DecayPathComputer.hpp"
 #include "Computer.hpp"
 #include "exceptions.hpp"
+#include "Searcher.hpp"
 
 #include <fstream>
 #include <string>
 #include <iostream>
+#include <vector>
+#include <cmath>
 #include <boost/program_options.hpp>
 namespace po = boost::program_options;
 
@@ -36,10 +39,13 @@ namespace turb {
             ("fast-threshold", po::value<double>(&fast_threshold)->default_value(50.0),
              "If a run decays before reaching t = fast_threshold"
              " it will be counted as fast-decaying")
+            ("static-interval", po::value<double>(&static_interval)->default_value(10.0),
+             "Finds a static point every time static-interval"
+             " of time passes")
             ;
     }
 
-    double DecayPathComputer::compute_single(std::ofstream *output)
+    double DecayPathComputer::compute_single(std::ofstream *output, MultirunComputer *base)
     {
         set_serializer();
         integrator = new Integrator(samples, dt, domain_size);
@@ -79,6 +85,15 @@ namespace turb {
                         << std::endl;
                     return i * dt;
                 }
+            }
+
+            // Try to find a static point at the current position
+            if (i%(int)(static_interval / dt) == 0) {
+                Searcher *searcher = new Searcher(integrator);
+                try {
+                    std::vector<double> stationary = searcher->run();
+                    base->add_stationary(&stationary);
+                } catch(NoResult e) {}
             }
         }
 

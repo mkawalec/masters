@@ -18,7 +18,7 @@ namespace turb {
     public:
         DecayMultirunComputer();
         virtual ~DecayMultirunComputer() { unregister(); }
-        double compute_single(std::ofstream *output);
+        double compute_single(std::ofstream *output, MultirunComputer *base);
 
         Computer* clone() const { return new DecayMultirunComputer(*this); }
     };

@@ -118,7 +118,7 @@ def fit(values, func):
         x[i] = time
 
     start = 2 * len(values) / 3
-    popt, pcov = curve_fit(func, x[start:], y[start:], [100, 0.01])
+    popt, pcov = curve_fit(func, x[start:], y[start:], [1, 0.005])
     print("Parameter values are", popt)
 
 def finalize(directory):
