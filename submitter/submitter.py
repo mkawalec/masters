@@ -101,7 +101,7 @@ def run_set(dt, samples, directory, tmax, R):
 
 def fit_func(x, a, c):
     ''' Example function used for curve fitting '''
-    return a * np.exp(c * x)
+    return a * np.exp(-c * x)
 
 def fit(values, func):
     ''' Fit the values to the function '''
@@ -135,17 +135,26 @@ def finalize(directory):
                 f.write(lines)
 
             os.remove(filename)
+        print(values)
         fit(values, fit_func)
 
-def signal_handler(signal, frame):
-    ''' Handle ctrl-c '''
-    kill_all()
-    finalize(current_dir) if len(current_dir) > 0 else None
-    sys.exit(0)
+def gen_signal_hdl():
+    handled = [False]
 
+    def signal_handler(signal, frame):
+        ''' Handle ctrl-c '''
+        if handled[0]:
+            return
+
+        handled[0] = True
+        kill_all()
+        finalize(current_dir) if len(current_dir) > 0 else None
+        sys.exit(0)
+
+    return signal_handler
 
 if __name__ == '__main__':
-    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGINT, gen_signal_hdl())
 
     maxt = 7000
     s_dt = 0.0005
@@ -154,7 +163,7 @@ if __name__ == '__main__':
     R = 1.0
 
     while R < 1.08:
-        print "starting at R =", R
+        print("starting at R =", R)
         directory = 'R_' + str(R)
         current_dir = directory
         os.mkdir(directory)

@@ -38,6 +38,8 @@ namespace turb {
 
             std::ofstream output(current_filename, std::ios::app);
 
+            // Create a new instance, run and save the 
+            // output values
             T* instance = static_cast<T*>(clone());
             try {
                 decay_times.push_back(instance->compute_single(&output));
