@@ -22,7 +22,9 @@ namespace turb {
 
         void get_jacobian();
         void F(double *input, double *result);
-        void jacobian_mult(double *what, double *result);
+
+        // TODO: Actually implement the Gauss' elimination
+        void gauss(double *f, double *result);
 
     public:
         Searcher(Integrator *integrator);

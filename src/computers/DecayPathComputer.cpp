@@ -39,9 +39,9 @@ namespace turb {
             ("fast-threshold", po::value<double>(&fast_threshold)->default_value(50.0),
              "If a run decays before reaching t = fast_threshold"
              " it will be counted as fast-decaying")
-            ("static-interval", po::value<double>(&static_interval)->default_value(10.0),
-             "Finds a static point every time static-interval"
-             " of time passes")
+            ("static-interval", po::value<double>(&static_interval)->default_value(1.0),
+             "Tries to find a static point every static-interval"
+             " of time")
             ;
     }
 

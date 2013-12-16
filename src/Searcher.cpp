@@ -72,9 +72,9 @@ namespace turb {
 
         size_t size = integrator->size_real;
         for (size_t i = 0; i < integrator->size_real; ++i) {
-            double k = (double) i * 2 * M_PI * inv_domain_size;
             double u = input[i];
             double v = input[i + size];
+            double k = (double) i * 2 * M_PI * inv_domain_size;
 
             double u_mult = -pow(k, 4) + 2 * pow(k, 2) - 
                 1 + integrator->e + (1 - integrator->e) * 
@@ -87,21 +87,8 @@ namespace turb {
         }
     }
 
-    void Searcher::jacobian_mult(double *what, double *result)
-    {
-        size_t size = 2 * integrator->size_real;
-
-        for (size_t j = 0; j < size; ++j) {
-            result[j] = 0;
-
-            for (size_t k = 0; k < size; ++k) 
-                result[j] += jacobian[j + size * k] * what[k];
-        }
-    }
-
     std::vector<double> Searcher::run()
     {
-        //std::cout << "in!"<< std::endl;
         size_t size = 2 * integrator->size_real;
         double *tmp_f = (double*) fftw_malloc(sizeof(double) * size);
         double norm;
@@ -109,29 +96,24 @@ namespace turb {
         for (size_t i = 0; i < iterations; ++i) {
             get_jacobian();
 
-            // Get the gradient
-            jacobian_mult(f, dx);
-            //std::cout << " " << l2_norm(f, size) << " " << l2_norm(dx, size) << std::endl;
-
             // Compute the value of F at current position
             F(f, f_val1);
-            //std::cout << l2_norm(f_val1, size) << " " << l2_norm(f, size) << std::endl;
-            jacobian_mult(dx, f_val2);
+            gauss(f_val1, dx);
 
             for (size_t j = 0; j < size; ++j)
-                f_val1[j] += f_val2[j];
-            if ((norm = l2_norm(f_val1, size)) < threshold)
-                return std::vector<double>(f_val1, f_val1 + size);
-            else if (norm > overflow)
-                throw NoResult();
+                f[j] += dx[j];
 
-            // Set a new value of f
-            double *tmp = f;
-            f = dx;
-            dx = tmp;
+            if ((norm = l2_norm(f_val1, size)) < threshold) {
+                std::cout << "Found! " << norm << std::endl;
+                fftw_free(tmp_f);
+                return std::vector<double>(f_val1, f_val1 + size);
+            } else if (norm > overflow) {
+                fftw_free(tmp_f);
+                throw NoResult();
+            }
         }
 
-        std::cout << "nothing!" << std::endl;
+        //std::cout << "nothing!" << std::endl;
         fftw_free(tmp_f);
         throw NoResult();
     }
@@ -151,23 +133,14 @@ namespace turb {
             // Calculate the values of F
             F(tmp_f, f_val1);
             F(f, f_val2);
-            //for (size_t j = 0; j < size; j++) 
-            //    std::cout << f_val1[j] << " ";
 
             // Subtract and invert
-            for (size_t j = 0; j < size; ++j) {
-                jacobian[size * i + j] = 
+            for (size_t j = 0; j < size; ++j) 
+                jacobian[size * j + i] = 
                     (f_val1[j] - f_val2[j]) * inv_h;
-                //std::cout << jacobian[size * i + j] << " ";
-            }
-            //std::cout << std::endl;
-
         }
-        //system("sleep 30s");
         fftw_free(tmp_f);
     }
-
-
 
     Searcher::~Searcher()
     {
