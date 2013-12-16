@@ -25,6 +25,7 @@ namespace turb {
         double fit_part = 0.3;
 
         std::vector<std::vector<double> > stationary_pts;
+        void print_stationary();
 
     protected:
         /*! \brief Manages multiple runs, reduces their

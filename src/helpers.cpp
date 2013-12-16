@@ -4,6 +4,7 @@
 #include <fftw3.h>
 #include <string>
 #include <ap.h>
+#include <vector>
 
 
 namespace turb {
@@ -27,6 +28,16 @@ namespace turb {
         }
         return sqrt(norm);
     }
+
+    double l2_norm(std::vector<double>::iterator start,
+                   std::vector<double>::iterator end) 
+    {
+        double norm = 0.0;
+        for (; start != end; ++start)
+            norm += pow(*start, 2);
+        return sqrt(norm);
+    }
+
 
     void e_x(const alglib::real_1d_array &c, const alglib::real_1d_array &x, 
             double &func, void *ptr) 

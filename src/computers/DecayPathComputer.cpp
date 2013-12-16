@@ -94,6 +94,7 @@ namespace turb {
                     std::vector<double> stationary = searcher->run();
                     base->add_stationary(&stationary);
                 } catch(NoResult e) {}
+                delete searcher;
             }
         }
 

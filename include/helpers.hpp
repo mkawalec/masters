@@ -4,6 +4,7 @@
 #include <fftw3.h>
 #include <cmath>
 #include <ap.h>
+#include <vector>
 
 namespace turb {
 
@@ -27,6 +28,9 @@ namespace turb {
      *  \return L2 norm(array)
      */
     double l2_norm(fftw_complex *array, size_t size, size_t start_i=0);
+
+    double l2_norm(std::vector<double>::iterator start,
+                   std::vector<double>::iterator end);
 
     /*! \brief Normalizes a FFT-transformed array
      *  \param array array of numbers

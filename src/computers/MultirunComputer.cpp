@@ -25,7 +25,7 @@ namespace turb {
     {
         std::vector<double> decay_times;
         decay_times.reserve(runs);
-        stationary_pts.reserve(runs);
+        //stationary_pts.reserve(runs);
 
         for (size_t i = 0; i < runs; ++i) {
             std::string current_filename = output_filename;
@@ -57,7 +57,22 @@ namespace turb {
             delete instance;
         }
 
+        print_stationary();
         if (fit) fit_it(&decay_times);
+    }
+
+    template <typename T>
+    void MultirunComputer<T>::print_stationary()
+    {
+        std::cerr << "Amount of stationary points is " << stationary_pts.size() << std::endl;
+        for (size_t i = 0; i < stationary_pts.size(); ++i) {
+           double norm_u = l2_norm(stationary_pts[i].begin(),
+                   stationary_pts[i].begin() + integrator->size_real);
+           double norm_v = l2_norm(stationary_pts[i].begin() + 
+                   integrator->size_real, stationary_pts[i].end());
+           std::cerr << "point " << i << " " << norm_u << " " << norm_v <<
+               std::endl;
+        }
     }
 
     template <typename T>
