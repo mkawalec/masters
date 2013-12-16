@@ -18,10 +18,6 @@ namespace turb {
          *      and final results of computations
          */
         protected:
-        fftw_plan e_u, e_v, i_u, i_v,
-                  f_u, f_v, f_du, b_u, b_v;
-
-
         void initialize_operators();
 
         /// Computes one timestep of the nonlinear transform
@@ -52,6 +48,10 @@ namespace turb {
                b=-0.004, D=40, R=1.04;
         fftw_complex *c_u, *c_v, *dc_u;
         size_t size_real, size_complex;
+
+        fftw_plan e_u, e_v, i_u, i_v,
+                  f_u, f_v, f_du, b_u, b_v;
+
     };
 }
 

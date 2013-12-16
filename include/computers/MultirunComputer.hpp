@@ -24,6 +24,9 @@ namespace turb {
          */
         double fit_part = 0.3;
 
+        std::vector<std::vector<double> > stationary_pts;
+        void print_stationary();
+
     protected:
         /*! \brief Manages multiple runs, reduces their
          *      output data etc.
@@ -34,8 +37,12 @@ namespace turb {
         /*! \brief Implemented by derived classes to execute
          *      a single run.
          */
-        virtual double compute_single(std::ofstream *output) = 0;
+        virtual double compute_single(std::ofstream *output, MultirunComputer *base) = 0;
 
+        /*! \brief Adds a stationary point to the set 
+         *      of stationary points
+         */
+        void add_stationary(std::vector<double> *stationary);
     };
 }
 

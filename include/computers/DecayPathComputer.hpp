@@ -14,13 +14,13 @@ namespace turb {
      */
     class DecayPathComputer : public MultirunComputer<DecayPathComputer> {
     private:
-        double decay_threshold, fast_threshold;
+        double decay_threshold, fast_threshold, static_interval;
 
     public:
         DecayPathComputer();
         virtual ~DecayPathComputer() { unregister(); }
 
-        double compute_single(std::ofstream *output);
+        double compute_single(std::ofstream *output, MultirunComputer *base);
         Computer* clone() const { return new DecayPathComputer(*this); }
 
         void set_options();

@@ -12,6 +12,7 @@ set(HEADER_FILES
     include/serializers/NormSerializer.hpp
     include/serializers/ComponentSerializer.hpp
     include/serializers/GenericSerializer.hpp
+    include/Searcher.hpp
     include/Computer.hpp
     include/computers/SimpleComputer.hpp
     include/computers/MultirunComputer.hpp
@@ -22,6 +23,7 @@ set(CPP_FILES
     src/helpers.cpp
     src/integrator.cpp
     src/Computer.cpp
+    src/Searcher.cpp
     src/serializers/NormSerializer.cpp
     src/serializers/ComponentSerializer.cpp
     src/serializers/GenericSerializer.cpp
@@ -40,7 +42,7 @@ add_executable(integrator ${CPP_FILES})
 
 if (CMAKE_COMPILER_IS_GNUCXX)
     message(status "Setting GCC flags")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -pthread -lpthread -static -Wall -Wextra -Wno-ignored-qualifiers -pedantic -W -std=c++0x")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -pthread -lpthread -static -Wall -Wextra -Wno-ignored-qualifiers -pedantic -W -std=c++0x -march=native")
 else()
     message(status "gcc not found!")
     return()

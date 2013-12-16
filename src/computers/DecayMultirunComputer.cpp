@@ -21,8 +21,10 @@ namespace turb {
         Computer::available.push_back(this);
     }
 
-    double DecayMultirunComputer::compute_single(std::ofstream *output)
+    double DecayMultirunComputer::compute_single(std::ofstream *output, MultirunComputer *base)
     {
+        unused(base);
+
         set_serializer();
         integrator = new Integrator(samples, dt, domain_size);
         set_constants();
