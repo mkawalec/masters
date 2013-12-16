@@ -72,7 +72,7 @@ def run_set(dt, samples, directory, tmax, R):
     processes = []
 
     # Spawning two threads per host
-    for i in range(hosts):
+    for i in range(1, hosts):
         processes.append(Process(target=setup_remote, 
             args=["cplab%03d" % (i,), runs, 'turb1', dt, samples, directory, tmax, R]))
         processes.append(Process(target=setup_remote, 
@@ -117,7 +117,9 @@ def fit(values, func):
         y[i] = (len(values) - i) / len(values)
         x[i] = time
 
-    start = 2 * len(values) / 3
+    print(y)
+    print(x)
+    start = 4 * len(values) / 5
     popt, pcov = curve_fit(func, x[start:], y[start:], [100, 0.01])
     print("Parameter values are", popt)
 
@@ -135,7 +137,6 @@ def finalize(directory):
                 f.write(lines)
 
             os.remove(filename)
-        print(values)
         fit(values, fit_func)
 
 def gen_signal_hdl():
@@ -156,11 +157,11 @@ def gen_signal_hdl():
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, gen_signal_hdl())
 
-    maxt = 7000
+    maxt = 10000
     s_dt = 0.0005
     dt = 0.0005
     samples = 7
-    R = 1.0
+    R = 0.9
 
     while R < 1.08:
         print("starting at R =", R)
