@@ -52,7 +52,7 @@ def kill(host):
 
 def kill_all():
     procs = []
-    for i in range(hosts):
+    for i in range(1, hosts):
         procs.append(Process(target=kill,
             args=["cplab%03d" % (i,)]))
 
