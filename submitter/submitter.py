@@ -127,7 +127,7 @@ def fit(values, func):
     start = 4 * len(values) / 5
     popt, pcov = curve_fit(func, x[start:], y[start:], [1, 0.005])
     print("Parameter values are", popt)
-    print("Computed with %d values" % (len(values)))
+    print("Computed with %d values\n" % (len(values)))
 
 def finalize(directory):
     ''' Finalize computation inside a dir '''
@@ -163,6 +163,7 @@ def gen_signal_hdl():
 def fit_R():
     for filename in glob('R*/output'):
         with open(filename, 'r') as f:
+            print("Fitting %s" % filename)
             lines = f.read().split('\n')
             parsed = map(lambda x: float(x), 
                     filter(lambda x: len(x) > 0, lines))
