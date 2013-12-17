@@ -10,6 +10,7 @@ from subprocess import call
 from progressbar import Bar, ETA, Percentage, ProgressBar
 from time import sleep
 from sys import argv
+import sys
 from glob import glob
 import os
 
@@ -21,8 +22,14 @@ import sys
 
 
 processes = []
-hosts = int(argv[1])
-runs = int(argv[2])
+try:
+    hosts = int(argv[1])
+except ValueError:
+    hosts = argv[1]
+
+if len(argv) > 2:
+    runs = int(argv[2])
+
 current_dir = ""
 
 devnull = open("/dev/null", "w")
@@ -52,7 +59,7 @@ def kill(host):
 
 def kill_all():
     procs = []
-    for i in range(hosts):
+    for i in range(1, hosts):
         procs.append(Process(target=kill,
             args=["cplab%03d" % (i,)]))
 
@@ -72,7 +79,7 @@ def run_set(dt, samples, directory, tmax, R):
     processes = []
 
     # Spawning two threads per host
-    for i in range(hosts):
+    for i in range(1, hosts):
         processes.append(Process(target=setup_remote, 
             args=["cplab%03d" % (i,), runs, 'turb1', dt, samples, directory, tmax, R]))
         processes.append(Process(target=setup_remote, 
@@ -117,9 +124,11 @@ def fit(values, func):
         y[i] = (len(values) - i) / len(values)
         x[i] = time
 
-    start = 2 * len(values) / 3
+    start = 4 * len(values) / 5
     popt, pcov = curve_fit(func, x[start:], y[start:], [1, 0.005])
     print("Parameter values are", popt)
+    print("Computed with %d values\n" % (len(values)))
+    return popt
 
 def finalize(directory):
     ''' Finalize computation inside a dir '''
@@ -135,7 +144,6 @@ def finalize(directory):
                 f.write(lines)
 
             os.remove(filename)
-        print(values)
         fit(values, fit_func)
 
 def gen_signal_hdl():
@@ -153,14 +161,34 @@ def gen_signal_hdl():
 
     return signal_handler
 
+def fit_R():
+    fit_output = open('fit_results', 'w')
+
+    for filename in glob('R*/output'):
+        with open(filename, 'r') as f:
+            print("Fitting %s" % filename)
+            lines = f.read().split('\n')
+            parsed = map(lambda x: float(x), 
+                    filter(lambda x: len(x) > 0, lines))
+            fit_results = fit(parsed, fit_func)
+            fit_output.write("%s\t%06e\t%06e\n" % 
+                    (filename, fit_results[0], fit_results[1]))
+
+    fit_output.close()
+
+
 if __name__ == '__main__':
+    if hosts == 'fit':
+        fit_R()
+        sys.exit()
+
     signal.signal(signal.SIGINT, gen_signal_hdl())
 
-    maxt = 7000
+    maxt = 10000
     s_dt = 0.0005
     dt = 0.0005
     samples = 7
-    R = 1.0
+    R = 0.9
 
     while R < 1.08:
         print("starting at R =", R)
