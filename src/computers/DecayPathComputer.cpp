@@ -89,12 +89,10 @@ namespace turb {
 
             // Try to find a static point at the current position
             if (i%(int)(static_interval / dt) == 0) {
-                Searcher *searcher = new Searcher(integrator);
+                Searcher searcher = Searcher(integrator);
                 try {
-                    std::vector<double> stationary = searcher->run();
-                    base->add_stationary(&stationary);
+                    base->add_stationary(searcher.run());
                 } catch(NoResult e) {}
-                delete searcher;
             }
         }
 

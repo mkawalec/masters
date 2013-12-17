@@ -26,6 +26,7 @@ namespace turb {
          */
         Exception(std::string msg) { message = msg; }
         Exception(std::stringstream *output) { message = output->str();}
+        Exception(double num) { std::stringstream tmp; tmp << num; message = tmp.str();}
 
         /*! \brief Returns the info message
          *  \return info message
@@ -58,6 +59,10 @@ namespace turb {
      *      to be thrown.
      */
     struct NoResult : public Exception {
+        using Exception::Exception;
+    };
+
+    struct OutOfBounds : public Exception {
         using Exception::Exception;
     };
 }

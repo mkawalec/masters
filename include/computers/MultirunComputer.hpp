@@ -42,7 +42,7 @@ namespace turb {
         /*! \brief Adds a stationary point to the set 
          *      of stationary points
          */
-        void add_stationary(std::vector<double> *stationary);
+        void add_stationary(std::vector<double> stationary);
     };
 }
 

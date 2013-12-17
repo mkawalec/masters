@@ -8,6 +8,7 @@
 #include <cmath>
 #include <iostream>
 #include <cstdio>
+#include <cstdlib>
 
 namespace turb {
 
@@ -21,7 +22,8 @@ namespace turb {
         d_cu = (fftw_complex*)
             fftw_malloc(sizeof(fftw_complex) * integrator->size_complex);
         jacobian = (double*)
-            fftw_malloc(sizeof(double) * pow(2 * integrator->size_real, 2));
+            fftw_malloc(sizeof(double) * 
+                    2 * integrator->size_real * (2 * integrator->size_real + 1));
 
         f_val1 = (double*)
             fftw_malloc(sizeof(double) * 2 * integrator->size_real);
@@ -98,7 +100,16 @@ namespace turb {
 
             // Compute the value of F at current position
             F(f, f_val1);
-            gauss(f_val1, dx);
+            try {
+                gauss(f_val1, dx);
+            } catch (const NoResult &e) {
+                std::cout << "Caught " << e.what() << std::endl;
+                continue;
+            }
+
+            for (int j = 0; j < size; ++j)
+                std::cout << dx[j] << " ";
+            std::cout << std::endl;
 
             for (size_t j = 0; j < size; ++j)
                 f[j] += dx[j];
@@ -118,6 +129,139 @@ namespace turb {
         throw NoResult();
     }
 
+    void Searcher::gauss(double *f, double *result)
+    {
+        size_t size = 2 * integrator->size_real;
+        srand(1234);
+
+        // Add F as a suffix to jacobian matrix
+        for (size_t i = 0; i < size; ++i) 
+            jacobian[(size + 1) * i + size] = -f[i];
+
+        // Bring jacobian to the echelon form
+        for (size_t i = 0; i < size; ++i) {
+            sort_jacobian(&jacobian[(size+1)*i], size-i);
+
+            size_t major_nonzero_i = get_prefix(i, jacobian);
+            for (size_t j = i + 1; j < size; ++j) {
+                size_t nonzero_i = get_prefix(j, jacobian);
+                if (nonzero_i != major_nonzero_i) break;
+
+                double factor = jacobian[(size+1) * j + nonzero_i] / 
+                                jacobian[(size+1) * i + nonzero_i];
+
+                for (size_t k = nonzero_i; k < size + 1; ++k) 
+                    jacobian[(size+1) * j + k] -= 
+                        factor * jacobian[(size+1) * i + k];
+            }
+        }
+
+        for (int i = 0; i < size; ++i)
+            //std::cout << jacobian[(size + 1) * i + size - 3] << " ";
+            std::cout << i << " " << get_prefix(i, jacobian) << " ";
+        std::cout << std::endl;
+        /*for (int i = 0; i < size; ++i)
+            std::cout << jacobian[(size+1) * i + size] << " ";
+
+        std::cout << std::endl;
+        std::cout << size << std::endl;*/
+
+        // Compute the result
+        for (int i = size - 1; i >= 0; --i) {
+            result[i] = jacobian[(size + 1) * i + size];
+
+            for (int j = size; j >= i; j--) {
+                size_t current_idx = (size + 1) * i + j;
+
+                if (j != i) result[i] -= result[j] * jacobian[current_idx];
+                else {
+                    result[i] /= jacobian[(size+1) * i + i];
+                    std::cout << jacobian[(size+1) * i + i] << " ";
+                }
+            }
+            //std::cout << result[i] << " " << fuzzy_eql(result[i], 0) << " ";
+            if (fuzzy_eql(result[i], 0) && i != 0) throw NoResult(i);
+        }
+    }
+
+    int Searcher::get_prefix(size_t line_index, double *where)
+    {
+        int zero_count = 0;
+        int line_size = 2 * integrator->size_real + 1;
+
+        for (int i = 0; i < 2 * integrator->size_real; ++i) {
+            if (!fuzzy_eql(where[line_size * line_index + i], 0)) break;
+            ++zero_count;
+        }
+        return zero_count;
+    }
+
+    // Make the partition in-place
+    void Searcher::sort_jacobian(double *where, int size)
+    {
+        if (size < 2) return;
+
+        int anchor = rand()%size;
+        int smaller_count=0, bigger_count=0;
+        int anchor_prefix = get_prefix(anchor, where);
+        int line_size = 2 * integrator->size_real + 1;
+
+        // Find out how many bigger and smaller indexes there are
+        for (int i=0; i < size; ++i) {
+            if (get_prefix(i, where) > anchor_prefix)
+                ++bigger_count;
+            else if (i != anchor)
+                ++smaller_count;
+        }
+
+        // Allocate the smaller and bigger arrays
+        double *smaller = (double*)
+            fftw_malloc(sizeof(double) * smaller_count * line_size);
+        double *bigger = (double*)
+            fftw_malloc(sizeof(double) * bigger_count * line_size);
+        double *anchor_line = (double*)
+            fftw_malloc(sizeof(double) * line_size);
+
+        // Backup the anchor line
+        for (int i = 0; i < line_size; ++i)
+            copy_line(anchor, where, anchor_line, 0);
+
+        // Distribute among arrays
+        int smaller_i=0, bigger_i=0;
+        for (int i = 0; i < size; ++i) {
+            if (get_prefix(i, where) > anchor_prefix)
+                copy_line(i, where, bigger, bigger_i++);
+            else if (i != anchor)
+                copy_line(i, where, smaller, smaller_i++);
+        }
+
+        // Launch the sorts
+        sort_jacobian(bigger, bigger_count);
+        sort_jacobian(smaller, smaller_count);
+
+        // Merge into the starting array
+        for (int i = 0; i < size; ++i) {
+            if (i < smaller_count)
+                copy_line(i, smaller, where, i);
+            else if (i == smaller_count) 
+                copy_line(0, anchor_line, where, i);
+            else 
+                copy_line(i - smaller_count - 1, bigger, where, i);
+        }
+
+        // Free the memory
+        fftw_free(smaller);
+        fftw_free(bigger);
+        fftw_free(anchor_line);
+    }
+
+    void Searcher::copy_line(size_t from_i, double *from, double *to, size_t to_i)
+    {
+        size_t line_size = 2 * integrator->size_real + 1;
+        for (size_t i = 0; i < line_size; ++i)
+            to[line_size * to_i + i] = from[line_size * from_i + i];
+    }
+
     void Searcher::get_jacobian()
     {
         size_t size = 2 * integrator->size_real;
@@ -134,9 +278,8 @@ namespace turb {
             F(tmp_f, f_val1);
             F(f, f_val2);
 
-            // Subtract and invert
-            for (size_t j = 0; j < size; ++j) 
-                jacobian[size * j + i] = 
+            for (size_t j = 0; j < size; ++j)
+                jacobian[(size + 1) * j + i] =
                     (f_val1[j] - f_val2[j]) * inv_h;
         }
         fftw_free(tmp_f);

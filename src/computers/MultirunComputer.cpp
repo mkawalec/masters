@@ -116,9 +116,9 @@ namespace turb {
     }
 
     template <typename T>
-    void MultirunComputer<T>::add_stationary(std::vector<double> *stationary)
+    void MultirunComputer<T>::add_stationary(std::vector<double> stationary)
     {
-        stationary_pts.push_back(*stationary);
+        stationary_pts.push_back(stationary);
     }
 }
 

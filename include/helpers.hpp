@@ -43,6 +43,16 @@ namespace turb {
             *(array + i) *= norm_factor;
     }
 
+    const double EQL_ACCURACY = 1e-14;
+
+    inline bool fuzzy_eql(double first, double second)
+    {
+        if (fabs(first-second) > EQL_ACCURACY)
+            return false;
+        return true;
+    }
+
+
     /*! \brief Holds information about values of
      *      u and v at a given time.
      */
