@@ -42,30 +42,6 @@ namespace turb {
         std::vector<double> run();
     };
 
-    class JacobianElement {
-    private:
-        size_t prefix, line_size;
-        double *line;
-
-    public:
-        size_t prefix();
-        size_t size();
-        double* line() { return line;}
-        void swap(Element *other);
-
-        Element(int line_size);
-        double operator[](int index);
-        double* operator=(double *ptr);
-    };
-
-    class Jacobian {
-    private:
-        double *jacobian;
-
-    public:
-        Jacobian(int m, int n);
-        JacobianElement operator[](int index);
-    };
 }
 
 #endif
