@@ -25,7 +25,8 @@ namespace turb {
     {
         std::vector<double> decay_times;
         decay_times.reserve(runs);
-        //stationary_pts.reserve(runs);
+        stationary_pts.reserve(runs);
+
         std::ofstream *output = NULL;
         if (!split_files)
             output = new std::ofstream(output_filename);
@@ -49,22 +50,25 @@ namespace turb {
             try {
                 decay_times.push_back(instance->compute_single(output, this));
                 *output << std::endl << std::endl;
-
-                output->close();
             } catch (const RemoveOutput &e) {
                 output->close();
                 remove(current_filename.c_str());
-            } catch (const NoResult &e) {
-                output->close();
-            }
+            } catch (const NoResult &e) {}
 
             delete instance;
-            if (split_files) delete output;
+            if (split_files) {
+                if (output->is_open()) output->close();
+                delete output;
+            }
         }
 
         print_stationary();
         if (fit) fit_it(&decay_times);
-        if (!split_files) delete output;
+
+        if (!split_files) {
+            if (output->is_open()) output->close();
+            delete output;
+        }
     }
 
     template <typename T>
@@ -81,6 +85,8 @@ namespace turb {
                    stationary_pts[i].size() / 2, stationary_pts[i].end());
 
             for (int j = size - 1; j >= 0; j--) {
+                if (j == i) continue;
+
                 double s_norm_u = l2_norm(stationary_pts[j].begin(),
                    stationary_pts[j].begin() + stationary_pts[j].size() / 2);
                 double s_norm_v = l2_norm(stationary_pts[j].begin() + 
@@ -93,6 +99,9 @@ namespace turb {
             ++i;
         }
 
+        if (stationary_pts.size() == 0) return;
+
+        std::ofstream output("stationary");
         std::cerr << "------------------------------------" << std::endl;
         std::cerr << "Amount of stationary points is " << stationary_pts.size() << std::endl;
         for (size_t i = 0; i < stationary_pts.size(); ++i) {
@@ -100,9 +109,11 @@ namespace turb {
                    stationary_pts[i].begin() + stationary_pts[i].size() / 2);
            double norm_v = l2_norm(stationary_pts[i].begin() + 
                    stationary_pts[i].size() / 2, stationary_pts[i].end());
-           std::cout << norm_u << " " << norm_v <<
-               std::endl;
+           
+           std::cout << norm_u << " " << norm_v <<std::endl;
+           output << norm_u << " " << norm_v << std::endl;
         }
+        output.close();
     }
 
     template <typename T>
