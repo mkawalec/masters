@@ -107,9 +107,9 @@ namespace turb {
             try {
                 gauss(f_val1, dx);
             } catch (const NoResult &e) {
-                std::cout << "Caught " << current_time() - start << std::endl;
                 continue;
             }
+            std::cout << current_time() - start << std::endl;
 
             for (size_t j = 0; j < size; ++j)
                 f[j] += dx[j];
