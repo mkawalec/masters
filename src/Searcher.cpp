@@ -104,17 +104,12 @@ namespace turb {
 
             double start = current_time();
 
-            std::cout << l2_norm(f_val1, size) << std::endl;
             try {
                 gauss(f_val1, dx);
             } catch (const NoResult &e) {
-               // std::cout << "Caught " << current_time() - start << std::endl;
+                std::cout << "Caught " << current_time() - start << std::endl;
                 continue;
             }
-
-            for (int j = 0; (unsigned)j < size; ++j)
-                std::cout << dx[j] << " ";
-            std::cout << std::endl;
 
             for (size_t j = 0; j < size; ++j)
                 f[j] += dx[j];
@@ -129,7 +124,6 @@ namespace turb {
             }
         }
 
-        //std::cout << "nothing!" << std::endl;
         fftw_free(tmp_f);
         throw NoResult();
     }
@@ -159,18 +153,6 @@ namespace turb {
             }
         }
 
-        long double row_norm = 0;
-        for (int i = 0; i < size; ++i)
-            row_norm += l2_norm((*jacobian)[i].get_line(), size+1);
-
-        double *tmp_f = (double*)
-            fftw_malloc(sizeof(double) * size);
-        for (int i = 0; i < size; ++i) 
-            tmp_f[i] = (*jacobian)[i][size - 1];
-
-        std::cout << "norm " << row_norm << std::endl;
-        fftw_free(tmp_f);
-
         // Check if jacobian is upper-triangular
         for (int i = 0; i < size; ++i) 
             if ((*jacobian)[i].prefix() != i) throw NoResult(i);
@@ -186,8 +168,6 @@ namespace turb {
                     result[i] /= (*jacobian)[i][i];
             }
         }
-        /*std::cout << std::endl;
-        system("sleep 20s");*/
     }
 
     // Make the partition in-place
