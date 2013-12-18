@@ -50,6 +50,44 @@ namespace turb {
         fftw_export_wisdom_to_filename(".wisdom");
     }
 
+    std::vector<double> Searcher::run()
+    {
+        size_t size = 2 * integrator->size_real;
+        double *tmp_f = (double*) fftw_malloc(sizeof(double) * size);
+        double norm;
+
+        for (size_t i = 0; i < iterations; ++i) {
+            get_jacobian();
+
+            // Compute the value of F at current position
+            F(f, f_val1);
+
+            try {
+                gauss(f_val1, dx);
+            } catch (const NoResult &e) {
+                std::cerr << "No result!" << std::endl;
+                continue;
+            }
+
+            for (size_t j = 0; j < size; ++j)
+                f[j] += dx[j];
+
+            if ((norm = l2_norm(f_val1, size)) < threshold) {
+                std::cerr << "Found! " << l2_norm(f, size/2) <<
+                    " " << l2_norm(f + size/2, size/2) << std::endl;
+                fftw_free(tmp_f);
+                return std::vector<double>(f, f + size);
+            } else if (norm > overflow) {
+                fftw_free(tmp_f);
+                throw NoResult();
+            }
+        }
+
+        fftw_free(tmp_f);
+        throw NoResult();
+    }
+
+
     void Searcher::F(double *input, double *result)
     {
         double inv_domain_size = 1 / integrator->domain_size;
@@ -88,44 +126,6 @@ namespace turb {
             result[i] = u * u_mult;
             result[i + size] = v * v_mult + integrator->R * pow(u, 2);
         }
-    }
-
-    std::vector<double> Searcher::run()
-    {
-        size_t size = 2 * integrator->size_real;
-        double *tmp_f = (double*) fftw_malloc(sizeof(double) * size);
-        double norm;
-
-        for (size_t i = 0; i < iterations; ++i) {
-            get_jacobian();
-
-            // Compute the value of F at current position
-            F(f, f_val1);
-
-            double start = current_time();
-
-            try {
-                gauss(f_val1, dx);
-            } catch (const NoResult &e) {
-                continue;
-            }
-            std::cout << current_time() - start << std::endl;
-
-            for (size_t j = 0; j < size; ++j)
-                f[j] += dx[j];
-
-            if ((norm = l2_norm(f_val1, size)) < threshold) {
-                std::cout << "Found! " << norm << std::endl;
-                fftw_free(tmp_f);
-                return std::vector<double>(f_val1, f_val1 + size);
-            } else if (norm > overflow) {
-                fftw_free(tmp_f);
-                throw NoResult();
-            }
-        }
-
-        fftw_free(tmp_f);
-        throw NoResult();
     }
 
     void Searcher::gauss(double *f, double *result)

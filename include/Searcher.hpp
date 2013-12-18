@@ -33,12 +33,12 @@ namespace turb {
         void sort_jacobian(int start, int end);
         int get_prefix(size_t line_index, double *where);
 
-        public:
-            Searcher(Integrator *integrator);
-            ~Searcher();
+    public:
+        Searcher(Integrator *integrator);
+        ~Searcher();
 
-            std::vector<double> run();
-        };
+        std::vector<double> run();
+    };
 
 }
 

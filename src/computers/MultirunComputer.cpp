@@ -64,13 +64,37 @@ namespace turb {
     template <typename T>
     void MultirunComputer<T>::print_stationary()
     {
+        const double same_acc = 1e-3;
+        size_t size = stationary_pts.size(), i = 0;
+
+        // Remove the same stationary points
+        while (i < size) {
+            double f_norm_u = l2_norm(stationary_pts[i].begin(),
+                   stationary_pts[i].begin() + stationary_pts[i].size() / 2);
+            double f_norm_v = l2_norm(stationary_pts[i].begin() + 
+                   stationary_pts[i].size() / 2, stationary_pts[i].end());
+
+            for (int j = size - 1; j >= 0; j--) {
+                double s_norm_u = l2_norm(stationary_pts[j].begin(),
+                   stationary_pts[j].begin() + stationary_pts[j].size() / 2);
+                double s_norm_v = l2_norm(stationary_pts[j].begin() + 
+                   stationary_pts[j].size() / 2, stationary_pts[j].end());
+                if (fabs(s_norm_u - f_norm_u) < same_acc &&
+                    fabs(s_norm_v - f_norm_v) < same_acc)
+                    stationary_pts.erase(stationary_pts.begin() + j);
+            }
+            size = stationary_pts.size();
+            ++i;
+        }
+
+        std::cerr << "------------------------------------" << std::endl;
         std::cerr << "Amount of stationary points is " << stationary_pts.size() << std::endl;
         for (size_t i = 0; i < stationary_pts.size(); ++i) {
            double norm_u = l2_norm(stationary_pts[i].begin(),
-                   stationary_pts[i].begin() + integrator->size_real);
+                   stationary_pts[i].begin() + stationary_pts[i].size() / 2);
            double norm_v = l2_norm(stationary_pts[i].begin() + 
-                   integrator->size_real, stationary_pts[i].end());
-           std::cerr << "point " << i << " " << norm_u << " " << norm_v <<
+                   stationary_pts[i].size() / 2, stationary_pts[i].end());
+           std::cout << norm_u << " " << norm_v <<
                std::endl;
         }
     }

@@ -6,6 +6,7 @@
 #include <ap.h>
 #include <vector>
 #include <sys/time.h>
+#include <iostream>
 
 
 namespace turb {
@@ -28,6 +29,15 @@ namespace turb {
         return sqrt(norm);
     }
 
+    double l2_norm(__float128 *array, size_t size, size_t start_i)
+    {
+        __float128 norm = 0.0;
+        for (size_t i = start_i; i < size; ++i) 
+            norm += pow(array[i], 2);
+
+        return sqrt(norm);
+    }
+
     double l2_norm(fftw_complex *array, size_t size, size_t start_i)
     {
         double norm = 0.0;
@@ -43,7 +53,7 @@ namespace turb {
                    std::vector<double>::iterator end) 
     {
         double norm = 0.0;
-        for (; start != end; ++start)
+        for (; start != end; ++start) 
             norm += pow(*start, 2);
         return sqrt(norm);
     }
