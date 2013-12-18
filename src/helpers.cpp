@@ -5,6 +5,7 @@
 #include <string>
 #include <ap.h>
 #include <vector>
+#include <sys/time.h>
 
 
 namespace turb {
@@ -44,6 +45,13 @@ namespace turb {
     {
         func = exp(-c[0] * x[0]);
         unused(ptr);
+    }
+
+    double current_time()
+    {
+        timeval time;
+        gettimeofday(&time, NULL);
+        return time.tv_sec + time.tv_usec * (double)1e-6;
     }
 
 }

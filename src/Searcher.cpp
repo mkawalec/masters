@@ -9,7 +9,6 @@
 #include <iostream>
 #include <cstdio>
 #include <cstdlib>
-#include <sys/time.h>
 
 namespace turb {
 
@@ -103,15 +102,12 @@ namespace turb {
             // Compute the value of F at current position
             F(f, f_val1);
 
-            timeval start;
-            gettimeofday(&start, NULL);
+            double start = current_time();
 
             try {
                 gauss(f_val1, dx);
             } catch (const NoResult &e) {
-                timeval end;
-                gettimeofday(&end, NULL);
-                std::cout << "Caught " << (end.tv_usec - start.tv_usec) * (double)1e-6 << std::endl;
+                std::cout << "Caught " << current_time() - start << std::endl;
                 continue;
             }
 

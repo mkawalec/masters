@@ -75,6 +75,8 @@ namespace turb {
     void e_x(const alglib::real_1d_array &c, const alglib::real_1d_array &x, 
             double &func, void *ptr);
 
+    double current_time();
+
 }
 
 #endif
