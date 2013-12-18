@@ -19,6 +19,15 @@ namespace turb {
         return sqrt(norm);
     }
 
+    double l2_norm(long double *array, size_t size, size_t start_i)
+    {
+        long double norm = 0.0;
+        for (size_t i = start_i; i < size; ++i) 
+            norm += pow(array[i], 2);
+
+        return sqrt(norm);
+    }
+
     double l2_norm(fftw_complex *array, size_t size, size_t start_i)
     {
         double norm = 0.0;

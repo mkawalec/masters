@@ -23,7 +23,7 @@ namespace turb {
         d_cu = (fftw_complex*)
             fftw_malloc(sizeof(fftw_complex) * integrator->size_complex);
 
-        jacobian = new Jacobian(2 * integrator->size_real,
+        jacobian = new Jacobian<long double>(2 * integrator->size_real,
                 2 * integrator->size_real + 1);
 
         f_val1 = (double*)
@@ -104,10 +104,11 @@ namespace turb {
 
             double start = current_time();
 
+            std::cout << l2_norm(f_val1, size) << std::endl;
             try {
                 gauss(f_val1, dx);
             } catch (const NoResult &e) {
-                std::cout << "Caught " << current_time() - start << std::endl;
+               // std::cout << "Caught " << current_time() - start << std::endl;
                 continue;
             }
 
@@ -135,49 +136,62 @@ namespace turb {
 
     void Searcher::gauss(double *f, double *result)
     {
-        size_t size = jacobian->dims().first;
+        int size = jacobian->dims().first;
 
         // Add F as a suffix to jacobian matrix
-        for (size_t i = 0; i < size; ++i) 
+        for (int i = 0; i < size; ++i) 
             (*jacobian)[i][size] = -f[i];
 
         // Bring jacobian to the echelon form
-        for (size_t i = 0; i < size; ++i) {
-            sort_jacobian(i, jacobian->dims().first, 0);
+        for (int i = 0; i < size; ++i) {
+            sort_jacobian(i, jacobian->dims().first);
 
             int major_nonzero_i = (*jacobian)[i].prefix();
-            for (size_t j = i + 1; j < size; ++j) {
+            for (int j = i + 1; j < size; ++j) {
                 int nonzero_i = (*jacobian)[j].prefix();
                 if (nonzero_i != major_nonzero_i) break;
 
-                double factor = (*jacobian)[j][nonzero_i] / 
+                long double factor = (*jacobian)[j][nonzero_i] / 
                                 (*jacobian)[i][nonzero_i];
 
-                for (size_t k = nonzero_i; k < size + 1; ++k) 
+                for (int k = nonzero_i; k < size + 1; ++k) 
                     (*jacobian)[j][k] -= factor * (*jacobian)[i][k];
             }
         }
+
+        long double row_norm = 0;
+        for (int i = 0; i < size; ++i)
+            row_norm += l2_norm((*jacobian)[i].get_line(), size+1);
+
+        double *tmp_f = (double*)
+            fftw_malloc(sizeof(double) * size);
+        for (int i = 0; i < size; ++i) 
+            tmp_f[i] = (*jacobian)[i][size - 1];
+
+        std::cout << "norm " << row_norm << std::endl;
+        fftw_free(tmp_f);
+
+        // Check if jacobian is upper-triangular
+        for (int i = 0; i < size; ++i) 
+            if ((*jacobian)[i].prefix() != i) throw NoResult(i);
 
         // Compute the result
         for (int i = size - 1; i >= 0; --i) {
             result[i] = (*jacobian)[i][size];
 
-            for (int j = size; j >= i; j--) {
-                if (j != i) result[i] -= result[j] * (*jacobian)[i][j];
-                else {
+            for (int j = size - 1; j >= i; j--) {
+                if (j != i) 
+                    result[i] -= result[j] * (*jacobian)[i][j];
+                else 
                     result[i] /= (*jacobian)[i][i];
-                    //std::cout << (*jacobian)[i][i] << " ";
-                }
             }
-            //std::cout << result[i] << " ";
-            if (fuzzy_eql(result[i], 0) && i != 0) throw NoResult(i);
         }
         /*std::cout << std::endl;
         system("sleep 20s");*/
     }
 
     // Make the partition in-place
-    void Searcher::sort_jacobian(int start, int end, int depth)
+    void Searcher::sort_jacobian(int start, int end)
     {
         if (end - start < 2) return;
 
@@ -196,8 +210,8 @@ namespace turb {
         jacobian->swap_lines(store_index, end - 1);
 
         // Launch the sorts
-        sort_jacobian(start, store_index, ++depth);
-        sort_jacobian(store_index + 1, end, ++depth);
+        sort_jacobian(start, store_index);
+        sort_jacobian(store_index + 1, end);
     }
 
     void Searcher::get_jacobian()

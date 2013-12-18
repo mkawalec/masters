@@ -11,7 +11,7 @@ namespace turb {
     private:
         Integrator *integrator;
         double *f, *du, *f_val1, *f_val2, *dx;
-        Jacobian *jacobian;
+        Jacobian<long double> *jacobian;
         fftw_complex *d_cu;
 
         size_t iterations = 50;
@@ -30,7 +30,7 @@ namespace turb {
         void gauss(double *f, double *result);
 
         // An in-place quicksort
-        void sort_jacobian(int start, int end, int depth);
+        void sort_jacobian(int start, int end);
         int get_prefix(size_t line_index, double *where);
 
         public:
