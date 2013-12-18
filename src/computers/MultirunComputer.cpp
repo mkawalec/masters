@@ -26,6 +26,10 @@ namespace turb {
         std::vector<double> decay_times;
         decay_times.reserve(runs);
         //stationary_pts.reserve(runs);
+        std::ofstream *output = NULL;
+        if (!split_files)
+            output = new std::ofstream(output_filename);
+
 
         for (size_t i = 0; i < runs; ++i) {
             std::string current_filename = output_filename;
@@ -35,30 +39,32 @@ namespace turb {
                 output_number << std::setfill('0') << i;
 
                 current_filename += output_number.str();
+                output = new std::ofstream(current_filename);
             }
 
-            std::ofstream output(current_filename, std::ios::app);
 
             // Create a new instance, run and save the 
             // output values
             T* instance = static_cast<T*>(clone());
             try {
-                decay_times.push_back(instance->compute_single(&output, this));
-                output << std::endl << std::endl;
+                decay_times.push_back(instance->compute_single(output, this));
+                *output << std::endl << std::endl;
 
-                output.close();
+                output->close();
             } catch (const RemoveOutput &e) {
-                output.close();
+                output->close();
                 remove(current_filename.c_str());
             } catch (const NoResult &e) {
-                output.close();
+                output->close();
             }
 
             delete instance;
+            if (split_files) delete output;
         }
 
         print_stationary();
         if (fit) fit_it(&decay_times);
+        if (!split_files) delete output;
     }
 
     template <typename T>
