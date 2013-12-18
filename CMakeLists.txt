@@ -8,6 +8,7 @@ set(HEADER_FILES
     include/exceptions.hpp
     include/Jacobian.hpp
     include/Base.hpp
+    include/WriteCheck.hpp
     include/Integrator.hpp 
     include/Serializer.hpp
     include/serializers/NormSerializer.hpp
@@ -44,7 +45,7 @@ add_executable(integrator ${CPP_FILES})
 
 if (CMAKE_COMPILER_IS_GNUCXX)
     message(status "Setting GCC flags")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -pthread -lpthread -static -Wall -Wextra -Wno-ignored-qualifiers -pedantic -W -std=c++0x -march=native -g")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -pthread -lpthread -static -Wall -Wextra -Wno-ignored-qualifiers -pedantic -W -std=c++0x -march=native")
 else()
     message(status "gcc not found!")
     return()
@@ -82,6 +83,7 @@ message(status "** FFTW Libraries: ${ALGLIB_LIBRARIES}")
 
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR} ${FFTW_INCLUDES} ${ALGLIB_INCLUDES})
 LINK_DIRECTORIES(${Boost_LIBRARY_DIRS} ${FFTW_LIBRARIES} ${ALGLIB_INCLUDES})
+
 
 target_link_libraries(integrator -lm -pthread ${FFTW_LIBRARIES} ${Boost_LIBRARIES} ${ALGLIB_LIBRARIES})
 #target_link_libraries(test-suite -lm ${FFTW_LIBRARIES} ${Boost_LIBRARIES} ${ALGLIB_LIBRARIES})

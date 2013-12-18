@@ -4,40 +4,74 @@
 #include "helpers.hpp"
 
 #include <fftw3.h>
+#include <iostream>
 
 namespace turb {
 
-    JacobianElement::prefix()
+    int JacobianElement::prefix()
     {
-        return get_prefix();
+        if (prefix_value == -1 || dirty) {
+            prefix_value = get_prefix();
+            dirty = false;
+        }
+        return prefix_value;
     }
 
-    JacobianElement::swap(JacobianElement *other) 
+    double* JacobianElement::swap(JacobianElement *other) 
     {
         double *tmp = line;
         line = other->line;
         other->line = tmp;
+
+        bool b_tmp = dirty;
+        dirty = other->dirty;
+        other->dirty = b_tmp;
+
+        b_tmp = free_at_destruction;
+        free_at_destruction = other->free_at_destruction;
+        other->free_at_destruction = b_tmp;
+
+        size_t s_tmp = line_size;
+        line_size = other->line_size;
+        other->line_size = s_tmp;
+
+        int i_tmp = prefix_value;
+        prefix_value = other->prefix_value;
+        other->prefix_value = i_tmp;
+
+        return line;
     }
 
     int JacobianElement::get_prefix()
     {
         int zero_count = 0;
-        for (int i = 0; i < line_size; ++i) {
-            if (!fuzzy_eql(where[line_size * line_index + i], 0)) break;
+        for (int i = 0; (unsigned)i < line_size; ++i) {
+            if (!fuzzy_eql(line[i], 0)) break;
             ++zero_count;
         }
         return zero_count;
     }
 
-    double JacobianElement::operator[](int index)
+    double const& JacobianElement::operator[](int index) const
     {
-        if (index >= line_size) throw OutOfBounds();
+        if ((unsigned)index >= line_size) throw OutOfBounds();
         return line[index];
+    }
+
+    WriteCheck<JacobianElement, double> JacobianElement::operator[](int index)
+    {
+        return WriteCheck<JacobianElement, double>(this, &line[index], index);
+    }
+
+    void JacobianElement::update_state(int index)
+    {
+        if (prefix_value != -1 && index >= prefix_value) return;
+        dirty = true;
     }
 
     double* JacobianElement::operator=(double *ptr)
     {
-        line = ptr;
+        return line = ptr;
     }
 
     JacobianElement::JacobianElement(int line_size)
@@ -64,7 +98,7 @@ namespace turb {
         return elements[index];
     }
 
-    void Jacobian::swap(int i, int j)
+    void Jacobian::swap_lines(int i, int j)
     {
         if (i >= y || j >= y) throw OutOfBounds();
         elements[i].swap(&elements[j]);
@@ -85,8 +119,7 @@ namespace turb {
 
     Jacobian::~Jacobian()
     {
-        for (int i = 0; i < y; ++i)
-            delete &elements[i];
+        fftw_free(elements);
         fftw_free(jacobian);
     }
 }

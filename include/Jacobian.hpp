@@ -1,6 +1,11 @@
 #ifndef turb_Jacobian_h
 #define turb_Jacobian_h
 
+#include "WriteCheck.hpp"
+
+#include <utility>
+#include <cstdlib>
+
 namespace turb {
     class JacobianElement {
     private:
@@ -8,14 +13,18 @@ namespace turb {
         double *line;
         int get_prefix();
         bool free_at_destruction = false;
+        bool dirty = false;
+        int prefix_value = -1;
 
     public:
-        size_t prefix();
+        int prefix();
         size_t size() { return line_size; }
-        double* line() { return line;}
-        void swap(JacobianElement *other);
+        double* swap(JacobianElement *other);
 
-        double operator[](int index);
+        double const& operator[](int index) const;
+        WriteCheck<JacobianElement, double> operator[](int index);
+        void update_state(int index);
+
         double* operator=(double *ptr);
 
         JacobianElement(int line_size);
@@ -31,12 +40,13 @@ namespace turb {
 
     public:
         JacobianElement operator[](int index);
-        void swap(int i, int j);
+        void swap_lines(int i, int j);
+
+        std::pair<int, int> dims() { return std::pair<int, int>(y, x);}
 
         Jacobian(int m, int n);
         ~Jacobian();
     };
 }
-
 
 #endif

@@ -2,6 +2,7 @@
 #define turb_Searcher_h
 
 #include "Integrator.hpp"
+#include "Jacobian.hpp"
 #include <vector>
 
 namespace turb {
@@ -9,8 +10,8 @@ namespace turb {
     class Searcher {
     private:
         Integrator *integrator;
-        double *f, *du, *jacobian, 
-               *f_val1, *f_val2, *dx;
+        double *f, *du, *f_val1, *f_val2, *dx;
+        Jacobian *jacobian;
         fftw_complex *d_cu;
 
         size_t iterations = 50;
@@ -28,19 +29,16 @@ namespace turb {
         // a singular matrix is provided
         void gauss(double *f, double *result);
 
-        // An in-place (with additional storage needed) 
-        // quicksort based on zeros count. If a more memory-efficient
-        // implementation turns out to be needed, it will be added
-        void sort_jacobian(double *where, int size);
+        // An in-place quicksort
+        void sort_jacobian(int start, int end, int depth);
         int get_prefix(size_t line_index, double *where);
-        void copy_line(size_t from_i, double *from, double *to, size_t to_i);
 
-    public:
-        Searcher(Integrator *integrator);
-        ~Searcher();
+        public:
+            Searcher(Integrator *integrator);
+            ~Searcher();
 
-        std::vector<double> run();
-    };
+            std::vector<double> run();
+        };
 
 }
 
