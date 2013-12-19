@@ -78,7 +78,7 @@ namespace turb {
         size_t size = stationary_pts.size(), i = 0;
 
         // Remove the same stationary points
-        while (i < size) {
+        /*while (i < size) {
             double f_norm_u = l2_norm(stationary_pts[i].begin(),
                    stationary_pts[i].begin() + stationary_pts[i].size() / 2);
             double f_norm_v = l2_norm(stationary_pts[i].begin() + 
@@ -97,7 +97,7 @@ namespace turb {
             }
             size = stationary_pts.size();
             ++i;
-        }
+        }*/
 
         if (stationary_pts.size() == 0) return;
 
