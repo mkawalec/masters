@@ -48,7 +48,7 @@ def setup_remote(host, runs, folder, dt=0.0005,
           shell=True, stdout=devnull, stderr=errlog)
 
     call(["scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "
-          "s0905879@%(host)s:/dev/shm/%(folder)s/output %(directory)s/%(host)s-%(folder)s.out" 
+          "s0905879@%(host)s:/dev/shm/%(folder)s/stationary %(directory)s/%(host)s-%(folder)s.out" 
           % dict(host=host, folder=folder, directory=directory)], 
             shell=True, stderr=errlog, stdout=devnull)
 

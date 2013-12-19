@@ -45,7 +45,7 @@ add_executable(integrator ${CPP_FILES})
 
 if (CMAKE_COMPILER_IS_GNUCXX)
     message(status "Setting GCC flags")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -pthread -lpthread -static -Wall -Wextra -Wno-ignored-qualifiers -pedantic -W -std=c++0x -march=native -static")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -pthread -lpthread -static -Wall -Wextra -Wno-ignored-qualifiers -pedantic -W -std=c++0x -static")
 else()
     message(status "gcc not found!")
     return()
