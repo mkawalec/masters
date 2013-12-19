@@ -41,8 +41,8 @@ def setup_remote(host, runs, folder, dt=0.0005,
     call(["ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "
           "s0905879@%(host)s \' cd /dev/shm; rm -rf %(folder)s ;"
           "mkdir %(folder)s; cp ~/integrator %(folder)s; cd %(folder)s; "
-          "./integrator -c decay-mult --samples %(samples)s --dt %(dt)s "
-          "--end-time %(tmax)s --runs %(runs)s -R %(R)s\'" 
+          "./integrator -c decay-path --samples %(samples)s --dt %(dt)s "
+          "--end-time %(tmax)s --runs %(runs)s -R %(R)s --fast-threshold 2000\'" 
           % dict(host=host, runs=runs, folder=folder, dt=dt, samples=samples,
               tmax=tmax, R=R)], 
           shell=True, stdout=devnull, stderr=errlog)
@@ -188,17 +188,14 @@ if __name__ == '__main__':
     s_dt = 0.0005
     dt = 0.0005
     samples = 7
-    R = 0.9
+    R = 1.04
 
-    while R < 1.08:
-        print("starting at R =", R)
-        directory = 'R_' + str(R)
-        current_dir = directory
-        os.mkdir(directory)
+    print("starting at R =", R)
+    directory = 'R_' + str(R)
+    current_dir = directory
+    os.mkdir(directory)
 
-        run_set(dt, samples, directory, maxt, R)
-        finalize(directory)
-
-        R += 0.01
+    run_set(dt, samples, directory, maxt, R)
+    #finalize(directory)
 
 
