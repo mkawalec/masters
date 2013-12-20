@@ -99,11 +99,8 @@ namespace turb {
                 continue;
             }
 
-            for (size_t j = 0; j < size; ++j)
-                f[j] += dx[j];
-
             if ((norm = l2_norm(f_val1, size)) < threshold) {
-                std::cerr << "Found! " << l2_norm(f, size/2) <<
+                std::cerr << "Found! " << i << " " << l2_norm(f, size/2) <<
                     " " << l2_norm(f + size/2, size/2) << std::endl;
                 fftw_free(tmp_f);
                 return std::vector<double>(f, f + size);
@@ -111,6 +108,9 @@ namespace turb {
                 fftw_free(tmp_f);
                 throw NoResult();
             }
+
+            for (size_t j = 0; j < size; ++j)
+                f[j] += dx[j];
         }
 
         fftw_free(tmp_f);
@@ -141,15 +141,15 @@ namespace turb {
             tmp[0] = -k * *(inp + 1);
             tmp[1] = k * *inp;
 
-            *inp = tmp[0] * inv_size;
-            *(inp + 1) = tmp[1] * inv_size;
+            *inp = tmp[0];
+            *(inp + 1) = tmp[1];
 
-            *d2v *= pow(k, 2) * inv_size;
-            *(d2v + 1) *= pow(k, 2) * inv_size;
-            *d2u *= pow(k, 2) * inv_size;
-            *(d2u + 1) *= pow(k, 2) * inv_size;
-            *d4u *= pow(k, 4) * inv_size;
-            *(d4u + 1) *= pow(k, 4) * inv_size;
+            *d2v *= pow(k, 2);
+            *(d2v + 1) *= pow(k, 2);
+            *d2u *= pow(k, 2);
+            *(d2u + 1) *= pow(k, 2);
+            *d4u *= pow(k, 4);
+            *(d4u + 1) *= pow(k, 4);
         }
 
         // Transform the derivative back into the real form
@@ -157,6 +157,13 @@ namespace turb {
         fftw_execute(d2v_r);
         fftw_execute(d2u_r);
         fftw_execute(d4u_r);
+
+        for (int i = 0; i < integrator->size_real; ++i) {
+            d2_v[i] *= inv_size;
+            d2_u[i] *= inv_size;
+            d4_u[i] *= inv_size;
+            du[i] *= inv_size;
+        }
 
         size_t size = integrator->size_real;
         for (size_t i = 0; i < integrator->size_real; ++i) {
