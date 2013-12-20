@@ -71,49 +71,40 @@ namespace turb {
         }
     }
 
+
     template <typename T>
     void MultirunComputer<T>::print_stationary()
     {
-        const double same_acc = 1e-3;
-        size_t size = stationary_pts.size(), i = 0;
+        std::vector<std::vector<double> > single_pts;
 
-        // Remove the same stationary points
-        /*while (i < size) {
-            double f_norm_u = l2_norm(stationary_pts[i].begin(),
-                   stationary_pts[i].begin() + stationary_pts[i].size() / 2);
-            double f_norm_v = l2_norm(stationary_pts[i].begin() + 
-                   stationary_pts[i].size() / 2, stationary_pts[i].end());
-
-            for (int j = size - 1; j >= 0; j--) {
-                if (j == i) continue;
-
-                double s_norm_u = l2_norm(stationary_pts[j].begin(),
-                   stationary_pts[j].begin() + stationary_pts[j].size() / 2);
-                double s_norm_v = l2_norm(stationary_pts[j].begin() + 
-                   stationary_pts[j].size() / 2, stationary_pts[j].end());
-                if (fabs(s_norm_u - f_norm_u) < same_acc &&
-                    fabs(s_norm_v - f_norm_v) < same_acc)
-                    stationary_pts.erase(stationary_pts.begin() + j);
-            }
-            size = stationary_pts.size();
-            ++i;
-        }*/
-
-        if (stationary_pts.size() == 0) return;
-
-        std::ofstream output("stationary");
-        std::cerr << "------------------------------------" << std::endl;
-        std::cerr << "Amount of stationary points is " << stationary_pts.size() << std::endl;
-        for (size_t i = 0; i < stationary_pts.size(); ++i) {
-           double norm_u = l2_norm(stationary_pts[i].begin(),
-                   stationary_pts[i].begin() + stationary_pts[i].size() / 2);
-           double norm_v = l2_norm(stationary_pts[i].begin() + 
-                   stationary_pts[i].size() / 2, stationary_pts[i].end());
-           
-           std::cout << norm_u << " " << norm_v <<std::endl;
-           output << norm_u << " " << norm_v << std::endl;
+        for (int i = 0; (unsigned)i < stationary_pts.size(); ++i) {
+            if (!contains(&single_pts, &stationary_pts[i]))
+                    single_pts.push_back(stationary_pts[i]);
         }
-        output.close();
+
+        if (single_pts.size() == 0) return;
+        std::cerr << "------------------------------------" << std::endl;
+        std::cerr << "Amount of stationary points is " << single_pts.size() << std::endl;
+
+        for (size_t i = 0; i < single_pts.size(); ++i) {
+            std::string current_filename = "stationary";
+            std::ostringstream output_number;
+            output_number.width(log(stationary_pts.size())/log(10) + 1);
+            output_number << std::setfill('0') << i;
+
+            current_filename += output_number.str();
+            std::ofstream output(current_filename);
+
+            double norm_u = l2_norm(single_pts[i].begin(),
+                   single_pts[i].begin() + single_pts[i].size() / 2);
+            double norm_v = l2_norm(single_pts[i].begin() + 
+                   single_pts[i].size() / 2, single_pts[i].end());
+           
+            std::cout << norm_u << " " << norm_v <<std::endl;
+            for (size_t j = 0; j < single_pts[i].size(); ++j)
+                output << single_pts[i][j] << std::endl;
+            output.close();
+        }
     }
 
     template <typename T>

@@ -73,4 +73,20 @@ namespace turb {
         return time.tv_sec + time.tv_usec * (double)1e-6;
     }
 
+    bool contains(std::vector<std::vector<double> > *collection, 
+                  std::vector<double> *element)
+    {
+        for (int i = 0; (unsigned)i < collection->size(); ++i) {
+            bool same = true;
+            for (int j = 0; (unsigned)j < (*collection)[i].size(); ++j) {
+                if (!fuzzy_eql((*collection)[i][j], (*element)[j], 1e-4)) {
+                    same = false;
+                    break;
+                }
+            }
+            if (same) return true;
+        }
+        return false;
+    }
+
 }

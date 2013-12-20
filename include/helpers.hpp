@@ -45,11 +45,9 @@ namespace turb {
             *(array + i) *= norm_factor;
     }
 
-    const double EQL_ACCURACY = 1e-14;
-
-    inline bool fuzzy_eql(double first, double second)
+    inline bool fuzzy_eql(double first, double second, double acc=1e-14)
     {
-        if (fabs(first-second) > EQL_ACCURACY)
+        if (fabs(first-second) > acc)
             return false;
         return true;
     }
@@ -78,6 +76,9 @@ namespace turb {
             double &func, void *ptr);
 
     double current_time();
+
+    bool contains(std::vector<std::vector<double> > *collection,
+                  std::vector<double> *element);
 }
 
 #endif
