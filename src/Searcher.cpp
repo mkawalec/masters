@@ -26,6 +26,21 @@ namespace turb {
         jacobian = new Jacobian<long double>(2 * integrator->size_real,
                 2 * integrator->size_real + 1);
 
+        d2_cv = (fftw_complex*)
+            fftw_malloc(sizeof(fftw_complex) * integrator->size_complex);
+        d2_v = (double*)
+            fftw_malloc(sizeof(fftw_complex) * integrator->size_real);
+
+        d2_cu = (fftw_complex*)
+            fftw_malloc(sizeof(fftw_complex) * integrator->size_complex);
+        d2_u = (double*)
+            fftw_malloc(sizeof(fftw_complex) * integrator->size_real);
+
+        d4_cu = (fftw_complex*)
+            fftw_malloc(sizeof(fftw_complex) * integrator->size_complex);
+        d4_u = (double*)
+            fftw_malloc(sizeof(fftw_complex) * integrator->size_real);
+
         f_val1 = (double*)
             fftw_malloc(sizeof(double) * 2 * integrator->size_real);
         f_val2 = (double*)
@@ -45,6 +60,21 @@ namespace turb {
         du_c = fftw_plan_dft_r2c_1d(integrator->size_real, f, d_cu,
                 FFTW_PATIENT);
         du_r = fftw_plan_dft_c2r_1d(integrator->size_real, d_cu, du,
+                FFTW_PATIENT);
+
+        d2v_c = fftw_plan_dft_r2c_1d(integrator->size_real, 
+                f + integrator->size_real, d2_cv, FFTW_PATIENT);
+        d2v_r = fftw_plan_dft_c2r_1d(integrator->size_real, d2_cv, d2_v,
+                FFTW_PATIENT);
+
+        d2u_c = fftw_plan_dft_r2c_1d(integrator->size_real, 
+                f, d2_cu, FFTW_PATIENT);
+        d2u_r = fftw_plan_dft_c2r_1d(integrator->size_real, d2_cu, d2_u,
+                FFTW_PATIENT);
+
+        d4u_c = fftw_plan_dft_r2c_1d(integrator->size_real, 
+                f, d4_cu, FFTW_PATIENT);
+        d4u_r = fftw_plan_dft_c2r_1d(integrator->size_real, d4_cu, d4_u,
                 FFTW_PATIENT);
 
         fftw_export_wisdom_to_filename(".wisdom");
@@ -94,34 +124,50 @@ namespace turb {
         double inv_size = 1 / (double) integrator->size_real;
         double tmp[2];
 
-        // Execute the plan transforming u to complex form
+        // Execute the plan transforming u/v to complex form
         fftw_execute(du_c);
+        fftw_execute(d2v_c);
+        fftw_execute(d2u_c);
+        fftw_execute(d4u_c);
 
         // Computing the derivative
         for (size_t i = 0; i < integrator->size_complex; ++i) {
             double k = (double) i * 2 * M_PI * inv_domain_size;
             double *inp = d_cu[i];
+            double *d2v = d2_cv[i];
+            double *d2u = d2_cu[i];
+            double *d4u = d4_cu[i];
+
             tmp[0] = -k * *(inp + 1);
             tmp[1] = k * *inp;
 
             *inp = tmp[0] * inv_size;
             *(inp + 1) = tmp[1] * inv_size;
+
+            *d2v *= pow(k, 2) * inv_size;
+            *(d2v + 1) *= pow(k, 2) * inv_size;
+            *d2u *= pow(k, 2) * inv_size;
+            *(d2u + 1) *= pow(k, 2) * inv_size;
+            *d4u *= pow(k, 4) * inv_size;
+            *(d4u + 1) *= pow(k, 4) * inv_size;
         }
 
         // Transform the derivative back into the real form
         fftw_execute(du_r);
+        fftw_execute(d2v_r);
+        fftw_execute(d2u_r);
+        fftw_execute(d4u_r);
 
         size_t size = integrator->size_real;
         for (size_t i = 0; i < integrator->size_real; ++i) {
             double u = input[i];
             double v = input[i + size];
-            double k = (double) i * 2 * M_PI * inv_domain_size;
 
-            double u_mult = -pow(k, 4) + 2 * pow(k, 2) - 
+            double u_mult = -d4_u[i] + 2 * d2_u[i] - 
                 1 + integrator->e + (1 - integrator->e) * 
                 (integrator->a * v + integrator->b * pow(v, 2)) +
                 du[i];
-            double v_mult = -integrator->D * pow(k, 2) - 1;
+            double v_mult = -integrator->D * d2_v[i] - 1;
 
             result[i] = u * u_mult;
             result[i + size] = v * v_mult + integrator->R * pow(u, 2);
@@ -221,7 +267,15 @@ namespace turb {
     {
         fftw_free(f);
         fftw_free(du);
+        fftw_free(d2_v);
+        fftw_free(d2_u);
+        fftw_free(d4_u);
+
         fftw_free(d_cu);
+        fftw_free(d2_cv);
+        fftw_free(d2_cu);
+        fftw_free(d4_cu);
+
         fftw_free(f_val1);
         fftw_free(f_val2);
         fftw_free(dx);

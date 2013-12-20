@@ -10,16 +10,19 @@ namespace turb {
     class Searcher {
     private:
         Integrator *integrator;
-        double *f, *du, *f_val1, *f_val2, *dx;
+        double *f, *du, *f_val1, *f_val2, *dx,
+               *d2_v, *d2_u, *d4_u;
         Jacobian<long double> *jacobian;
-        fftw_complex *d_cu;
+        fftw_complex *d_cu, *d2_cv, *d2_cu,
+                     *d4_cu;
 
         size_t iterations = 50;
         double threshold = 0.0001;
         double overflow = 1e20;
         double h = 0.0001;
 
-        fftw_plan du_c, du_r;
+        fftw_plan du_c, du_r, d2v_c, d2v_r,
+                  d2u_c, d2u_r, d4u_c, d4u_r;
 
         void get_jacobian();
         void F(double *input, double *result);
