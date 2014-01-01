@@ -16,14 +16,14 @@ namespace turb {
         integrator(integrator)
     {
         srand(1234);
-        f = (double*) 
+        f = (double*)
             fftw_malloc(sizeof(double) * 2 * integrator->size_real);
         du = (double*)
             fftw_malloc(sizeof(fftw_complex) * integrator->size_real);
         d_cu = (fftw_complex*)
             fftw_malloc(sizeof(fftw_complex) * integrator->size_complex);
 
-        jacobian = new Jacobian<long double>(2 * integrator->size_real,
+        jacobian = new Jacobian<jacobian_type>(2 * integrator->size_real,
                 2 * integrator->size_real + 1);
 
         d2_cv = (fftw_complex*)
@@ -52,7 +52,7 @@ namespace turb {
         for (size_t i = 0; i < 2 * integrator->size_real; ++i) {
             if (i < integrator->size_real)
                 f[i] = integrator->u[i];
-            else 
+            else
                 f[i] = integrator->v[i-integrator->size_real];
         }
 
@@ -62,17 +62,17 @@ namespace turb {
         du_r = fftw_plan_dft_c2r_1d(integrator->size_real, d_cu, du,
                 FFTW_PATIENT);
 
-        d2v_c = fftw_plan_dft_r2c_1d(integrator->size_real, 
+        d2v_c = fftw_plan_dft_r2c_1d(integrator->size_real,
                 f + integrator->size_real, d2_cv, FFTW_PATIENT);
         d2v_r = fftw_plan_dft_c2r_1d(integrator->size_real, d2_cv, d2_v,
                 FFTW_PATIENT);
 
-        d2u_c = fftw_plan_dft_r2c_1d(integrator->size_real, 
+        d2u_c = fftw_plan_dft_r2c_1d(integrator->size_real,
                 f, d2_cu, FFTW_PATIENT);
         d2u_r = fftw_plan_dft_c2r_1d(integrator->size_real, d2_cu, d2_u,
                 FFTW_PATIENT);
 
-        d4u_c = fftw_plan_dft_r2c_1d(integrator->size_real, 
+        d4u_c = fftw_plan_dft_r2c_1d(integrator->size_real,
                 f, d4_cu, FFTW_PATIENT);
         d4u_r = fftw_plan_dft_c2r_1d(integrator->size_real, d4_cu, d4_u,
                 FFTW_PATIENT);
@@ -83,7 +83,6 @@ namespace turb {
     std::vector<double> Searcher::run()
     {
         size_t size = 2 * integrator->size_real;
-        double *tmp_f = (double*) fftw_malloc(sizeof(double) * size);
         double norm;
 
         for (size_t i = 0; i < iterations; ++i) {
@@ -100,20 +99,23 @@ namespace turb {
             }
 
             if ((norm = l2_norm(f_val1, size)) < threshold) {
-                std::cerr << "Found! " << i << " " << l2_norm(f, size/2) <<
+                std::cerr << "Found! " << i << " " << f[0] <<
                     " " << l2_norm(f + size/2, size/2) << std::endl;
-                fftw_free(tmp_f);
                 return std::vector<double>(f, f + size);
             } else if (norm > overflow) {
-                fftw_free(tmp_f);
+                std::cerr << "THROWING " << norm << " " << i << std::endl;
                 throw NoResult();
             }
 
-            for (size_t j = 0; j < size; ++j)
+            std::cerr << "Factors ";
+            for (size_t j = 0; j < size; ++j) {
                 f[j] += dx[j];
+                std::cerr << dx[j] << " ";
+            }
+            std::cerr << std::endl;
         }
 
-        fftw_free(tmp_f);
+        std::cerr << "Nothing found! " << l2_norm(f_val1, size) << std::endl;
         throw NoResult();
     }
 
@@ -144,10 +146,10 @@ namespace turb {
             *inp = tmp[0];
             *(inp + 1) = tmp[1];
 
-            *d2v *= pow(k, 2);
-            *(d2v + 1) *= pow(k, 2);
-            *d2u *= pow(k, 2);
-            *(d2u + 1) *= pow(k, 2);
+            *d2v *= -pow(k, 2);
+            *(d2v + 1) *= -pow(k, 2);
+            *d2u *= -pow(k, 2);
+            *(d2u + 1) *= -pow(k, 2);
             *d4u *= pow(k, 4);
             *(d4u + 1) *= pow(k, 4);
         }
@@ -158,7 +160,7 @@ namespace turb {
         fftw_execute(d2u_r);
         fftw_execute(d4u_r);
 
-        for (int i = 0; i < integrator->size_real; ++i) {
+        for (int i = 0; (unsigned)i < integrator->size_real; ++i) {
             d2_v[i] *= inv_size;
             d2_u[i] *= inv_size;
             d4_u[i] *= inv_size;
@@ -170,14 +172,13 @@ namespace turb {
             double u = input[i];
             double v = input[i + size];
 
-            double u_mult = -d4_u[i] + 2 * d2_u[i] - 
-                1 + integrator->e + (1 - integrator->e) * 
+            double u_mult =
+                -1 + integrator->e + (1 - integrator->e) *
                 (integrator->a * v + integrator->b * pow(v, 2)) +
                 du[i];
-            double v_mult = -integrator->D * d2_v[i] - 1;
 
-            result[i] = u * u_mult;
-            result[i + size] = v * v_mult + integrator->R * pow(u, 2);
+            result[i] = u * u_mult - d4_u[i] - 2 * d2_u[i];
+            result[i + size] = -v + integrator->D * d2_v[i] + integrator->R * pow(u, 2);
         }
     }
 
@@ -186,7 +187,7 @@ namespace turb {
         int size = jacobian->dims().first;
 
         // Add F as a suffix to jacobian matrix
-        for (int i = 0; i < size; ++i) 
+        for (int i = 0; i < size; ++i)
             (*jacobian)[i][size] = -f[i];
 
         // Bring jacobian to the echelon form
@@ -198,26 +199,27 @@ namespace turb {
                 int nonzero_i = (*jacobian)[j].prefix();
                 if (nonzero_i != major_nonzero_i) break;
 
-                long double factor = (*jacobian)[j][nonzero_i] / 
+                jacobian_type factor = (*jacobian)[j][nonzero_i] /
                                 (*jacobian)[i][nonzero_i];
 
-                for (int k = nonzero_i; k < size + 1; ++k) 
+                for (int k = nonzero_i; k < size + 1; ++k)
                     (*jacobian)[j][k] -= factor * (*jacobian)[i][k];
             }
         }
 
         // Check if jacobian is upper-triangular
-        for (int i = 0; i < size; ++i) 
+        for (int i = 0; i < size; ++i) {
             if ((*jacobian)[i].prefix() != i) throw NoResult(i);
+        }
 
         // Compute the result
         for (int i = size - 1; i >= 0; --i) {
             result[i] = (*jacobian)[i][size];
 
             for (int j = size - 1; j >= i; j--) {
-                if (j != i) 
+                if (j != i)
                     result[i] -= result[j] * (*jacobian)[i][j];
-                else 
+                else
                     result[i] /= (*jacobian)[i][i];
             }
         }

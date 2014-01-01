@@ -9,15 +9,17 @@ namespace turb {
 
     class Searcher {
     private:
+        typedef __float128 jacobian_type;
+
         Integrator *integrator;
         double *f, *du, *f_val1, *f_val2, *dx,
                *d2_v, *d2_u, *d4_u;
-        Jacobian<long double> *jacobian;
+        Jacobian<__float128> *jacobian;
         fftw_complex *d_cu, *d2_cv, *d2_cu,
                      *d4_cu;
 
-        size_t iterations = 50;
-        double threshold = 0.0001;
+        size_t iterations = 20;
+        double threshold = 1e-4;
         double overflow = 1e20;
         double h = 0.0001;
 
@@ -27,7 +29,7 @@ namespace turb {
         void get_jacobian();
         void F(double *input, double *result);
 
-        // Gaussian elimination, must operate on 
+        // Gaussian elimination, must operate on
         // non-singular matrices, will break badly if
         // a singular matrix is provided
         void gauss(double *f, double *result);
