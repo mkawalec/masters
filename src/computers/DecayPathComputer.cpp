@@ -51,7 +51,10 @@ namespace turb {
         integrator = new Integrator(samples, dt, domain_size);
         set_constants();
 
-        history *run_history = 
+        if (searcher) delete searcher;
+        searcher = new Searcher(integrator);
+
+        history *run_history =
             new history[(size_t)(fast_threshold / dt / (double) print_every)];
 
         for (size_t i = 0; i * dt < fast_threshold; ++i) {
@@ -81,7 +84,7 @@ namespace turb {
                     delete run_history;
 
                     serializer->serialize(NULL, output, &output_data);
-                    std::cerr << "Run decayed fast at t = " << i * dt 
+                    std::cerr << "Run decayed fast at t = " << i * dt
                         << std::endl;
                     return i * dt;
                 }
@@ -89,9 +92,9 @@ namespace turb {
 
             // Try to find a static point at the current position
             if (i%(int)(static_interval / dt) == 0) {
-                Searcher searcher = Searcher(integrator);
                 try {
-                    base->add_stationary(searcher.run());
+                    searcher->init();
+                    base->add_stationary(searcher->run());
                 } catch(NoResult e) {}
             }
         }

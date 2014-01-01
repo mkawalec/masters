@@ -49,13 +49,6 @@ namespace turb {
         dx = (double*)
             fftw_malloc(sizeof(double) * 2 * integrator->size_real);
 
-        for (size_t i = 0; i < 2 * integrator->size_real; ++i) {
-            if (i < integrator->size_real)
-                f[i] = integrator->u[i];
-            else
-                f[i] = integrator->v[i-integrator->size_real];
-        }
-
         fftw_import_wisdom_from_filename(".wisdom");
         du_c = fftw_plan_dft_r2c_1d(integrator->size_real, f, d_cu,
                 FFTW_PATIENT);
@@ -78,6 +71,16 @@ namespace turb {
                 FFTW_PATIENT);
 
         fftw_export_wisdom_to_filename(".wisdom");
+    }
+
+    void Searcher::init()
+    {
+        for (size_t i = 0; i < 2 * integrator->size_real; ++i) {
+            if (i < integrator->size_real)
+                f[i] = integrator->u[i];
+            else
+                f[i] = integrator->v[i-integrator->size_real];
+        }
     }
 
     std::vector<double> Searcher::run()

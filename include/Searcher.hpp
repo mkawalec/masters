@@ -39,13 +39,14 @@ namespace turb {
         int get_prefix(size_t line_index, double *where);
 
     protected:
-        void compute_F(double *input, double *result);
+        virtual void compute_F(double *input, double *result);
 
     public:
         Searcher(Integrator *integrator);
-        ~Searcher();
+        virtual ~Searcher();
 
         std::vector<double> run();
+        void init();
     };
 
 }
