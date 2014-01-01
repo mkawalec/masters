@@ -38,6 +38,9 @@ namespace turb {
         void sort_jacobian(int start, int end);
         int get_prefix(size_t line_index, double *where);
 
+    protected:
+        void compute_F(double *input, double *result);
+
     public:
         Searcher(Integrator *integrator);
         ~Searcher();

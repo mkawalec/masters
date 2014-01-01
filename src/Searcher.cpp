@@ -178,8 +178,12 @@ namespace turb {
             du[i] *= inv_size;
         }
 
-        size_t size = integrator->size_real;
-        for (size_t i = 0; i < integrator->size_real; ++i) {
+        compute_F(input, result);
+    }
+
+    void Searcher::compute_F(double *input, double *result) {
+        int size = integrator->size_real;
+        for (int i = 0; i < size; ++i) {
             double u = input[i];
             double v = input[i + size];
 
@@ -190,6 +194,7 @@ namespace turb {
 
             result[i + size] = -v + integrator->D * d2_v[i] + integrator->R * pow(u, 2);
         }
+
     }
 
     void Searcher::gauss(double *f, double *result)
