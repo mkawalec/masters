@@ -13,3 +13,8 @@ The C++ part uses cmake, so to configure and compile use (from inside of C direc
 
 Tests use the [Boost Test Framefork](http://www.boost.org/doc/libs/1_54_0/libs/test/doc/html/index.html).
 
+## TODO
+
+[ ] Tests work and test the recent code version (including Searcher)
+[ ] A bug causing Searcher to diverge is found
+
