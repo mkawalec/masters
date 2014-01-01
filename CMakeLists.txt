@@ -41,7 +41,7 @@ set(TEST_FILES ${CPP_FILES} src/test-suite.cpp include/test_integrators.hpp)
 
 message(status "${CMAKE_CURRENT_SOURCE_DIR}")
 add_executable(integrator ${CPP_FILES})
-#add_executable(test-suite ${TEST_FILES})
+add_executable(test-suite ${TEST_FILES})
 
 if (CMAKE_COMPILER_IS_GNUCXX)
     message(status "Setting GCC flags")
@@ -85,8 +85,8 @@ INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR} ${FFTW_INCLUDES} ${ALGLIB_INCLUDES})
 LINK_DIRECTORIES(${Boost_LIBRARY_DIRS} ${FFTW_LIBRARIES} ${ALGLIB_INCLUDES})
 
 
-target_link_libraries(integrator -lm -pthread ${FFTW_LIBRARIES} ${Boost_LIBRARIES} ${ALGLIB_LIBRARIES})
-#target_link_libraries(test-suite -lm ${FFTW_LIBRARIES} ${Boost_LIBRARIES} ${ALGLIB_LIBRARIES})
+target_link_libraries(integrator -lm ${FFTW_LIBRARIES} ${Boost_LIBRARIES} ${ALGLIB_LIBRARIES})
+target_link_libraries(test-suite -lm ${FFTW_LIBRARIES} ${Boost_LIBRARIES} ${ALGLIB_LIBRARIES})
 
 find_package(Doxygen)
 if(DOXYGEN_FOUND)
