@@ -13,7 +13,7 @@
 
 namespace turb {
 
-        Integrator::Integrator(size_t dim_power, double timestep, double domain) : 
+        Integrator::Integrator(size_t dim_power, double timestep, double domain) :
             dt(timestep), domain_size(domain)
         {
             fftw_import_wisdom_from_filename(".wisdom");
@@ -33,7 +33,7 @@ namespace turb {
             // Linear operators acting on u and v
             Lu = (double*) fftw_malloc(size_complex *
                     sizeof(double) * 2.0 / 3);
-            Lv = (double*) fftw_malloc(size_complex * 
+            Lv = (double*) fftw_malloc(size_complex *
                     sizeof(double) * 2.0 / 3);
 
             // Plans to be applied initially
@@ -78,13 +78,13 @@ namespace turb {
          *  on u and v - precomputing saves a lot of
          *  cycles later on.
          */
-        void Integrator::initialize_operators() 
+        void Integrator::initialize_operators()
         {
             for (size_t i = 0; i < size_complex * 2.0 / 3; ++i) {
                 double k = (double) i * 2 * M_PI / domain_size;
                 double Lx, Ly;
 
-                Lx = - pow(k, 4) + 2*pow(k, 2) - (1 - e);
+                Lx = - pow(k, 4) + 2 * pow(k, 2) - (1 - e);
                 Ly = - D * pow(k, 2) - 1;
 
                 Lu[i] = (1 + 0.5 * dt * Lx) / (1 - 0.5 * dt * Lx);
@@ -98,7 +98,7 @@ namespace turb {
             result[1] = 0.0;
         }
 
-        void Integrator::initialize() 
+        void Integrator::initialize()
         {
             /** The outer wrapper for initializing, calls the
              *  initialize_function to get the actual values it sets
@@ -112,7 +112,7 @@ namespace turb {
             fftw_execute(i_u);
             fftw_execute(i_v);
 
-            /** Make padidng the padding and scale the 
+            /** Make padidng the padding and scale the
              *  transformed arrays by sqrt(N)
              */
             override_initialize();
@@ -149,7 +149,7 @@ namespace turb {
             gettimeofday(&tv, NULL);
             rng.seed(1000000 * tv.tv_sec + tv.tv_usec);
 
-            boost::random::uniform_real_distribution<> random_data(0, 
+            boost::random::uniform_real_distribution<> random_data(0,
                     3 * pow(size_real, 0.85));
             for (size_t i = 0; i < size_complex; ++i) {
                 double *tmp_u = c_u[i];
@@ -160,7 +160,7 @@ namespace turb {
         }
 
         /** Computes the linear transformation, which is
-         *  essencially just a multiplication by a precomputed
+         *  essentially just a multiplication by a precomputed
          *  vector. Nothing to see here, move along...
          */
         void Integrator::compute_linear()
@@ -229,7 +229,7 @@ namespace turb {
                     *(u + 1) = 0.0;
                     *v = 0.0;
                     *(v + 1) = 0.0;
-                } else { 
+                } else {
                     *u *= scale_factor;
                     *(u + 1) *= scale_factor;
                     *v *= scale_factor;
@@ -238,7 +238,7 @@ namespace turb {
             }
         }
 
-        void Integrator::apply_step() 
+        void Integrator::apply_step()
         {
             compute_nonlinear();
             compute_linear();

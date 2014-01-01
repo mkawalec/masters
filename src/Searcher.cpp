@@ -107,12 +107,12 @@ namespace turb {
                 throw NoResult();
             }
 
-            std::cerr << "Factors ";
+            //std::cerr << std::endl << "Factors ";
             for (size_t j = 0; j < size; ++j) {
                 f[j] += dx[j];
-                std::cerr << dx[j] << " ";
+                //std::cerr << dx[j] << " ";
             }
-            std::cerr << std::endl;
+            //std::cerr << std::endl;
         }
 
         std::cerr << "Nothing found! " << l2_norm(f_val1, size) << std::endl;
@@ -140,18 +140,29 @@ namespace turb {
             double *d2u = d2_cu[i];
             double *d4u = d4_cu[i];
 
-            tmp[0] = -k * *(inp + 1);
-            tmp[1] = k * *inp;
+            if (i < integrator->size_complex * 2.0 / 3) {
+                tmp[0] = -k * *(inp + 1);
+                tmp[1] = k * *inp;
 
-            *inp = tmp[0];
-            *(inp + 1) = tmp[1];
+                *inp = tmp[0];
+                *(inp + 1) = tmp[1];
 
-            *d2v *= -pow(k, 2);
-            *(d2v + 1) *= -pow(k, 2);
-            *d2u *= -pow(k, 2);
-            *(d2u + 1) *= -pow(k, 2);
-            *d4u *= pow(k, 4);
-            *(d4u + 1) *= pow(k, 4);
+                *d2v *= -pow(k, 2);
+                *(d2v + 1) *= -pow(k, 2);
+                *d2u *= -pow(k, 2);
+                *(d2u + 1) *= -pow(k, 2);
+                *d4u *= pow(k, 4);
+                *(d4u + 1) *= pow(k, 4);
+            } else {
+                *inp = 0;
+                *(inp + 1) = 0;
+                *d2v = 0;
+                *(d2v + 1) = 0;
+                *d2u = 0;
+                *(d2u + 1) = 0;
+                *d4u = 0;
+                *(d4u + 1) = 0;
+            }
         }
 
         // Transform the derivative back into the real form
@@ -190,7 +201,7 @@ namespace turb {
         for (int i = 0; i < size; ++i)
             (*jacobian)[i][size] = -f[i];
 
-        // Bring jacobian to the echelon form
+        // Bring Jacobian to the echelon form
         for (int i = 0; i < size; ++i) {
             sort_jacobian(i, jacobian->dims().first);
 
@@ -207,7 +218,7 @@ namespace turb {
             }
         }
 
-        // Check if jacobian is upper-triangular
+        // Check if Jacobian is upper-triangular
         for (int i = 0; i < size; ++i) {
             if ((*jacobian)[i].prefix() != i) throw NoResult(i);
         }
