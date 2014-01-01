@@ -117,7 +117,6 @@ namespace turb {
              */
             override_initialize();
 
-            //double scale_factor = sqrt(2 * M_PI) / size_real;
             double scale_factor = 1 / sqrt(size_real);
             for (size_t i = 0; i < size_complex; ++i) {
                 double *tmp_u = c_u[i];

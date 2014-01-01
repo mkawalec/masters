@@ -183,12 +183,11 @@ namespace turb {
             double u = input[i];
             double v = input[i + size];
 
-            double u_mult =
-                -1 + integrator->e + (1 - integrator->e) *
+            result[i] = -d4_u[i] - 2 * d2_u[i] +
+                (-1 + integrator->e + (1 - integrator->e) *
                 (integrator->a * v + integrator->b * pow(v, 2)) +
-                du[i];
+                du[i]) * u;
 
-            result[i] = u * u_mult - d4_u[i] - 2 * d2_u[i];
             result[i + size] = -v + integrator->D * d2_v[i] + integrator->R * pow(u, 2);
         }
     }
