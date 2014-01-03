@@ -27,7 +27,7 @@ namespace turb {
         /*! \brief Gives additional information about a worker.
          *  \return the additional information
          *
-         *  Usually used to provide description of 
+         *  Usually used to provide description of
          *  class-specific command line parameters
          */
         virtual std::string additional_info() { return "";}
@@ -47,7 +47,7 @@ namespace turb {
 
         /*! \brief Provides a human-readable information
          *      about currently available workers.
-         *      
+         *
          *  \return available workers description
          */
         static std::string list_available();
@@ -56,7 +56,7 @@ namespace turb {
          *  \param argc number of command-line parameters
          *  \param argv array of command-line parameters
          */
-        virtual void parse_params(int argc, const char *argv[]) 
+        virtual void parse_params(int argc, const char *argv[])
             { unused(argc); unused(argv);}
 
         /// Name of the current class, specifying its function

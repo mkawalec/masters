@@ -1,58 +1,50 @@
-#ifndef turb_integrator_h
-#define turb_integrator_h
+#ifndef turb_Integrator_h
+#define turb_Integrator_h
 
-#include <fftw3.h>
-#include <fstream>
-#include "helpers.hpp"
+#include "Base.hpp"
+
+#include <memory>
+#include <boost/program_options/options_description.hpp>
+namespace po = boost::program_options;
 
 namespace turb {
 
-    /*! \brief The class doing actual computation through
-     *      integrating a non-linear PDE
-     *
-     *  It is NOT thread-safe, don't try to use the same
-     *  Integrator instance in multiple threads.
-     */
-    class Integrator {
-        /*! \brief The complex arrays holding the intermediate
-         *      and final results of computations
-         */
-        protected:
-        void initialize_operators();
+    class Integrator : public Base<Integrator> {
+    protected:
+        void initialize_operators() = 0;
 
         /// Computes one timestep of the nonlinear transform
-        void compute_nonlinear();
-        void compute_linear();
+        virtual void compute_nonlinear();
+        virtual void compute_linear();
 
         virtual void override_initialize();
 
-        virtual void initialize_function(double x, double *results);
-        /*! \brief The overloadable nonlinear transform applied 
+        virtual void initialize_function(double x, double *results) = 0;
+        /*! \brief The overloadable nonlinear transform applied
          *      in the real (non-Fourier) space
          */
-        virtual void nonlinear_transform(size_t i, double *results);
+        virtual void nonlinear_transform(size_t i, double *results) = 0;
 
         // The much needed temprorary array of two doubles
         double *temp_array;
 
-        public:
-        Integrator(size_t dim_power, double timestep, double domain=2*M_PI);
+        virtual void set_options() { };
+        std::shared_ptr<po::options_description> options = NULL;
+
+    public:
         virtual ~Integrator();
-        void initialize();
+        virtual void initialize() = 0;
 
         virtual void apply_step();
-        void forward_transform();
-
-        double *u, *v, *du, *Lu, *Lv;
-        double dt, domain_size, e=-0.1, a=0.125, 
-               b=-0.004, D=40, R=1.04;
-        fftw_complex *c_u, *c_v, *dc_u;
+        virtual void forward_transform() = 0;
         size_t size_real, size_complex;
+
+        double dt, domain_size;
 
         fftw_plan e_u, e_v, i_u, i_v,
                   f_u, f_v, f_du, b_u, b_v;
 
+        virtual void parse_params(int argc, const char *argv[]);
+        virtual Integrator* clone() const = 0;
     };
 }
-
-#endif

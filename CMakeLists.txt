@@ -11,6 +11,7 @@ set(HEADER_FILES
     include/Base.hpp
     include/WriteCheck.hpp
     include/Integrator.hpp 
+    include/integrators/PaperIntegrator.hpp
     include/Serializer.hpp
     include/serializers/NormSerializer.hpp
     include/serializers/ComponentSerializer.hpp
@@ -25,6 +26,8 @@ set(HEADER_FILES
 set(CPP_FILES
     src/helpers.cpp
     src/integrator.cpp
+    src/Integrator.cpp
+    src/integrators/PaperIntegrator.cpp
     src/Computer.cpp
     src/Searcher.cpp
     src/serializers/NormSerializer.cpp
@@ -41,7 +44,7 @@ set(TEST_FILES ${CPP_FILES} src/test-suite.cpp include/test_integrators.hpp)
 
 message(status "${CMAKE_CURRENT_SOURCE_DIR}")
 add_executable(integrator ${CPP_FILES})
-add_executable(test-suite ${TEST_FILES})
+#add_executable(test-suite ${TEST_FILES})
 
 if (CMAKE_COMPILER_IS_GNUCXX)
     message(status "Setting GCC flags")
@@ -86,7 +89,7 @@ LINK_DIRECTORIES(${Boost_LIBRARY_DIRS} ${FFTW_LIBRARIES} ${ALGLIB_INCLUDES})
 
 
 target_link_libraries(integrator -lm ${FFTW_LIBRARIES} ${Boost_LIBRARIES} ${ALGLIB_LIBRARIES})
-target_link_libraries(test-suite -lm ${FFTW_LIBRARIES} ${Boost_LIBRARIES} ${ALGLIB_LIBRARIES})
+#target_link_libraries(test-suite -lm ${FFTW_LIBRARIES} ${Boost_LIBRARIES} ${ALGLIB_LIBRARIES})
 
 find_package(Doxygen)
 if(DOXYGEN_FOUND)

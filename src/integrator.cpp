@@ -16,9 +16,9 @@ namespace po = boost::program_options;
 
 turb::Computer* initialize(int argc, const char *argv[])
 {
-    std::string output_filename, config_filename, 
+    std::string output_filename, config_filename,
         serializer_name, computer_name;
-    double end_time, dt, e, a, b, D, 
+    double end_time, dt, e, a, b, D,
            R, domain_size, threshold;
     size_t print_every, samples, runs;
     bool split_files, fit;
@@ -45,7 +45,7 @@ turb::Computer* initialize(int argc, const char *argv[])
         ("serializer,s", po::value<std::string>(&serializer_name),
         ("name of a selected Serializer. If not specified, "
          "the default Serializer specified by a selected "
-         "Computer will be used. Available are:\n\n" + 
+         "Computer will be used. Available are:\n\n" +
          turb::Serializer::list_available()).c_str())
         ("computer,c", po::value<std::string>(&computer_name)->default_value("simple"),
          ("name of a selected Computer. Available are:\n\n" +
@@ -70,16 +70,6 @@ turb::Computer* initialize(int argc, const char *argv[])
          "if specified, the MultirunComputers will try to fit"
          " returned values of u to an exponential curve and print"
          " results to stdout")
-        ("e,e", po::value<double>(&e)->default_value(-0.1),
-         "an integration parameter")
-        ("a,a", po::value<double>(&a)->default_value(0.125),
-         "an integration parameter")
-        ("b,b", po::value<double>(&b)->default_value(-0.004),
-         "an integration parameter")
-        ("D,D", po::value<double>(&D)->default_value(40),
-         "an integration parameter")
-        ("R,R", po::value<double>(&R)->default_value(1.04),
-         "integration parameter corresponding to a Reynolds number")
         ;
 
     po::options_description cmdline_opts;
@@ -108,11 +98,11 @@ turb::Computer* initialize(int argc, const char *argv[])
 
     if (vm.count("help")) {
         std::stringstream output;
-        output << "Called as: " << argv[0] << " [params]" 
+        output << "Called as: " << argv[0] << " [params]"
             << std::endl << cmdline_opts;
         throw turb::ProgramDeathRequest(&output);
     }
-    
+
 
     turb::Computer *computer = turb::Computer::choose(computer_name)->clone();
     computer->serializer = turb::Serializer::choose(serializer_name);
