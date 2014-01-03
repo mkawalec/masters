@@ -4,6 +4,7 @@
 #include "Base.hpp"
 
 #include <memory>
+#include <string>
 #include <boost/program_options/options_description.hpp>
 namespace po = boost::program_options;
 
@@ -43,7 +44,7 @@ namespace turb {
         size_t size_real, size_complex;
 
         double dt, domain_size, dim_power,
-               e=-0.1, a=0.125, b=-0.004, D=40, R=1.04;
+               e, a, b, D, R;
         double *u = NULL, *v = NULL, *du = NULL, *Lu = NULL, *Lv = NULL;
 
         fftw_plan e_u, e_v, i_u, i_v,
@@ -51,6 +52,8 @@ namespace turb {
         fftw_complex *c_u = NULL, *c_v = NULL, *dc_u = NULL;
 
         void parse_params(int argc, const char *argv[]);
+        std::string additional_info();
+
         virtual Integrator* clone() const = 0;
     };
 }

@@ -22,4 +22,17 @@ namespace turb {
             po::notify(vm);
         }
     }
+
+    std::string Integrator::additional_info()
+    {
+        std::string message;
+
+        if (options) {
+            std::stringstream params_desc;
+            params_desc << *options;
+            message += params_desc.str();
+        }
+        return message;
+
+    }
 }

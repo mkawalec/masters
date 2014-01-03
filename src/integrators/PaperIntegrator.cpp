@@ -38,7 +38,7 @@ namespace turb {
              "an integration parameter")
             ("D,D", po::value<double>(&D)->default_value(40),
              "an integration parameter")
-            ("R,R", po::value<double>(&D)->default_value(1.04),
+            ("R,R", po::value<double>(&R)->default_value(1.04),
              "integration parameter corresponding to a Reynolds number")
             ;
     }

@@ -44,6 +44,8 @@ namespace turb {
                 vm);
             po::notify(vm);
         }
+
+        integrator->parse_params(argc, argv);
     }
 
 }
