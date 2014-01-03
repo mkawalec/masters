@@ -43,7 +43,7 @@ namespace turb {
             ;
     }
 
-    void PaperIntegrator::clear()
+    void PaperIntegrator::clear(size_t dim_power, double dt, double domain_size)
     {
         fftw_free(u); fftw_free(v); fftw_free(du);
         fftw_free(c_u); fftw_free(c_v); fftw_free(dc_u);
@@ -69,6 +69,7 @@ namespace turb {
         dt = timestep;
         domain_size = domain;
         dim_power = dim_power;
+        std::cout << "DS2 " << dim_power << " " << timestep << " " << domain_size << std::endl;
 
         fftw_import_wisdom_from_filename(".wisdom");
 

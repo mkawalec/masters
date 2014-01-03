@@ -138,17 +138,18 @@ namespace turb {
         // Computing the derivative
         for (size_t i = 0; i < integrator->size_complex; ++i) {
             double k = (double) i * 2 * M_PI * inv_domain_size;
-            double *inp = d_cu[i];
+            double *du = d_cu[i];
             double *d2v = d2_cv[i];
             double *d2u = d2_cu[i];
             double *d4u = d4_cu[i];
 
             if (i < integrator->size_complex * 2.0 / 3) {
-                tmp[0] = -k * *(inp + 1);
-                tmp[1] = k * *inp;
+                tmp[0] = -k * *(du + 1);
+                tmp[1] = k * *du;
+                //std::cout << integrator->domain_size << std::endl;
 
-                *inp = tmp[0];
-                *(inp + 1) = tmp[1];
+                *du = tmp[0];
+                *(du + 1) = tmp[1];
 
                 *d2v *= -pow(k, 2);
                 *(d2v + 1) *= -pow(k, 2);
@@ -157,8 +158,8 @@ namespace turb {
                 *d4u *= pow(k, 4);
                 *(d4u + 1) *= pow(k, 4);
             } else {
-                *inp = 0;
-                *(inp + 1) = 0;
+                *du = 0;
+                *(du + 1) = 0;
                 *d2v = 0;
                 *(d2v + 1) = 0;
                 *d2u = 0;
@@ -196,6 +197,7 @@ namespace turb {
                 du[i]) * u;
 
             result[i + size] = -v + integrator->D * d2_v[i] + integrator->R * pow(u, 2);
+            //std::cout << d2_v[i] << std::endl;
         }
 
     }

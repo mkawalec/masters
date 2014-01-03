@@ -23,8 +23,7 @@ namespace turb {
     void SimpleComputer::compute()
     {
         set_serializer();
-        integrator->clear();
-        set_constants();
+        integrator->clear(samples, dt, domain_size);
 
         std::ofstream output(output_filename);
         for (size_t i = 0; i * dt < end_time; ++i) {

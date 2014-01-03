@@ -9,11 +9,6 @@ namespace po = boost::program_options;
 
 namespace turb {
 
-    void Computer::set_constants()
-    {
-        integrator->initialize(samples, dt, domain_size);
-    }
-
     std::string Computer::additional_info()
     {
         std::string message;

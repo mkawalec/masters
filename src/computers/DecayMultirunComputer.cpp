@@ -26,8 +26,7 @@ namespace turb {
         unused(base);
 
         set_serializer();
-        integrator->clear();
-        set_constants();
+        integrator->clear(samples, dt, domain_size);
 
         for (size_t i = 0; i * dt < end_time; ++i) {
             integrator->apply_step();

@@ -31,12 +31,12 @@ namespace turb {
 
         virtual void set_options() { };
         std::shared_ptr<po::options_description> options = NULL;
+        virtual void initialize(size_t dim_power,
+                double timestep, double domain=2*M_PI) = 0;
 
     public:
         virtual ~Integrator() { };
-        virtual void initialize(size_t dim_power,
-                double timestep, double domain=2*M_PI) = 0;
-        virtual void clear() = 0;
+        virtual void clear(size_t dim_power, double dt, double domain_size=2*M_PI) = 0;
 
         virtual void apply_step();
 

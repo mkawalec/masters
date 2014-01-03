@@ -35,24 +35,20 @@ namespace turb {
          */
         virtual void nonlinear_transform(size_t i, double *results);
 
-        // The much needed temprorary array of two doubles
+        // The much needed temporary array of two doubles
         double *temp_array = NULL;
 
         void set_options();
+        void initialize(size_t dim_power, double timestep, double domain=2*M_PI);
 
     public:
         PaperIntegrator();
         ~PaperIntegrator();
-        void initialize(size_t dim_power, double timestep, double domain=2*M_PI);
-        void clear();
+        void clear(size_t dim_power, double dt, double domain_size=2*M_PI);
 
         Integrator* clone() const { return new PaperIntegrator(*this); }
 
         void forward_transform();
-
-        double dt, domain_size,
-               e=-0.1, a=0.125, b=-0.004, D=40, R=1.04;
-
     };
 }
 
