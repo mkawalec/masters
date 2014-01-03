@@ -1,6 +1,8 @@
 #ifndef turb_Base_h
 #define turb_Base_h
 
+#include "helpers.hpp"
+
 #include <list>
 #include <string>
 

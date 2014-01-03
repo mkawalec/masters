@@ -48,7 +48,7 @@ namespace turb {
     double DecayPathComputer::compute_single(std::ofstream *output, MultirunComputer *base)
     {
         set_serializer();
-        integrator = new Integrator(samples, dt, domain_size);
+        integrator->clear();
         set_constants();
 
         if (searcher) delete searcher;

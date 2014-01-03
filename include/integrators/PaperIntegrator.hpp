@@ -16,10 +16,11 @@ namespace turb {
      *  Integrator instance in multiple threads.
      */
     class PaperIntegrator : Integrator {
-        /*! \brief The complex arrays holding the intermediate
-         *      and final results of computations
-         */
-        protected:
+
+    private:
+        void allocate(size_t dim_power, double timestep, double domain);
+
+    protected:
         void initialize_operators();
 
         /// Computes one timestep of the nonlinear transform
@@ -35,19 +36,23 @@ namespace turb {
         virtual void nonlinear_transform(size_t i, double *results);
 
         // The much needed temprorary array of two doubles
-        double *temp_array;
+        double *temp_array = NULL;
 
-        public:
-        PaperIntegrator(size_t dim_power, double timestep, double domain=2*M_PI);
-        virtual ~PaperIntegrator();
-        void initialize();
+        void set_options();
+
+    public:
+        PaperIntegrator();
+        ~PaperIntegrator();
+        void initialize(size_t dim_power, double timestep, double domain=2*M_PI);
+        void clear();
+
+        Integrator* clone() const { return new PaperIntegrator(*this); }
 
         void forward_transform();
 
-        double *u, *v, *du, *Lu, *Lv;
-        double e=-0.1, a=0.125, b=-0.004, D=40, R=1.04;
+        double dt, domain_size,
+               e=-0.1, a=0.125, b=-0.004, D=40, R=1.04;
 
-        fftw_complex *c_u, *c_v, *dc_u;
     };
 }
 

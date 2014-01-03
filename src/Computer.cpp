@@ -11,12 +11,7 @@ namespace turb {
 
     void Computer::set_constants()
     {
-        integrator->e = e;
-        integrator->a = a;
-        integrator->b = b;
-        integrator->D = D;
-        integrator->R = R;
-        integrator->initialize();
+        integrator->initialize(samples, dt, domain_size);
     }
 
     std::string Computer::additional_info()
@@ -45,7 +40,7 @@ namespace turb {
         if (options) {
             po::variables_map vm;
             po::store(po::command_line_parser(argc, argv).
-                options(*options).allow_unregistered().run(), 
+                options(*options).allow_unregistered().run(),
                 vm);
             po::notify(vm);
         }

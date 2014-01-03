@@ -17,9 +17,8 @@ namespace po = boost::program_options;
 turb::Computer* initialize(int argc, const char *argv[])
 {
     std::string output_filename, config_filename,
-        serializer_name, computer_name;
-    double end_time, dt, e, a, b, D,
-           R, domain_size, threshold;
+        serializer_name, computer_name, integrator_name;
+    double end_time, dt, domain_size, threshold;
     size_t print_every, samples, runs;
     bool split_files, fit;
 
@@ -50,6 +49,9 @@ turb::Computer* initialize(int argc, const char *argv[])
         ("computer,c", po::value<std::string>(&computer_name)->default_value("simple"),
          ("name of a selected Computer. Available are:\n\n" +
          turb::Computer::list_available()).c_str())
+        ("integrator,i", po::value<std::string>(&integrator_name)->default_value("paper"),
+         ("name of a selected Integrator. Available are:\n\n" +
+          turb::Integrator::list_available()).c_str())
         ;
 
     po::options_description simulation_opts("Simulation options");
@@ -105,6 +107,7 @@ turb::Computer* initialize(int argc, const char *argv[])
 
 
     turb::Computer *computer = turb::Computer::choose(computer_name)->clone();
+    computer->integrator = turb::Integrator::choose(integrator_name)->clone();
     computer->serializer = turb::Serializer::choose(serializer_name);
     computer->parse_params(argc, argv);
 
@@ -117,11 +120,7 @@ turb::Computer* initialize(int argc, const char *argv[])
     computer->output_filename = output_filename;
     if (!computer->split_files)
         computer->split_files = split_files;
-    computer->e = e;
-    computer->a = a;
-    computer->b = b;
-    computer->D = D;
-    computer->R = R;
+
     computer->fit = fit;
     computer->threshold = threshold;
     computer->runs = runs;

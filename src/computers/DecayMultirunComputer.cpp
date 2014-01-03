@@ -15,7 +15,7 @@ namespace turb {
             " and outputs the times to decay for each run";
         serializer = NULL;
         suggested_serializer = "generic";
-        
+
         decay_threshold = 5.0;
 
         Computer::available.push_back(this);
@@ -26,7 +26,7 @@ namespace turb {
         unused(base);
 
         set_serializer();
-        integrator = new Integrator(samples, dt, domain_size);
+        integrator->clear();
         set_constants();
 
         for (size_t i = 0; i * dt < end_time; ++i) {
@@ -40,7 +40,7 @@ namespace turb {
                     std::string current_time = std::to_string(i * dt);
                     serializer->serialize(integrator, output, &current_time);
 
-                    std::cerr << "Finished run at time " << i * dt << 
+                    std::cerr << "Finished run at time " << i * dt <<
                         " with norm " << norm << std::endl;
                     return i * dt;
                 }
@@ -55,4 +55,4 @@ namespace turb {
 }
 
 
-               
+

@@ -16,7 +16,7 @@ namespace turb {
      *
      *  These workers manage binding the Integrators,
      *  setting up the simulation and then performing
-     *  the computation. 
+     *  the computation.
      *
      *  They also provide some additional bookkeeping
      *  functionality like parsing of additional command
@@ -24,30 +24,28 @@ namespace turb {
      */
     class Computer : public Base<Computer> {
     protected:
-        /// Currently used Integrator
-        Integrator *integrator = NULL;
 
         /// \brief Function doing the actual computation.
         virtual void compute() = 0;
 
         /*! \brief Initializes integrator with constants with
          *      proper values.
-         */ 
+         */
         void set_constants();
 
         /*! \brief Implements class-specific options setting logic.
          */
         virtual void set_options() { };
 
-        /*! \brief If set points to a description of 
+        /*! \brief If set points to a description of
          *      the class-specific command line options
          */
         std::shared_ptr<po::options_description> options = NULL;
 
-        /*! \brief If set and no serializer is set at 
+        /*! \brief If set and no serializer is set at
          *      set-up stage this serializer will be used.
          *
-         *  Note that if the specified serializer is 
+         *  Note that if the specified serializer is
          *  unavailable at runtime, InstanceNotFound will
          *  still be thrown.
          */
@@ -59,6 +57,9 @@ namespace turb {
         void set_serializer();
 
     public:
+        /// Currently used Integrator
+        Integrator *integrator = NULL;
+
         /*! \brief Execute to start the simulation.
          *  \return an std::thread object that runs the integration
          *
@@ -73,8 +74,7 @@ namespace turb {
 
         /// \brief Parameters needing to be set before run
         size_t print_every=100, samples=7, runs=2000;
-        double end_time=2000, dt=0.0005, e, a, b, D, 
-               R, domain_size=20*M_PI, threshold=300;
+        double end_time=2000, dt=0.0005, domain_size=20*M_PI, threshold=300;
         std::string output_filename;
         bool split_files, fit=true;
 
@@ -88,7 +88,7 @@ namespace turb {
          */
         virtual void parse_params(int argc, const char *argv[]);
 
-        /*! \brief Overloads the clone method so that 
+        /*! \brief Overloads the clone method so that
          *      a correct pointer is returned.
          */
         virtual Computer* clone() const = 0;

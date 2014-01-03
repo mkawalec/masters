@@ -23,7 +23,7 @@ namespace turb {
     void SimpleComputer::compute()
     {
         set_serializer();
-        integrator = new Integrator(samples, dt, domain_size);
+        integrator->clear();
         set_constants();
 
         std::ofstream output(output_filename);

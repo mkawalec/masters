@@ -1,5 +1,5 @@
 #include "serializers/NormSerializer.hpp"
-#include "Integrator.cpp"
+#include "Integrator.hpp"
 #include "helpers.hpp"
 
 #include <fftw3.h>
@@ -18,7 +18,7 @@ namespace turb {
         Serializer::available.push_back(this);
     }
 
-    void NormSerializer::serialize(Integrator *instance, 
+    void NormSerializer::serialize(Integrator *instance,
             std::ofstream *output, void *time)
     {
         instance->forward_transform();
@@ -32,4 +32,4 @@ namespace turb {
     NormSerializer *norm_serializer_instance = new NormSerializer();
 }
 
-        
+
