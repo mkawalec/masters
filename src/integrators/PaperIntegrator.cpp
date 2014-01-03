@@ -69,7 +69,6 @@ namespace turb {
         dt = timestep;
         domain_size = domain;
         dim_power = dim_power;
-        std::cout << "DS2 " << dim_power << " " << timestep << " " << domain_size << std::endl;
 
         fftw_import_wisdom_from_filename(".wisdom");
 
