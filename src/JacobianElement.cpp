@@ -17,7 +17,18 @@ namespace turb {
     }
 
     template <typename T>
-    T* JacobianElement<T>::swap(JacobianElement *other) 
+    int JacobianElement<T>::get_prefix()
+    {
+        int zero_count = 0;
+        for (int i = 0; (unsigned)i < line_size; ++i) {
+            if (!fuzzy_eql(line[i], 0)) break;
+            ++zero_count;
+        }
+        return zero_count;
+    }
+
+    template <typename T>
+    T* JacobianElement<T>::swap(JacobianElement *other)
     {
         T *tmp = line;
         line = other->line;
@@ -40,17 +51,6 @@ namespace turb {
         other->prefix_value = i_tmp;
 
         return line;
-    }
-
-    template <typename T>
-    int JacobianElement<T>::get_prefix()
-    {
-        int zero_count = 0;
-        for (int i = 0; (unsigned)i < line_size; ++i) {
-            if (!fuzzy_eql(line[i], 0)) break;
-            ++zero_count;
-        }
-        return zero_count;
     }
 
     template <typename T>
