@@ -100,7 +100,7 @@ namespace turb {
 
         // Receive and align
         folded->clear();
-        delete send_array;
+        delete[] send_array;
 
         double *recv_array = new double[max_size];
 
@@ -124,7 +124,7 @@ namespace turb {
         }
 
         MPI_Wait(&send_request, NULL);
-        delete recv_array;
+        delete[] recv_array;
 
         if (my_rank == 0) std::cerr << " done" << std::endl;
     }
