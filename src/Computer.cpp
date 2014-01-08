@@ -77,6 +77,7 @@ namespace turb {
         MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
         MPI_Comm_size(MPI_COMM_WORLD, &process_count);
         MPI_Request send_request;
+        MPI_Status tmp_status;
 
         if (my_rank == 0)
             std::cerr << "About to fold stationary points..." << std::flush;
@@ -93,7 +94,7 @@ namespace turb {
                    target_rank, 0, MPI_COMM_WORLD, &send_request);
 
         if (my_rank != 0) {
-            MPI_Wait(&send_request, NULL);
+            MPI_Wait(&send_request, &tmp_status);
             free(send_array);
             return;
         }
@@ -123,7 +124,7 @@ namespace turb {
             }
         }
 
-        MPI_Wait(&send_request, NULL);
+        MPI_Wait(&send_request, &tmp_status);
         delete[] recv_array;
 
         if (my_rank == 0) std::cerr << " done" << std::endl;
