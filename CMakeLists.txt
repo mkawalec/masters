@@ -39,7 +39,7 @@ set(alglib_headers
 
 add_library(
     Alglib
-    SHARED
+    STATIC
     ${alglib_src}
     ${alglib_headers}
     )
@@ -88,7 +88,7 @@ add_executable(integrator ${CPP_FILES})
 
 if (CMAKE_COMPILER_IS_GNUCXX)
     message(status "Setting GCC flags")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -march=barcelona -O2 -pthread -lpthread -Wall -Wextra -Wno-ignored-qualifiers -pedantic -W -std=c++0x")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static -O2 -Wall -Wextra -Wno-ignored-qualifiers -pedantic -W -std=c++0x")
 else()
     message(status "gcc not found!")
     return()
@@ -140,6 +140,7 @@ LINK_DIRECTORIES(
 target_link_libraries(integrator -lm ${FFTW_LIBRARIES} 
                                      ${Boost_LIBRARIES} 
                                      Alglib
+					/opt/cray/mpt/5.6.5/gni/mpich2-cray64/74/lib/libmpichcxx.a
                                      ${MPI_CXX_LIBRARIES}
                      )
 #target_link_libraries(test-suite -lm ${FFTW_LIBRARIES} ${Boost_LIBRARIES} ${ALGLIB_LIBRARIES})
