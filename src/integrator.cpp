@@ -14,7 +14,7 @@
 namespace po = boost::program_options;
 
 
-turb::Computer* initialize(int argc, const char *argv[])
+turb::Computer* initialize(int argc, char *argv[])
 {
     std::string output_filename, config_filename,
         serializer_name, computer_name, integrator_name;
@@ -129,15 +129,12 @@ turb::Computer* initialize(int argc, const char *argv[])
 }
 
 
-int main(int argc, const char *argv[])
+int main(int argc, char *argv[])
 {
-    // Speeds up the performance for large
-    // inputs and outputs. Makes using printf and scanf
-    // very unpredicatable
-    std::ios_base::sync_with_stdio(false);
+    MPI_Init(0, NULL);
     turb::Computer *computer = NULL;
 
-    try{
+    try {
         computer = initialize(argc, argv);
     } catch (const turb::ProgramDeathRequest& e) {
         std::cerr << e.what() << std::endl;
@@ -145,5 +142,7 @@ int main(int argc, const char *argv[])
     }
 
     computer->run();
+
+    MPI_Finalize();
     return 0;
 }

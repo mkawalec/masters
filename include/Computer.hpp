@@ -5,7 +5,9 @@
 #include "Integrator.hpp"
 #include "Base.hpp"
 
+#include <mpi.h>
 #include <memory>
+#include <string>
 #include <boost/program_options/options_description.hpp>
 namespace po = boost::program_options;
 
@@ -51,6 +53,9 @@ namespace turb {
          */
         void set_serializer();
 
+        void set_filename(std::string *output);
+        std::string prefix = "process";
+
     public:
         /// Currently used Integrator
         Integrator *integrator = NULL;
@@ -81,7 +86,7 @@ namespace turb {
         /*! \brief Call to parse the class-specific command line
          *      parameters.
          */
-        virtual void parse_params(int argc, const char *argv[]);
+        virtual void parse_params(int argc, char *argv[]);
 
         /*! \brief Overloads the clone method so that
          *      a correct pointer is returned.

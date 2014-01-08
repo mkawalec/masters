@@ -3,6 +3,7 @@
 #include "helpers.hpp"
 #include "exceptions.hpp"
 
+#include <mpi.h>
 #include <vector>
 #include <fftw3.h>
 #include <cmath>
@@ -53,7 +54,7 @@ namespace turb {
         dx = (double*)
             fftw_malloc(sizeof(double) * 2 * integrator->size_real);
 
-        fftw_import_wisdom_from_filename(".wisdom");
+        fftw_import_wisdom_from_filename(get_wisdom_filename().c_str());
         du_c = fftw_plan_dft_r2c_1d(integrator->size_real, f, d_cu,
                 FFTW_PATIENT);
         du_r = fftw_plan_dft_c2r_1d(integrator->size_real, d_cu, du,
@@ -75,7 +76,7 @@ namespace turb {
         d4u_r = fftw_plan_dft_c2r_1d(integrator->size_real, d4_cu, d4_u,
                 FFTW_PATIENT);
 
-        fftw_export_wisdom_to_filename(".wisdom");
+        fftw_export_wisdom_to_filename(get_wisdom_filename().c_str());
     }
 
     void Searcher::init()
@@ -108,14 +109,16 @@ namespace turb {
                 std::cerr << "THROWING " << norm << " " << i << std::endl;
                 throw NoResult();
             }
-            std::cout << norm << std::endl;
 
             get_jacobian();
             try {
                 gauss(f_val1, dx);
             } catch (const NoResult &e) {
-                std::cerr << "No result, wrong at " << e.what() << std::endl;
-                continue;
+                int rank;
+                MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+                std::cerr << "No result, wrong at " << e.what()
+                          << " at rank " << rank << std::endl;
+                throw NoResult();
             }
 
             for (size_t j = 0; j < 2 * size; ++j)

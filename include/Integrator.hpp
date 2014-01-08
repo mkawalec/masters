@@ -51,7 +51,7 @@ namespace turb {
                   f_u, f_v, f_du, b_u, b_v;
         fftw_complex *c_u = NULL, *c_v = NULL, *dc_u = NULL;
 
-        void parse_params(int argc, const char *argv[]);
+        void parse_params(int argc, char *argv[]);
         std::string additional_info();
 
         virtual Integrator* clone() const = 0;

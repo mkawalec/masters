@@ -25,6 +25,8 @@ namespace turb {
         set_serializer();
         integrator->clear(samples, dt, domain_size);
 
+        set_filename(&output_filename);
+
         std::ofstream output(output_filename);
         for (size_t i = 0; i * dt < end_time; ++i) {
             double current_time = i * dt;

@@ -24,4 +24,6 @@ Tests use the [Boost Test Framefork](http://www.boost.org/doc/libs/1_54_0/libs/t
 [ ] Make searcher register its parameters in global params
 [ ] A bug causing Searcher to diverge is found
 [ ] Add more comments + project page
+[x] Searcher works
+[ ] Multiple threads at instantiation with OpenMP
 

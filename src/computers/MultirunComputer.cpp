@@ -31,6 +31,7 @@ namespace turb {
         if (!split_files)
             output = new std::ofstream(output_filename);
 
+        set_filename(&output_filename);
 
         for (size_t i = 0; i < runs; ++i) {
             std::string current_filename = output_filename;
@@ -44,7 +45,7 @@ namespace turb {
             }
 
 
-            // Create a new instance, run and save the 
+            // Create a new instance, run and save the
             // output values
             T* instance = static_cast<T*>(clone());
             try {
@@ -97,9 +98,9 @@ namespace turb {
 
             double norm_u = l2_norm(single_pts[i].begin(),
                    single_pts[i].begin() + single_pts[i].size() / 2);
-            double norm_v = l2_norm(single_pts[i].begin() + 
+            double norm_v = l2_norm(single_pts[i].begin() +
                    single_pts[i].size() / 2, single_pts[i].end());
-           
+
             std::cout << norm_u << " " << norm_v <<std::endl;
             for (size_t j = 0; j < single_pts[i].size(); ++j)
                 output << single_pts[i][j] << std::endl;
@@ -108,7 +109,7 @@ namespace turb {
     }
 
     template <typename T>
-    void MultirunComputer<T>::fit_it(std::vector<double> *decay_times) 
+    void MultirunComputer<T>::fit_it(std::vector<double> *decay_times)
     {
         std::cerr << "Fitting starting... " << std::flush;
 

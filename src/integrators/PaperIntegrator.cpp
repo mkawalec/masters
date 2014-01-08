@@ -1,6 +1,7 @@
 #include "integrators/PaperIntegrator.hpp"
 #include "helpers.hpp"
 
+#include <mpi.h>
 #include <fftw3.h>
 #include <cmath>
 #include <iostream>
@@ -70,7 +71,7 @@ namespace turb {
         domain_size = domain;
         dim_power = dim_power;
 
-        fftw_import_wisdom_from_filename(".wisdom");
+        fftw_import_wisdom_from_filename(get_wisdom_filename().c_str());
 
         size_real = pow(2, dim_power);
         size_complex = size_real / 2 + 1;
@@ -116,7 +117,7 @@ namespace turb {
         b_v = fftw_plan_dft_r2c_1d(size_real, v, c_v,
                 FFTW_PATIENT);
 
-        fftw_export_wisdom_to_filename(".wisdom");
+        fftw_export_wisdom_to_filename(get_wisdom_filename().c_str());
     }
 
     /** Computes the linear operators acting

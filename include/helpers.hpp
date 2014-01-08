@@ -5,6 +5,7 @@
 #include <cmath>
 #include <ap.h>
 #include <vector>
+#include <string>
 
 namespace turb {
 
@@ -72,13 +73,15 @@ namespace turb {
      *  \param func function value
      *  \param ptr an unused pointer
      */
-    void e_x(const alglib::real_1d_array &c, const alglib::real_1d_array &x, 
+    void e_x(const alglib::real_1d_array &c, const alglib::real_1d_array &x,
             double &func, void *ptr);
 
     double current_time();
 
     bool contains(std::vector<std::vector<double> > *collection,
                   std::vector<double> *element);
+
+    std::string get_wisdom_filename();
 }
 
 #endif

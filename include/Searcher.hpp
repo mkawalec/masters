@@ -19,7 +19,7 @@ namespace turb {
                      *d4_cu;
 
         size_t iterations = 20;
-        double threshold = 1e-3;
+        double threshold = 1e-1;
         double overflow = 1e5;
         double h = 0.0001;
 

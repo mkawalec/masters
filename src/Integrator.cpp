@@ -11,7 +11,7 @@ namespace turb {
         compute_linear();
     }
 
-    void Integrator::parse_params(int argc, const char *argv[])
+    void Integrator::parse_params(int argc, char *argv[])
     {
         set_options();
         if (options) {
