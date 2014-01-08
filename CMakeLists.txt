@@ -129,7 +129,6 @@ INCLUDE_DIRECTORIES(
                  ${Boost_INCLUDE_DIR} 
                  ${FFTW_INCLUDES} 
                  ${MPI_CXX_INCLUDE_PATH}
-                 ${MPI_CXX_LIBRARIES} 
                  )
 LINK_DIRECTORIES(
                  ${Boost_LIBRARY_DIRS} 
@@ -141,7 +140,6 @@ LINK_DIRECTORIES(
 target_link_libraries(integrator -lm ${FFTW_LIBRARIES} 
                                      ${Boost_LIBRARIES} 
                                      Alglib
-					/opt/cray/mpt/5.6.5/gni/mpich2-cray64/74/lib/libmpichcxx.a
                                      ${MPI_CXX_LIBRARIES}
                      )
 #target_link_libraries(test-suite -lm ${FFTW_LIBRARIES} ${Boost_LIBRARIES} ${ALGLIB_LIBRARIES})
