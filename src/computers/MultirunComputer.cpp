@@ -27,11 +27,12 @@ namespace turb {
         decay_times.reserve(runs);
         stationary_pts.reserve(runs);
 
+        set_filename(&output_filename);
+
         std::ofstream *output = NULL;
         if (!split_files)
             output = new std::ofstream(output_filename);
 
-        set_filename(&output_filename);
 
         for (size_t i = 0; i < runs; ++i) {
             std::string current_filename = output_filename;
