@@ -129,6 +129,7 @@ INCLUDE_DIRECTORIES(
                  ${Boost_INCLUDE_DIR} 
                  ${FFTW_INCLUDES} 
                  ${MPI_CXX_INCLUDE_PATH}
+                 ${MPI_CXX_LIBRARIES} 
                  )
 LINK_DIRECTORIES(
                  ${Boost_LIBRARY_DIRS} 
