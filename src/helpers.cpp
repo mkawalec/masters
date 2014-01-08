@@ -4,7 +4,7 @@
 #include <mpi.h>
 #include <fftw3.h>
 #include <string>
-#include <ap.h>
+#include "ap.h"
 #include <vector>
 #include <sys/time.h>
 #include <iostream>

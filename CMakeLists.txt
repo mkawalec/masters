@@ -1,8 +1,48 @@
 cmake_minimum_required(VERSION 2.8)
 project(turb)
-include_directories(src include)
+include_directories(src include alglib)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 #set(CXX mpicxx)
+
+set(alglib_src
+    alglib/alglibinternal.cpp
+    alglib/alglibmisc.cpp
+    alglib/ap.cpp
+    alglib/dataanalysis.cpp
+    alglib/diffequations.cpp
+    alglib/fasttransforms.cpp
+    alglib/integration.cpp
+    alglib/interpolation.cpp
+    alglib/linalg.cpp
+    alglib/optimization.cpp
+    alglib/solvers.cpp
+    alglib/specialfunctions.cpp
+    alglib/statistics.cpp
+    )
+
+set(alglib_headers
+    alglib/statistics.h
+    alglib/stdafx.h
+    alglib/specialfunctions.h
+    alglib/solvers.h
+    alglib/optimization.h
+    alglib/linalg.h
+    alglib/interpolation.h
+    alglib/integration.h
+    alglib/fasttransforms.h
+    alglib/diffequations.h
+    alglib/dataanalysis.h
+    alglib/ap.h
+    alglib/alglibmisc.h
+    alglib/alglibinternal.h
+    )
+
+add_library(
+    Alglib
+    SHARED
+    ${alglib_src}
+    ${alglib_headers}
+    )
 
 set(HEADER_FILES 
     include/helpers.hpp 
@@ -38,7 +78,6 @@ set(CPP_FILES
     src/computers/DecayMultirunComputer.cpp
     src/computers/DecayPathComputer.cpp
     ${HEADER_FILES}
-    #    ${alglib}
     )
 
 set(TEST_FILES ${CPP_FILES} src/test-suite.cpp include/test_integrators.hpp)
@@ -59,12 +98,12 @@ unset(Boost_INCLUDE_DIR CACHE)
 unset(Boost_LIBRARY_DIRS CACHE)
 unset(FFTW_INCLUDES CACHE)
 unset(FFTW_LIBRARIES CACHE)
-unset(ALGLIB_INCLUDES CACHE)
-unset(ALGLIB_LIBRARIES CACHE)
+#unset(ALGLIB_INCLUDES CACHE)
+#unset(ALGLIB_LIBRARIES CACHE)
 unset(MPI_LIB CACHE)
 
 find_package(FFTW)
-find_package(ALGLIB)
+#find_package(ALGLIB)
 
 find_package(MPI REQUIRED)
 
@@ -82,18 +121,25 @@ message(status "** Boost Libraries: ${Boost_LIBRARIES}")
 message(status "** FFTW Include: ${FFTW_INCLUDES}")
 message(status "** FFTW Libraries: ${FFTW_LIBRARIES}")
 
-message(status "** ALGLIB Include: ${ALGLIB_INCLUDES}")
-message(status "** ALGLIB Libraries: ${ALGLIB_LIBRARIES}")
-
 message(status "** MPI Include: ${MPI_CXX_INCLUDE_PATH}")
 message(status "** MPI Libraries: ${MPI_CXX_LIBRARIES}")
 
-INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR} ${FFTW_INCLUDES} ${ALGLIB_INCLUDES} ${MPI_CXX_INCLUDE_PATH})
-LINK_DIRECTORIES(${Boost_LIBRARY_DIRS} ${FFTW_LIBRARIES} ${ALGLIB_INCLUDES} ${MPI_CXX_LIBRARIES})
+INCLUDE_DIRECTORIES(
+                 ${Boost_INCLUDE_DIR} 
+                 ${FFTW_INCLUDES} 
+                 ${MPI_CXX_INCLUDE_PATH}
+                 )
+LINK_DIRECTORIES(
+                 ${Boost_LIBRARY_DIRS} 
+                 ${FFTW_LIBRARIES} 
+                 ${MPI_CXX_LIBRARIES} 
+                 ${CMAKE_CURRENT_BINARY_DIR}
+                 )
 
 target_link_libraries(integrator -lm ${FFTW_LIBRARIES} 
                                      ${Boost_LIBRARIES} 
-                                     ${ALGLIB_LIBRARIES} 
+                                     #${ALGLIB_LIBRARIES} 
+                                     Alglib
                                      ${MPI_CXX_LIBRARIES}
                      )
 #target_link_libraries(test-suite -lm ${FFTW_LIBRARIES} ${Boost_LIBRARIES} ${ALGLIB_LIBRARIES})
