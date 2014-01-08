@@ -73,7 +73,7 @@ set(Boost_USE_MULTITHREADED      OFF)
 set(Boost_USE_STATIC_RUNTIME     OFF)
 set(BOOST_ALL_DYN_LINK           ON)   # force dynamic linking for all libraries
 
-find_package(Boost 1.53 COMPONENTS unit_test_framework program_options random REQUIRED)
+find_package(Boost 1.52 COMPONENTS unit_test_framework program_options REQUIRED)
 ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK) 
 message(status "** Boost Include: ${Boost_INCLUDE_DIR}")
 message(status "** Boost Libraries: ${Boost_LIBRARY_DIRS}")
@@ -85,12 +85,16 @@ message(status "** FFTW Libraries: ${FFTW_LIBRARIES}")
 message(status "** ALGLIB Include: ${ALGLIB_INCLUDES}")
 message(status "** ALGLIB Libraries: ${ALGLIB_LIBRARIES}")
 
-INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR} ${FFTW_INCLUDES} ${ALGLIB_INCLUDES})
-LINK_DIRECTORIES(${Boost_LIBRARY_DIRS} ${FFTW_LIBRARIES} ${ALGLIB_INCLUDES} )
+message(status "** MPI Include: ${MPI_CXX_INCLUDE_PATH}")
+message(status "** MPI Libraries: ${MPI_CXX_LIBRARIES}")
+
+INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR} ${FFTW_INCLUDES} ${ALGLIB_INCLUDES} ${MPI_CXX_INCLUDE_PATH})
+LINK_DIRECTORIES(${Boost_LIBRARY_DIRS} ${FFTW_LIBRARIES} ${ALGLIB_INCLUDES} ${MPI_CXX_LIBRARIES})
 
 target_link_libraries(integrator -lm ${FFTW_LIBRARIES} 
                                      ${Boost_LIBRARIES} 
                                      ${ALGLIB_LIBRARIES} 
+                                     ${MPI_CXX_LIBRARIES}
                      )
 #target_link_libraries(test-suite -lm ${FFTW_LIBRARIES} ${Boost_LIBRARIES} ${ALGLIB_LIBRARIES})
 

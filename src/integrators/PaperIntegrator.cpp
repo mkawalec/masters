@@ -9,8 +9,6 @@
 #include <stdlib.h>
 #include <sys/time.h>
 
-#include <boost/random/mersenne_twister.hpp>
-#include <boost/random/uniform_real_distribution.hpp>
 #include <boost/program_options.hpp>
 namespace po = boost::program_options;
 
@@ -191,18 +189,17 @@ namespace turb {
      */
     void PaperIntegrator::override_initialize()
     {
-        boost::random::mt19937 rng;
         timeval tv;
         gettimeofday(&tv, NULL);
-        rng.seed(1000000 * tv.tv_sec + tv.tv_usec);
 
-        boost::random::uniform_real_distribution<> random_data(0,
-                3 * pow(size_real, 0.85));
+        std::mt19937 generator(1e6 * tv.tv_sec + tv.tv_usec);
+        double divisor = 3 * pow(size_real, 0.85) / generator.max();
+
         for (size_t i = 0; i < size_complex; ++i) {
             double *tmp_u = c_u[i];
 
-            *tmp_u          = random_data(rng);
-            *(tmp_u + 1)    = random_data(rng);
+            *tmp_u          = generator() * divisor;
+            *(tmp_u + 1)    = generator() * divisor;
         }
     }
 
