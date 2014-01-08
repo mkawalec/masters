@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 project(turb)
 include_directories(src include)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+#set(CXX mpicxx)
 
 set(HEADER_FILES 
     include/helpers.hpp 
@@ -54,14 +55,13 @@ else()
     return()
 endif()
 
-#add_custom_target(debug ALL
-#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DDEBUG -g")
-#    COMMENT "Compiling in debug mode" VERBATIM
-#    )
 unset(Boost_INCLUDE_DIR CACHE)
 unset(Boost_LIBRARY_DIRS CACHE)
 unset(FFTW_INCLUDES CACHE)
 unset(FFTW_LIBRARIES CACHE)
+unset(ALGLIB_INCLUDES CACHE)
+unset(ALGLIB_LIBRARIES CACHE)
+unset(MPI_LIB CACHE)
 
 find_package(FFTW)
 find_package(ALGLIB)
@@ -69,7 +69,7 @@ find_package(ALGLIB)
 find_package(MPI REQUIRED)
 
 set(Boost_USE_STATIC_LIBS        OFF)
-set(Boost_USE_MULTITHREADED      ON)
+set(Boost_USE_MULTITHREADED      OFF)
 set(Boost_USE_STATIC_RUNTIME     OFF)
 set(BOOST_ALL_DYN_LINK           ON)   # force dynamic linking for all libraries
 
@@ -82,29 +82,15 @@ message(status "** Boost Libraries: ${Boost_LIBRARIES}")
 message(status "** FFTW Include: ${FFTW_INCLUDES}")
 message(status "** FFTW Libraries: ${FFTW_LIBRARIES}")
 
+message(status "** ALGLIB Include: ${ALGLIB_INCLUDES}")
+message(status "** ALGLIB Libraries: ${ALGLIB_LIBRARIES}")
 
-message(status "** FFTW Include: ${ALGLIB_INCLUDES}")
-message(status "** FFTW Libraries: ${ALGLIB_LIBRARIES}")
-
-INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR} ${FFTW_INCLUDES} ${ALGLIB_INCLUDES} ${MPI_INCLUDE_PATH})
-LINK_DIRECTORIES(${Boost_LIBRARY_DIRS} ${FFTW_LIBRARIES} ${ALGLIB_INCLUDES})
-
-if(MPI_COMPILE_FLAGS)
-    set_target_properties(Integrator PROPERTIES
-        COMPILE_FLAGS "${MPI_COMPILE_FLAGS}")
-endif()
-
-if(MPI_LINK_FLAGS)
-    set_target_properties(integrator PROPERTIES
-        LINK_FLAGS "${MPI_LINK_FLAGS}")
-endif()
-
-
+INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR} ${FFTW_INCLUDES} ${ALGLIB_INCLUDES})
+LINK_DIRECTORIES(${Boost_LIBRARY_DIRS} ${FFTW_LIBRARIES} ${ALGLIB_INCLUDES} )
 
 target_link_libraries(integrator -lm ${FFTW_LIBRARIES} 
                                      ${Boost_LIBRARIES} 
                                      ${ALGLIB_LIBRARIES} 
-                                     ${MPI_LIBRARIES}
                      )
 #target_link_libraries(test-suite -lm ${FFTW_LIBRARIES} ${Boost_LIBRARIES} ${ALGLIB_LIBRARIES})
 
