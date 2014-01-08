@@ -67,6 +67,68 @@ namespace turb {
     }
 
 
+    void Computer::fold(std::vector<std::vector<double> > *folded, int target_rank)
+    {
+        int my_rank, process_count,
+            point_size=2*integrator->size_real;
+        int max_size = point_size *
+            ceil(end_time / static_interval);
+
+        MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+        MPI_Comm_size(MPI_COMM_WORLD, &process_count);
+        MPI_Request send_request;
+
+        if (my_rank == 0)
+            std::cerr << "About to fold stationary points..." << std::flush;
+
+        // Gather
+        // Prepare send array
+        double *send_array = new double[max_size];
+        for (int i = 0; (unsigned)i < folded->size(); ++i) {
+            for (int j = 0; j < point_size; ++j)
+                send_array[i * point_size + j] = (*folded)[i][j];
+        }
+
+        MPI_Issend(send_array, folded->size() * point_size, MPI_DOUBLE,
+                   target_rank, 0, MPI_COMM_WORLD, &send_request);
+
+        if (my_rank != 0) {
+            MPI_Wait(&send_request, NULL);
+            free(send_array);
+            return;
+        }
+
+        // Receive and align
+        folded->clear();
+        delete send_array;
+
+        double *recv_array = new double[max_size];
+
+        for (int i = 0; i < process_count; ++i) {
+            int received_count, j = 0;
+            MPI_Status recv_status;
+
+            MPI_Recv(recv_array, max_size, MPI_DOUBLE,
+                    i, 0, MPI_COMM_WORLD, &recv_status);
+            MPI_Get_count(&recv_status, MPI_DOUBLE, &received_count);
+
+            while (j < received_count) {
+                std::vector<double> to_add;
+                to_add.reserve(point_size);
+
+                for (int k = 0; k < point_size; ++k, ++j)
+                    to_add.push_back(recv_array[i]);
+
+                folded->push_back(to_add);
+            }
+        }
+
+        MPI_Wait(&send_request, NULL);
+        delete recv_array;
+
+        if (my_rank == 0) std::cerr << " done" << std::endl;
+    }
+
 
 }
 

@@ -56,6 +56,8 @@ namespace turb {
         void set_filename(std::string *output);
         std::string prefix = "process";
 
+        void fold(std::vector<std::vector<double> > *folded, int target_rank);
+
     public:
         /// Currently used Integrator
         Integrator *integrator = NULL;
@@ -74,7 +76,8 @@ namespace turb {
 
         /// \brief Parameters needing to be set before run
         size_t print_every=100, samples=7, runs=2000;
-        double end_time=2000, dt=0.0005, domain_size, threshold=300;
+        double end_time=2000, dt=0.0005, domain_size, threshold=300,
+               static_interval;
         std::string output_filename;
         bool split_files, fit=true;
 

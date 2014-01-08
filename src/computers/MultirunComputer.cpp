@@ -76,6 +76,12 @@ namespace turb {
     template <typename T>
     void MultirunComputer<T>::print_stationary()
     {
+        int my_rank;
+        MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+
+        fold(&stationary_pts, 0);
+        if (my_rank != 0) return;
+
         std::vector<std::vector<double> > single_pts;
 
         for (int i = 0; (unsigned)i < stationary_pts.size(); ++i) {
@@ -83,7 +89,11 @@ namespace turb {
                     single_pts.push_back(stationary_pts[i]);
         }
 
-        if (single_pts.size() == 0) return;
+        if (single_pts.size() == 0) {
+            std::cerr << "No points found" << std::endl;
+            return;
+        }
+
         std::cerr << "------------------------------------" << std::endl;
         std::cerr << "Amount of stationary points is " << single_pts.size() << std::endl;
 

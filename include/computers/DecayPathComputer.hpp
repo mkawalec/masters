@@ -15,7 +15,7 @@ namespace turb {
      */
     class DecayPathComputer : public MultirunComputer<DecayPathComputer> {
     private:
-        double decay_threshold, fast_threshold, static_interval;
+        double decay_threshold, fast_threshold;
         Searcher *searcher = NULL;
 
     public:
