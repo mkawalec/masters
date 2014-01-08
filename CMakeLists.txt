@@ -125,6 +125,7 @@ message(status "** MPI Include: ${MPI_CXX_INCLUDE_PATH}")
 message(status "** MPI Libraries: ${MPI_CXX_LIBRARIES}")
 
 INCLUDE_DIRECTORIES(
+                 ${INCLUDE_DIRECTORIES}
                  ${Boost_INCLUDE_DIR} 
                  ${FFTW_INCLUDES} 
                  ${MPI_CXX_INCLUDE_PATH}
@@ -138,7 +139,6 @@ LINK_DIRECTORIES(
 
 target_link_libraries(integrator -lm ${FFTW_LIBRARIES} 
                                      ${Boost_LIBRARIES} 
-                                     #${ALGLIB_LIBRARIES} 
                                      Alglib
                                      ${MPI_CXX_LIBRARIES}
                      )
