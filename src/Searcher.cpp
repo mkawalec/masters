@@ -20,7 +20,11 @@ namespace turb {
             fftw_malloc(sizeof(double) * 2 * integrator->size_real);
         du = (double*)
             fftw_malloc(sizeof(fftw_complex) * integrator->size_real);
+        dv = (double*)
+            fftw_malloc(sizeof(fftw_complex) * integrator->size_real);
         d_cu = (fftw_complex*)
+            fftw_malloc(sizeof(fftw_complex) * integrator->size_complex);
+        d_cv = (fftw_complex*)
             fftw_malloc(sizeof(fftw_complex) * integrator->size_complex);
 
         jacobian = new Jacobian<jacobian_type>(2 * integrator->size_real,
@@ -55,18 +59,19 @@ namespace turb {
         du_r = fftw_plan_dft_c2r_1d(integrator->size_real, d_cu, du,
                 FFTW_PATIENT);
 
+        dv_c = fftw_plan_dft_r2c_1d(integrator->size_real,
+                f + integrator->size_real, d_cv, FFTW_PATIENT);
+        dv_r = fftw_plan_dft_c2r_1d(integrator->size_real, d_cv, dv,
+                FFTW_PATIENT);
+
         d2v_c = fftw_plan_dft_r2c_1d(integrator->size_real,
                 f + integrator->size_real, d2_cv, FFTW_PATIENT);
         d2v_r = fftw_plan_dft_c2r_1d(integrator->size_real, d2_cv, d2_v,
                 FFTW_PATIENT);
 
-        d2u_c = fftw_plan_dft_r2c_1d(integrator->size_real,
-                f, d2_cu, FFTW_PATIENT);
         d2u_r = fftw_plan_dft_c2r_1d(integrator->size_real, d2_cu, d2_u,
                 FFTW_PATIENT);
 
-        d4u_c = fftw_plan_dft_r2c_1d(integrator->size_real,
-                f, d4_cu, FFTW_PATIENT);
         d4u_r = fftw_plan_dft_c2r_1d(integrator->size_real, d4_cu, d4_u,
                 FFTW_PATIENT);
 
@@ -75,50 +80,49 @@ namespace turb {
 
     void Searcher::init()
     {
-        for (size_t i = 0; i < 2 * integrator->size_real; ++i) {
-            if (i < integrator->size_real)
-                f[i] = integrator->u[i];
-            else
-                f[i] = integrator->v[i-integrator->size_real];
+        for (size_t i = 0; i < integrator->size_real; ++i) {
+            f[i] = integrator->u[i];
+            f[i + integrator->size_real] = integrator->v[i];
+
+            // TODO: Implement the commented parts as a test
+            /*double x = i * integrator->domain_size / integrator->size_real;
+            f[i] = 0.4 * cos(x);
+            f[integrator->size_real + i] = 0.5 * sin(x);*/
         }
     }
 
     std::vector<double> Searcher::run()
     {
-        size_t size = 2 * integrator->size_real;
+        size_t size = integrator->size_real;
         double norm;
 
         for (size_t i = 0; i < iterations; ++i) {
-            get_jacobian();
-
             // Compute the value of F at current position
             F(f, f_val1);
 
-            try {
-                gauss(f_val1, dx);
-            } catch (const NoResult &e) {
-                std::cerr << "No result!" << std::endl;
-                continue;
-            }
-
-            if ((norm = l2_norm(f_val1, size)) < threshold) {
+            if ((norm = l2_norm(f_val1, 2 * size)) < threshold) {
                 std::cerr << "Found! " << i << " " << f[0] <<
-                    " " << l2_norm(f + size/2, size/2) << std::endl;
+                    " " << l2_norm(f + size, size) << std::endl;
                 return std::vector<double>(f, f + size);
             } else if (norm > overflow) {
                 std::cerr << "THROWING " << norm << " " << i << std::endl;
                 throw NoResult();
             }
+            std::cout << norm << std::endl;
 
-            //std::cerr << std::endl << "Factors ";
-            for (size_t j = 0; j < size; ++j) {
-                f[j] += dx[j];
-                //std::cerr << dx[j] << " ";
+            get_jacobian();
+            try {
+                gauss(f_val1, dx);
+            } catch (const NoResult &e) {
+                std::cerr << "No result, wrong at " << e.what() << std::endl;
+                continue;
             }
-            //std::cerr << std::endl;
+
+            for (size_t j = 0; j < 2 * size; ++j)
+                f[j] += dx[j];
         }
 
-        std::cerr << "Nothing found! " << l2_norm(f_val1, size) << std::endl;
+        std::cerr << "Nothing found! " << l2_norm(f_val1, 2 * size) << std::endl;
         throw NoResult();
     }
 
@@ -127,18 +131,29 @@ namespace turb {
     {
         double inv_domain_size = 1 / integrator->domain_size;
         double inv_size = 1 / (double) integrator->size_real;
-        double tmp[2];
+        double tmp[2], tmp2[2];
 
         // Execute the plan transforming u/v to complex form
-        fftw_execute(du_c);
-        fftw_execute(d2v_c);
-        fftw_execute(d2u_c);
-        fftw_execute(d4u_c);
+        fftw_execute_dft_r2c(du_c, input, d_cu);
+        fftw_execute_dft_r2c(dv_c, input + integrator->size_real, d_cv);
+        fftw_execute_dft_r2c(d2v_c, input + integrator->size_real, d2_cv);
+        for (size_t i = 0; i < integrator->size_complex; ++i) {
+            double *d2u = d2_cu[i],
+                   *d4u = d4_cu[i],
+                   *du = d_cu[i];
+
+            *d2u = *du;
+            *(d2_u + 1) = *(du + 1);
+            *d4u = *du;
+            *(d4u + 1) = *(du + 1);
+        }
+
 
         // Computing the derivative
         for (size_t i = 0; i < integrator->size_complex; ++i) {
             double k = (double) i * 2 * M_PI * inv_domain_size;
             double *du = d_cu[i];
+            double *dv = d_cv[i];
             double *d2v = d2_cv[i];
             double *d2u = d2_cu[i];
             double *d4u = d4_cu[i];
@@ -146,10 +161,15 @@ namespace turb {
             if (i < integrator->size_complex * 2.0 / 3) {
                 tmp[0] = -k * *(du + 1);
                 tmp[1] = k * *du;
-                //std::cout << integrator->domain_size << std::endl;
+
+                tmp2[0] = -k * *(dv + 1);
+                tmp2[1] = k * *dv;
 
                 *du = tmp[0];
                 *(du + 1) = tmp[1];
+
+                *dv = tmp2[0];
+                *(dv + 1) = tmp2[1];
 
                 *d2v *= -pow(k, 2);
                 *(d2v + 1) *= -pow(k, 2);
@@ -160,6 +180,8 @@ namespace turb {
             } else {
                 *du = 0;
                 *(du + 1) = 0;
+                *dv = 0;
+                *(dv + 1) = 0;
                 *d2v = 0;
                 *(d2v + 1) = 0;
                 *d2u = 0;
@@ -170,16 +192,18 @@ namespace turb {
         }
 
         // Transform the derivative back into the real form
-        fftw_execute(du_r);
-        fftw_execute(d2v_r);
-        fftw_execute(d2u_r);
-        fftw_execute(d4u_r);
+        fftw_execute_dft_c2r(du_r, d_cu, du);
+        fftw_execute_dft_c2r(dv_r, d_cv, dv);
+        fftw_execute_dft_c2r(d2v_r, d2_cv, d2_v);
+        fftw_execute_dft_c2r(d2u_r, d2_cu, d2_u);
+        fftw_execute_dft_c2r(d4u_r, d4_cu, d4_u);
 
         for (int i = 0; (unsigned)i < integrator->size_real; ++i) {
             d2_v[i] *= inv_size;
             d2_u[i] *= inv_size;
             d4_u[i] *= inv_size;
             du[i] *= inv_size;
+            dv[i] *= inv_size;
         }
 
         compute_F(input, result);
@@ -197,7 +221,8 @@ namespace turb {
                 du[i]) * u;
 
             result[i + size] = -v + integrator->D * d2_v[i] + integrator->R * pow(u, 2);
-            //std::cout << d2_v[i] << std::endl;
+            /*result[i] = d4_u[i] + u * dv[i] - 2 * pow(u, 2) - (1 - u) * u;
+            result[i + size] = d2_v[i] + v;*/
         }
 
     }

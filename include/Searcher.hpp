@@ -13,18 +13,18 @@ namespace turb {
 
         Integrator *integrator;
         double *f, *du, *f_val1, *f_val2, *dx,
-               *d2_v, *d2_u, *d4_u;
+               *d2_v, *d2_u, *d4_u, *dv;
         Jacobian<jacobian_type> *jacobian;
-        fftw_complex *d_cu, *d2_cv, *d2_cu,
+        fftw_complex *d_cu, *d_cv, *d2_cv, *d2_cu,
                      *d4_cu;
 
         size_t iterations = 20;
-        double threshold = 1e-4;
-        double overflow = 1e10;
+        double threshold = 1e-3;
+        double overflow = 1e5;
         double h = 0.0001;
 
         fftw_plan du_c, du_r, d2v_c, d2v_r,
-                  d2u_c, d2u_r, d4u_c, d4u_r;
+                  d2u_r, d4u_r, dv_c, dv_r;
 
         void get_jacobian();
         void F(double *input, double *result);
