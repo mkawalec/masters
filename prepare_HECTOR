@@ -1,5 +1,5 @@
 module load git
-module load CMake
+module load CMake/2.8.8
 
 module load fftw/3.3.0.3
 module swap PrgEnv-cray PrgEnv-gnu
