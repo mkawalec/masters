@@ -99,9 +99,14 @@ turb::Computer* initialize(int argc, char *argv[])
     }
 
     if (vm.count("help")) {
+        int my_rank;
+        MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
         std::stringstream output;
-        output << "Called as: " << argv[0] << " [params]"
-            << std::endl << cmdline_opts;
+
+        if (my_rank == 0)
+            output << "Called as: " << argv[0] << " [params]"
+                << std::endl << cmdline_opts;
+
         throw turb::ProgramDeathRequest(&output);
     }
 
@@ -131,13 +136,14 @@ turb::Computer* initialize(int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
-    MPI_Init(0, NULL);
+    MPI_Init(&argc, &argv);
     turb::Computer *computer = NULL;
 
     try {
         computer = initialize(argc, argv);
     } catch (const turb::ProgramDeathRequest& e) {
         std::cerr << e.what() << std::endl;
+        MPI_Finalize();
         return 0;
     }
 
