@@ -99,18 +99,21 @@ namespace turb {
         std::cerr << "Amount of stationary points is " << single_pts.size() << std::endl;
 
         for (size_t i = 0; i < single_pts.size(); ++i) {
-            std::string current_filename = "stationary";
-            std::ostringstream output_number;
-            output_number.width(log(stationary_pts.size())/log(10) + 1);
-            output_number << std::setfill('0') << i;
-
-            current_filename += output_number.str();
-
             double norm_u = l2_norm(single_pts[i].begin(),
                    single_pts[i].begin() + single_pts[i].size() / 2);
             double norm_v = l2_norm(single_pts[i].begin() +
                    single_pts[i].size() / 2, single_pts[i].end());
             if (fabs(norm_u) > 300 || fabs(norm_v) > 200) continue;
+
+            std::string current_filename = "stationary";
+            std::ostringstream output_number;
+            output_number.width(log(stationary_pts.size())/log(10) + 1);
+
+            output_number << std::setfill('0') << i;
+
+            current_filename += output_number.str() +
+                "-" + std::to_string(norm_u) +
+                "-" + std::to_string(norm_v);
 
             std::ofstream output(current_filename);
             std::cout << norm_u << " " << norm_v <<std::endl;
