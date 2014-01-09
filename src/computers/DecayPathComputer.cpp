@@ -90,7 +90,7 @@ namespace turb {
             }
 
             // Try to find a static point at the current position
-            if (i%(int)(static_interval / dt) == 0) {
+            if (i != 0 && i%(int)(static_interval / dt) == 0) {
                 try {
                     searcher->init();
                     base->add_stationary(searcher->run());

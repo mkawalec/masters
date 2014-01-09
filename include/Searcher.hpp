@@ -12,10 +12,10 @@ namespace turb {
         typedef __float128 jacobian_type;
 
         Integrator *integrator;
-        double *f, *du, *f_val1, *f_val2, *dx,
-               *d2_v, *d2_u, *d4_u, *dv;
+        double *f, *du, *f_val1, *dx,
+               *d2_v, *d2_u, *d4_u;
         Jacobian<jacobian_type> *jacobian;
-        fftw_complex *d_cu, *d_cv, *d2_cv, *d2_cu,
+        fftw_complex *d_cu, *d2_cv, *d2_cu,
                      *d4_cu;
 
         size_t iterations = 20;

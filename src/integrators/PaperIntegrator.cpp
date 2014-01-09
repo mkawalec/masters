@@ -91,29 +91,29 @@ namespace turb {
 
         // Plans to be applied initially
         i_u = fftw_plan_dft_r2c_1d(size_real, u, c_u,
-                FFTW_PATIENT);
+                FFTW_MEASURE);
         i_v = fftw_plan_dft_r2c_1d(size_real, v, c_v,
-                FFTW_PATIENT);
+                FFTW_MEASURE);
 
         // Final transformations
         e_u = fftw_plan_dft_c2r_1d(size_real, c_u, u,
-                FFTW_PATIENT | FFTW_PRESERVE_INPUT);
+                FFTW_MEASURE | FFTW_PRESERVE_INPUT);
         e_v = fftw_plan_dft_c2r_1d(size_real, c_v, v,
-                FFTW_PATIENT | FFTW_PRESERVE_INPUT);
+                FFTW_MEASURE | FFTW_PRESERVE_INPUT);
 
         // Forward plans
         f_u = fftw_plan_dft_c2r_1d(size_real, c_u, u,
-                FFTW_PATIENT);
+                FFTW_MEASURE);
         f_v = fftw_plan_dft_c2r_1d(size_real, c_v, v,
-                FFTW_PATIENT);
+                FFTW_MEASURE);
         f_du = fftw_plan_dft_c2r_1d(size_real, dc_u, du,
-                FFTW_PATIENT);
+                FFTW_MEASURE);
 
         // Backward plans
         b_u = fftw_plan_dft_r2c_1d(size_real, u, c_u,
-                FFTW_PATIENT);
+                FFTW_MEASURE);
         b_v = fftw_plan_dft_r2c_1d(size_real, v, c_v,
-                FFTW_PATIENT);
+                FFTW_MEASURE);
 
         fftw_export_wisdom_to_filename(get_wisdom_filename().c_str());
     }
