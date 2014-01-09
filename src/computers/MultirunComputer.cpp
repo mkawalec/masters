@@ -105,13 +105,14 @@ namespace turb {
             output_number << std::setfill('0') << i;
 
             current_filename += output_number.str();
-            std::ofstream output(current_filename);
 
             double norm_u = l2_norm(single_pts[i].begin(),
                    single_pts[i].begin() + single_pts[i].size() / 2);
             double norm_v = l2_norm(single_pts[i].begin() +
                    single_pts[i].size() / 2, single_pts[i].end());
+            if (norm_u > 300 || norm_v > 200) continue;
 
+            std::ofstream output(current_filename);
             std::cout << norm_u << " " << norm_v <<std::endl;
             for (size_t j = 0; j < single_pts[i].size(); ++j)
                 output << single_pts[i][j] << std::endl;
