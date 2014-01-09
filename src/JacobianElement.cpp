@@ -69,7 +69,12 @@ namespace turb {
     template <typename T>
     void JacobianElement<T>::update_state(int index)
     {
-        if (prefix_value != -1 && index >= prefix_value) return;
+        if (index > prefix_value) return;
+        if (index == prefix_value && fuzzy_eql(line[index], 0)) {
+            ++prefix_value;
+            return;
+        }
+
         dirty = true;
     }
 

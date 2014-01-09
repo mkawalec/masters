@@ -9,7 +9,7 @@ namespace turb {
 
     class Searcher {
     private:
-        typedef __float128 jacobian_type;
+        typedef double jacobian_type;
 
         Integrator *integrator;
         double *f, *du, *f_val1, *dx,
@@ -19,9 +19,9 @@ namespace turb {
                      *d4_cu;
 
         size_t iterations = 20;
-        double threshold = 1e-1;
+        double threshold = 2e-1;
         double overflow = 1e5;
-        double h = 0.0001;
+        double h = 1e-4;
 
         fftw_plan du_c, du_r, d2v_c, d2v_r,
                   d2u_r, d4u_r, dv_c, dv_r;

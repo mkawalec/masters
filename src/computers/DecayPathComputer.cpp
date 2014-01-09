@@ -91,10 +91,12 @@ namespace turb {
 
             // Try to find a static point at the current position
             if (i != 0 && i%(int)(static_interval / dt) == 0) {
+                double start = current_time();
                 try {
                     searcher->init();
                     base->add_stationary(searcher->run());
                 } catch(NoResult e) {}
+                std::cout << current_time() - start << std::endl;
             }
         }
 

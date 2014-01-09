@@ -146,7 +146,7 @@ namespace turb {
                    *du = d_cu[i];
 
             *d2u = *du;
-            *(d2_u + 1) = *(du + 1);
+            *(d2u + 1) = *(du + 1);
             *d4u = *du;
             *(d4u + 1) = *(du + 1);
         }
