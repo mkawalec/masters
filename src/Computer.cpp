@@ -79,7 +79,7 @@ namespace turb {
         MPI_Request send_request;
         MPI_Status tmp_status;
 
-        if (my_rank == 0)
+        if (my_rank == target_rank)
             std::cerr << "About to fold stationary points..." << std::flush;
 
         // Gather
@@ -127,7 +127,7 @@ namespace turb {
         MPI_Wait(&send_request, &tmp_status);
         delete[] recv_array;
 
-        if (my_rank == 0) std::cerr << " done" << std::endl;
+        if (my_rank == target_rank) std::cerr << " done" << std::endl;
     }
 
 

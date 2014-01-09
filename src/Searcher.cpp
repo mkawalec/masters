@@ -21,11 +21,12 @@ namespace turb {
             fftw_malloc(sizeof(double) * 2 * integrator->size_real);
         du = (double*)
             fftw_malloc(sizeof(fftw_complex) * integrator->size_real);
-        /*dv = (double*)
-            fftw_malloc(sizeof(fftw_complex) * integrator->size_real);*/
         d_cu = (fftw_complex*)
             fftw_malloc(sizeof(fftw_complex) * integrator->size_complex);
-        /*d_cv = (fftw_complex*)
+
+        /*dv = (double*)
+            fftw_malloc(sizeof(fftw_complex) * integrator->size_real);
+        d_cv = (fftw_complex*)
             fftw_malloc(sizeof(fftw_complex) * integrator->size_complex);*/
 
         jacobian = new Jacobian<jacobian_type>(2 * integrator->size_real,
@@ -85,8 +86,8 @@ namespace turb {
 
             // TODO: Implement the commented parts as a test
             /*double x = i * integrator->domain_size / integrator->size_real;
-            f[i] = 0.4 * cos(x);
-            f[integrator->size_real + i] = 0.5 * sin(x);*/
+            f[i] = 0.8 * cos(x) + i / (4 * integrator->size_real);
+            f[integrator->size_real + i] =  sin(x);*/
         }
     }
 
@@ -117,7 +118,7 @@ namespace turb {
                 MPI_Comm_rank(MPI_COMM_WORLD, &rank);
                 std::cerr << "No result, wrong at " << e.what()
                           << " at rank " << rank <<
-                          " with norm " << norm << std::endl;
+                          " at iteration " << i << std::endl;
                 throw NoResult();
             }
 
@@ -134,7 +135,7 @@ namespace turb {
     {
         double inv_domain_size = 1 / integrator->domain_size;
         double inv_size = 1 / (double) integrator->size_real;
-        double tmp[2];
+        double tmp[2], tmp2[2];
 
         // Execute the plan transforming u/v to complex form
         fftw_execute_dft_r2c(du_c, input, d_cu);
@@ -330,11 +331,13 @@ namespace turb {
     {
         fftw_free(f);
         fftw_free(du);
+        //fftw_free(dv);
         fftw_free(d2_v);
         fftw_free(d2_u);
         fftw_free(d4_u);
 
         fftw_free(d_cu);
+        //fftw_free(d_cv);
         fftw_free(d2_cv);
         fftw_free(d2_cu);
         fftw_free(d4_cu);

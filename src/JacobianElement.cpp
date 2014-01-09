@@ -70,10 +70,10 @@ namespace turb {
     void JacobianElement<T>::update_state(int index)
     {
         if (index > prefix_value) return;
-        if (index == prefix_value && fuzzy_eql(line[index], 0)) {
+        /*if (index == prefix_value && fuzzy_eql(line[index], 0)) {
             ++prefix_value;
             return;
-        }
+        }*/
 
         dirty = true;
     }
