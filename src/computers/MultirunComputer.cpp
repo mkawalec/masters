@@ -110,7 +110,7 @@ namespace turb {
                    single_pts[i].begin() + single_pts[i].size() / 2);
             double norm_v = l2_norm(single_pts[i].begin() +
                    single_pts[i].size() / 2, single_pts[i].end());
-            if (norm_u > 300 || norm_v > 200) continue;
+            if (fabs(norm_u) > 300 || fabs(norm_v) > 200) continue;
 
             std::ofstream output(current_filename);
             std::cout << norm_u << " " << norm_v <<std::endl;
