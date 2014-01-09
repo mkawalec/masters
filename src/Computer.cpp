@@ -78,36 +78,43 @@ namespace turb {
         MPI_Comm_size(MPI_COMM_WORLD, &process_count);
         MPI_Request send_request;
         MPI_Status tmp_status;
+        std::cout << rank << " here1" << std::endl;
 
         // TODO: MPI_Barrier
         MPI_Barrier(MPI_COMM_WORLD);
+        std::cout << rank << " here2" << std::endl;
 
         if (my_rank == target_rank)
             std::cerr << "About to fold stationary points..." << std::flush;
 
         // Gather
         // Prepare send array
+        std::cout << rank << " here3" << std::endl;
         double *send_array = new double[max_size];
         for (int i = 0; (unsigned)i < folded->size(); ++i) {
             for (int j = 0; j < point_size; ++j)
                 send_array[i * point_size + j] = (*folded)[i][j];
         }
 
+        std::cout << rank << " here4" << std::endl;
         MPI_Issend(send_array, folded->size() * point_size, MPI_DOUBLE,
                    target_rank, 0, MPI_COMM_WORLD, &send_request);
 
+        std::cout << rank << " here5" << std::endl;
         if (my_rank != 0) {
             MPI_Wait(&send_request, &tmp_status);
             free(send_array);
             return;
         }
 
+        std::cout << rank << " here6" << std::endl;
         // Receive and align
         folded->clear();
         delete[] send_array;
 
         double *recv_array = new double[max_size];
 
+        std::cout << rank << " here7" << std::endl;
         for (int i = 0; i < process_count; ++i) {
             int received_count, j = 0;
             MPI_Status recv_status;
@@ -124,7 +131,9 @@ namespace turb {
             }
         }
 
+        std::cout << rank << " here8" << std::endl;
         MPI_Wait(&send_request, &tmp_status);
+        std::cout << rank << " here9" << std::endl;
         delete[] recv_array;
 
         if (my_rank == target_rank) std::cerr << " done" << std::endl;
