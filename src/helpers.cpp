@@ -80,7 +80,7 @@ namespace turb {
         for (int i = 0; (unsigned)i < collection->size(); ++i) {
             bool same = true;
             for (int j = 0; (unsigned)j < (*collection)[i].size(); ++j) {
-                if (!fuzzy_eql((*collection)[i][j], (*element)[j], 1e-4)) {
+                if (!fuzzy_eql((*collection)[i][j], (*element)[j], 1e-2)) {
                     same = false;
                     break;
                 }
