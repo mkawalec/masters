@@ -103,14 +103,13 @@ namespace turb {
         //std::cout << my_rank << " here5" << std::endl;
         if (my_rank != 0) {
             MPI_Wait(&send_request, &tmp_status);
-            free(send_array);
+            delete[] send_array;
             return;
         }
 
         //std::cout << my_rank << " here6" << std::endl;
         // Receive and align
         folded->clear();
-        delete[] send_array;
 
         double *recv_array = new double[max_size];
 
@@ -138,6 +137,7 @@ namespace turb {
         //std::cout << my_rank << " here8" << std::endl;
         MPI_Wait(&send_request, &tmp_status);
         //std::cout << my_rank << " here9" << std::endl;
+        delete[] send_array;
         delete[] recv_array;
 
         if (my_rank == target_rank) std::cerr << " done" << std::endl;
