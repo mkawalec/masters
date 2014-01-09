@@ -117,13 +117,10 @@ namespace turb {
             MPI_Get_count(&recv_status, MPI_DOUBLE, &received_count);
 
             while (j < received_count) {
-                std::vector<double> to_add;
-                to_add.reserve(point_size);
-
-                for (int k = 0; k < point_size; ++k, ++j)
-                    to_add.push_back(recv_array[i]);
-
+                std::vector<double> to_add(&recv_array[j], &recv_array[j] + point_size);
                 folded->push_back(to_add);
+
+                j += point_size;
             }
         }
 
