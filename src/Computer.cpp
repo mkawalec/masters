@@ -79,6 +79,9 @@ namespace turb {
         MPI_Request send_request;
         MPI_Status tmp_status;
 
+        // TODO: MPI_Barrier
+        MPI_Barrier(MPI_COMM_WORLD);
+
         if (my_rank == target_rank)
             std::cerr << "About to fold stationary points..." << std::flush;
 
