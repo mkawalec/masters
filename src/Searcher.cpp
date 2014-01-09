@@ -97,8 +97,6 @@ namespace turb {
         double norm;
         int rank;
         MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-            if (rank != 1) return std::vector<double>(f, f + size);
-            throw NoResult();
 
         for (size_t i = 0; i < iterations; ++i) {
             get_jacobian();

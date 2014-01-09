@@ -112,7 +112,7 @@ namespace turb {
             double norm_v = l2_norm(single_pts[i].begin() +
                    single_pts[i].size() / 2, single_pts[i].end());
 
-            //std::cout << norm_u << " " << norm_v <<std::endl;
+            std::cout << norm_u << " " << norm_v <<std::endl;
             for (size_t j = 0; j < single_pts[i].size(); ++j)
                 output << single_pts[i][j] << std::endl;
             output.close();
