@@ -119,9 +119,12 @@ namespace turb {
             int received_count, j = 0;
             MPI_Status recv_status;
 
+            std::cerr << "before recv" << std::endl;
             MPI_Recv(recv_array, max_size, MPI_DOUBLE,
                     i, 0, MPI_COMM_WORLD, &recv_status);
+            std::cerr << "after recv" << std::endl;
             MPI_Get_count(&recv_status, MPI_DOUBLE, &received_count);
+            std::cerr << "after count " << received_count << std::endl;
 
             while (j < received_count) {
                 std::cerr << j << " " << received_count << std::endl;
