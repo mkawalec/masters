@@ -192,7 +192,7 @@ namespace turb {
         timeval tv;
         gettimeofday(&tv, NULL);
 
-        std::mt19937 generator(1e6 * tv.tv_sec + tv.tv_usec);
+        std::mt19937 generator(tv.tv_usec);
         double divisor = 3 * pow(size_real, 0.85) / generator.max();
 
         for (size_t i = 0; i < size_complex; ++i) {
