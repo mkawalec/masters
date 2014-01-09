@@ -1,5 +1,7 @@
 build
-.*.sw*
 drop
+tags
+
+.*.sw*
 *.pyc
 *.out
