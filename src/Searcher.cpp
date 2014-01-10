@@ -121,7 +121,7 @@ namespace turb {
                 std::cerr << "No result, wrong at " << e.what()
                           << " at rank " << rank <<
                           " at iteration " << i << std::endl;
-                throw NoResult();
+                throw e;
             }
 
             for (size_t j = 0; j < 2 * size; ++j)
@@ -243,25 +243,21 @@ namespace turb {
             (*jacobian)[i][size] = -f[i];
 
         // Bring Jacobian to the echelon form
-        for (int i = 0; i < size; ++i) {
-            sort_jacobian(i, jacobian->dims().first);
+        for (int k = 0; k < size; ++k) {
+            int pivot = jacobian->max_arg(k);
+            if (fuzzy_eql((*jacobian)[pivot][k], 0, 1e-10))
+                throw NoResult("singular");
 
-            int major_nonzero_i = (*jacobian)[i].prefix();
-            for (int j = i + 1; j < size; ++j) {
-                int nonzero_i = (*jacobian)[j].prefix();
-                if (nonzero_i != major_nonzero_i) break;
+            jacobian->swap_lines(k, pivot);
 
-                jacobian_type factor = (*jacobian)[j][nonzero_i] /
-                                (*jacobian)[i][nonzero_i];
+            for (int i = k + 1; i < size; ++i) {
+                jacobian_type factor = (*jacobian)[i][k] / (*jacobian)[k][k];
 
-                for (int k = nonzero_i; k < size + 1; ++k)
-                    (*jacobian)[j][k] -= factor * (*jacobian)[i][k];
+                for (int j = k; j < size + 1; ++j)
+                    (*jacobian)[i][j] -= (*jacobian)[k][j] * factor;
+
+                (*jacobian)[i][k] = 0;
             }
-        }
-
-        // Check if Jacobian is upper-triangular
-        for (int i = 0; i < size; ++i) {
-            if ((*jacobian)[i].prefix() != i) throw NoResult(i);
         }
 
         // Compute the result
@@ -275,30 +271,6 @@ namespace turb {
                     result[i] /= (*jacobian)[i][i];
             }
         }
-    }
-
-    // Make the partition in-place
-    void Searcher::sort_jacobian(int start, int end)
-    {
-        if (end - start < 2) return;
-
-        int anchor = start + rand()%(end-start);
-        int anchor_prefix = (*jacobian)[anchor].prefix();
-        int store_index = start;
-
-        // In-place partition
-        jacobian->swap_lines(anchor, end - 1);
-        for (int i = start; i < end - 1; ++i) {
-            if ((*jacobian)[i].prefix() < anchor_prefix) {
-                jacobian->swap_lines(i, store_index);
-                ++store_index;
-            }
-        }
-        jacobian->swap_lines(store_index, end - 1);
-
-        // Launch the sorts
-        sort_jacobian(start, store_index);
-        sort_jacobian(store_index + 1, end);
     }
 
     void Searcher::get_jacobian()

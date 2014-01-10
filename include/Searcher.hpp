@@ -9,7 +9,7 @@ namespace turb {
 
     class Searcher {
     private:
-        typedef long double jacobian_type;
+        typedef double jacobian_type;
 
         Integrator *integrator;
         double *f, *du, *f_val1, *dx,
@@ -34,10 +34,6 @@ namespace turb {
         // non-singular matrices, will break badly if
         // a singular matrix is provided
         void gauss(double *f, double *result);
-
-        // An in-place quicksort
-        void sort_jacobian(int start, int end);
-        int get_prefix(size_t line_index, double *where);
 
     protected:
         virtual void compute_F(double *input, double *result);

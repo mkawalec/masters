@@ -18,6 +18,7 @@ namespace turb {
     public:
         JacobianElement<T> operator[](int index);
         void swap_lines(int i, int j);
+        int max_arg(int k);
 
         std::pair<int, int> dims() { return std::pair<int, int>(y, x);}
 

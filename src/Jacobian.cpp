@@ -7,6 +7,7 @@
 
 #include <fftw3.h>
 #include <iostream>
+#include <cmath>
 
 namespace turb {
 
@@ -21,8 +22,27 @@ namespace turb {
     void Jacobian<T>::swap_lines(int i, int j)
     {
         if (i >= y || j >= y) throw OutOfBounds();
+        if (i == j) return;
+
         elements[i].swap(&elements[j]);
     }
+
+    template <typename T>
+    int Jacobian<T>::max_arg(int k)
+    {
+        double value = -1;
+        int max_index = 0;
+
+        for (int i = k; i < y; ++i) {
+            if (fabs(elements[i][k]) > value) {
+                value = fabs(elements[i][k]);
+                max_index = i;
+            }
+        }
+
+        return max_index;
+    }
+
 
     template <typename T>
     Jacobian<T>::Jacobian(int m, int n)
@@ -31,7 +51,7 @@ namespace turb {
         x = n;
 
         jacobian = (T*) fftw_malloc(sizeof(T) * y * x);
-        elements = (JacobianElement<T>*) 
+        elements = (JacobianElement<T>*)
             fftw_malloc(sizeof(JacobianElement<T>) * y);
 
         for (int i = 0; i < y; ++i)
