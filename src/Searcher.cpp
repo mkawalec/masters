@@ -109,7 +109,6 @@ namespace turb {
                     " " << l2_norm(f + size, size) << std::endl;
                 return std::vector<double>(f, f + 2 * size);
             } else if (norm > overflow) {
-                std::cerr << "THROWING " << norm << " " << i << std::endl;
                 throw NoResult();
             }
 
