@@ -113,7 +113,7 @@ set(Boost_USE_MULTITHREADED      OFF)
 set(Boost_USE_STATIC_RUNTIME     ON)
 set(BOOST_ALL_DYN_LINK           OFF)   # force dynamic linking for all libraries
 
-find_package(Boost 1.52 COMPONENTS unit_test_framework program_options REQUIRED)
+find_package(Boost 1.52 COMPONENTS unit_test_framework program_options date_time REQUIRED)
 #ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK) 
 message(status "** Boost Include: ${Boost_INCLUDE_DIR}")
 message(status "** Boost Libraries: ${Boost_LIBRARY_DIRS}")
