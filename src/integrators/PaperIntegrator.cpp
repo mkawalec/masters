@@ -195,7 +195,7 @@ namespace turb {
         pt::ptime tick = pt::second_clock::local_time();
         pt::time_duration diff = t - tick;
 
-        std::mt19937 generator(diff.total_nanoseconds()/1e3);
+        std::mt19937 generator(diff.total_nanoseconds());
         double divisor = 3 * pow(size_real, 0.85) / generator.max();
 
         for (size_t i = 0; i < size_complex; ++i) {
