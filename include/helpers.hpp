@@ -46,7 +46,7 @@ namespace turb {
             *(array + i) *= norm_factor;
     }
 
-    inline bool fuzzy_eql(double first, double second, double acc=1e-5)
+    inline bool fuzzy_eql(double first, double second, double acc=1e-7)
     {
         if (fabs(first-second) > acc)
             return false;

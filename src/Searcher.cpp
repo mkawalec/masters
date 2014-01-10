@@ -216,8 +216,7 @@ namespace turb {
     }
 
     void Searcher::compute_F(double *input, double *result) {
-        int rank;
-        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
         int size = integrator->size_real;
         for (int i = 0; i < size; ++i) {
             double u = input[i];

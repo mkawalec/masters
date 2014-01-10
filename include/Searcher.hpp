@@ -9,7 +9,7 @@ namespace turb {
 
     class Searcher {
     private:
-        typedef double jacobian_type;
+        typedef long double jacobian_type;
 
         Integrator *integrator;
         double *f, *du, *f_val1, *dx,
