@@ -57,7 +57,6 @@ namespace turb {
         int rank, process_count;
         MPI_Comm_rank(MPI_COMM_WORLD, &rank);
         MPI_Comm_size(MPI_COMM_WORLD, &process_count);
-        std::cerr << "Hi from rank " << rank << std::endl;
 
         std::stringstream process_number;
         process_number.width(log(process_count - 1)/log(10) + 1);
