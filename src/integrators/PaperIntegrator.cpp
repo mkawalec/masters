@@ -10,7 +10,9 @@
 #include <sys/time.h>
 
 #include <boost/program_options.hpp>
+#include <boost/date_time.hpp>
 namespace po = boost::program_options;
+namespace pt = boost::posix_time;
 
 namespace turb {
 
@@ -189,10 +191,11 @@ namespace turb {
      */
     void PaperIntegrator::override_initialize()
     {
-        timeval tv;
-        gettimeofday(&tv, NULL);
+        pt::ptime t = pt::microsec_clock::local_time();
+        pt::ptime tick = pt::second_clock::local_time();
+        pt::time_duration diff = t - tick;
 
-        std::mt19937 generator(tv.tv_usec);
+        std::mt19937 generator(diff.total_nanoseconds());
         double divisor = 3 * pow(size_real, 0.85) / generator.max();
 
         for (size_t i = 0; i < size_complex; ++i) {
