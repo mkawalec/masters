@@ -80,14 +80,22 @@ namespace turb {
         int my_rank;
         MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 
-        fold(&stationary_pts, 0);
+        // TODO: Remove local duplicates before folding
+        std::vector<std::vector<double> > temp_vec;
+        for (int i = 0; (unsigned)i < stationary_pts.size(); ++i) {
+            if (!contains(&temp_vec, &stationary_pts[i])) {
+                temp_vec.push_back(stationary_pts[i]);
+            }
+        }
+
+        fold(&temp_vec, 0);
         if (my_rank != 0) return;
 
         std::vector<std::vector<double> > single_pts;
 
-        for (int i = 0; (unsigned)i < stationary_pts.size(); ++i) {
-            if (!contains(&single_pts, &stationary_pts[i]))
-                    single_pts.push_back(stationary_pts[i]);
+        for (int i = 0; (unsigned)i < temp_vec.size(); ++i) {
+            if (!contains(&single_pts, &temp_vec[i]))
+                    single_pts.push_back(temp_vec[i]);
         }
 
         if (single_pts.size() == 0) {
@@ -107,7 +115,7 @@ namespace turb {
 
             std::string current_filename = "stationary";
             std::ostringstream output_number;
-            output_number.width(log(stationary_pts.size())/log(10) + 1);
+            output_number.width(log(single_pts.size())/log(10) + 1);
 
             output_number << std::setfill('0') << i;
 
