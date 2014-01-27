@@ -35,4 +35,20 @@ namespace turb {
         return message;
 
     }
+
+    void Integrator::setup_searcher()
+    {
+        if (searcher) delete searcher;
+        searcher = new Searcher(this);
+    }
+
+    std::vector<double> Integrator::get_norms(std::vector<double> coords)
+    {
+        std::vector<double> norms;
+        norms.push_back(l2_norm(coords.begin(),
+                    coords.begin() + coords.size() / 2));
+        norms.push_back(l2_norm(coords.begin() + coords.size() / 2,
+                    coords.end()));
+        return norms;
+    }
 }

@@ -7,6 +7,8 @@
 
 namespace turb {
 
+    class Integrator;
+
     class Searcher {
     private:
         typedef double jacobian_type;

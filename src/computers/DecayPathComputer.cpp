@@ -49,9 +49,7 @@ namespace turb {
     {
         set_serializer();
         integrator->clear(samples, dt, domain_size);
-
-        if (searcher) delete searcher;
-        searcher = new Searcher(integrator);
+        integrator->setup_searcher();
 
         history *run_history =
             new history[(size_t)(fast_threshold / dt / (double) print_every)];
@@ -92,8 +90,8 @@ namespace turb {
             // Try to find a static point at the current position
             if (i != 0 && i%(int)(static_interval / dt) == 0) {
                 try {
-                    searcher->init();
-                    base->add_stationary(searcher->run());
+                    integrator->searcher->init();
+                    base->add_stationary(integrator->searcher->run());
                 } catch(NoResult e) {}
             }
         }

@@ -2,6 +2,7 @@
 #define turb_Integrator_h
 
 #include "Base.hpp"
+#include "Searcher.hpp"
 
 #include <memory>
 #include <string>
@@ -9,6 +10,7 @@
 namespace po = boost::program_options;
 
 namespace turb {
+    class Searcher;
 
     class Integrator : public Base<Integrator> {
     protected:
@@ -34,6 +36,7 @@ namespace turb {
         virtual void initialize(size_t dim_power,
                 double timestep, double domain=2*M_PI) = 0;
 
+
     public:
         virtual ~Integrator() { };
         virtual void clear(size_t dim_power, double dt, double domain_size=2*M_PI) = 0;
@@ -50,6 +53,11 @@ namespace turb {
         fftw_plan e_u, e_v, i_u, i_v,
                   f_u, f_v, f_du, b_u, b_v;
         fftw_complex *c_u = NULL, *c_v = NULL, *dc_u = NULL;
+
+        Searcher *searcher = NULL;
+        void setup_searcher();
+
+        virtual std::vector<double> get_norms(std::vector<double> coords);
 
         void parse_params(int argc, char *argv[]);
         std::string additional_info();
