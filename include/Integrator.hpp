@@ -63,6 +63,9 @@ namespace turb {
         std::string additional_info();
 
         virtual Integrator* clone() const = 0;
+
+        // If set to true, static points will be searched for
+        bool search = true;
     };
 }
 

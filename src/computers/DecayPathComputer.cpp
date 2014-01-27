@@ -88,7 +88,7 @@ namespace turb {
             }
 
             // Try to find a static point at the current position
-            if (i != 0 && i%(int)(static_interval / dt) == 0) {
+            if (i != 0 && integrator->search && i%(int)(static_interval / dt) == 0) {
                 try {
                     integrator->searcher->init();
                     base->add_stationary(integrator->searcher->run());
