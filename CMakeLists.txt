@@ -53,6 +53,7 @@ set(HEADER_FILES
     include/WriteCheck.hpp
     include/Integrator.hpp 
     include/integrators/PaperIntegrator.hpp
+    include/integrators/PolymerIntegrator.hpp
     include/Serializer.hpp
     include/serializers/NormSerializer.hpp
     include/serializers/ComponentSerializer.hpp
@@ -69,6 +70,7 @@ set(CPP_FILES
     src/integrator.cpp
     src/Integrator.cpp
     src/integrators/PaperIntegrator.cpp
+    src/integrators/PolymerIntegrator.cpp
     src/Computer.cpp
     src/Searcher.cpp
     src/serializers/NormSerializer.cpp

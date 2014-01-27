@@ -1,4 +1,4 @@
-#include "integrators/PaperIntegrator.hpp"
+#include "integrators/PolymerIntegrator.hpp"
 #include "helpers.hpp"
 
 #include <mpi.h>
@@ -16,20 +16,19 @@ namespace pt = boost::posix_time;
 
 namespace turb {
 
-    PaperIntegrator::PaperIntegrator()
+    PolymerIntegrator::PolymerIntegrator()
     {
         // Set the info for runtime class discovery
-        name = "paper";
+        name = "polymer";
         class_name = "integrator";
-        description = "Integrator operating on an equation from"
-                      " the paper";
+        description = " integrator trying to model polymers.";
         set_options();
         Integrator::available.push_back(this);
 
-        search = true;
+        search = false;
     }
 
-    void PaperIntegrator::set_options()
+    void PolymerIntegrator::set_options()
     {
         options.reset(new po::options_description(name + " options"));
         options->add_options()
@@ -43,31 +42,39 @@ namespace turb {
              "an integration parameter")
             ("R,R", po::value<double>(&R)->default_value(1.04),
              "integration parameter corresponding to a Reynolds number")
+            ("lambda", po::value<double>(&lambda)->default_value(1),
+             "elasticity constant")
             ;
     }
 
-    void PaperIntegrator::clear(size_t dim_power, double dt, double domain_size)
+    void PolymerIntegrator::clear(size_t dim_power, double dt, double domain_size)
     {
         fftw_free(u); fftw_free(v); fftw_free(du);
-        fftw_free(c_u); fftw_free(c_v); fftw_free(dc_u);
+        fftw_free(tau); fftw_free(dtau);
 
-        fftw_free(Lu); fftw_free(Lv);
+        fftw_free(c_u); fftw_free(c_v); fftw_free(dc_u);
+        fftw_free(c_tau); fftw_free(c_dtau);
+
+        fftw_free(Lu); fftw_free(Lv); fftw_free(Ltau);
         fftw_free(temp_array);
 
         initialize(dim_power, dt, domain_size);
     }
 
 
-    PaperIntegrator::~PaperIntegrator()
+    PolymerIntegrator::~PolymerIntegrator()
     {
         fftw_free(u); fftw_free(v); fftw_free(du);
-        fftw_free(c_u); fftw_free(c_v); fftw_free(dc_u);
+        fftw_free(tau); fftw_free(dtau);
 
-        fftw_free(Lu); fftw_free(Lv);
+        fftw_free(c_u); fftw_free(c_v); fftw_free(dc_u);
+        fftw_free(c_tau); fftw_free(c_dtau);
+
+        fftw_free(Lu); fftw_free(Lv); fftw_free(Ltau);
         fftw_free(temp_array);
     }
 
-    void PaperIntegrator::allocate(size_t dim_power, double timestep, double domain)
+    void PolymerIntegrator::allocate(size_t dim_power, double timestep, double domain)
     {
         dt = timestep;
         domain_size = domain;
@@ -78,19 +85,27 @@ namespace turb {
         size_real = pow(2, dim_power);
         size_complex = size_real / 2 + 1;
 
-        temp_array = (double*) fftw_malloc(2 * sizeof(double));
+        temp_array = (double*) fftw_malloc(3 * sizeof(double));
 
         u = (double*) fftw_malloc(size_real * sizeof(double));
         v = (double*) fftw_malloc(size_real * sizeof(double));
+        tau = (double*) fftw_malloc(size_real * sizeof(double));
+
         du = (double*) fftw_malloc(size_real * sizeof(double));
+        dtau = (double*) fftw_malloc(size_real * sizeof(double));
+
         c_u = (fftw_complex*) fftw_malloc(size_complex * sizeof(fftw_complex));
         c_v = (fftw_complex*) fftw_malloc(size_complex * sizeof(fftw_complex));
         dc_u = (fftw_complex*) fftw_malloc(size_complex * sizeof(fftw_complex));
+        c_tau = (fftw_complex*) fftw_malloc(size_complex * sizeof(fftw_complex));
+        c_dtau = (fftw_complex*) fftw_malloc(size_complex * sizeof(fftw_complex));
 
         // Linear operators acting on u and v
         Lu = (double*) fftw_malloc(size_complex *
                 sizeof(double) * 2.0 / 3);
         Lv = (double*) fftw_malloc(size_complex *
+                sizeof(double) * 2.0 / 3);
+        Ltau = (double*) fftw_malloc(size_complex *
                 sizeof(double) * 2.0 / 3);
 
         // Plans to be applied initially
@@ -98,11 +113,15 @@ namespace turb {
                 FFTW_MEASURE);
         i_v = fftw_plan_dft_r2c_1d(size_real, v, c_v,
                 FFTW_MEASURE);
+        i_tau = fftw_plan_dft_r2c_1d(size_real, tau, c_tau,
+                FFTW_MEASURE);
 
         // Final transformations
         e_u = fftw_plan_dft_c2r_1d(size_real, c_u, u,
                 FFTW_MEASURE | FFTW_PRESERVE_INPUT);
         e_v = fftw_plan_dft_c2r_1d(size_real, c_v, v,
+                FFTW_MEASURE | FFTW_PRESERVE_INPUT);
+        e_tau = fftw_plan_dft_c2r_1d(size_real, c_tau, tau,
                 FFTW_MEASURE | FFTW_PRESERVE_INPUT);
 
         // Forward plans
@@ -110,13 +129,19 @@ namespace turb {
                 FFTW_MEASURE);
         f_v = fftw_plan_dft_c2r_1d(size_real, c_v, v,
                 FFTW_MEASURE);
+        f_tau = fftw_plan_dft_c2r_1d(size_real, c_tau, tau,
+                FFTW_MEASURE);
         f_du = fftw_plan_dft_c2r_1d(size_real, dc_u, du,
+                FFTW_MEASURE);
+        f_dtau = fftw_plan_dft_c2r_1d(size_real, c_dtau, dtau,
                 FFTW_MEASURE);
 
         // Backward plans
         b_u = fftw_plan_dft_r2c_1d(size_real, u, c_u,
                 FFTW_MEASURE);
         b_v = fftw_plan_dft_r2c_1d(size_real, v, c_v,
+                FFTW_MEASURE);
+        b_tau = fftw_plan_dft_r2c_1d(size_real, tau, c_tau,
                 FFTW_MEASURE);
 
         fftw_export_wisdom_to_filename(get_wisdom_filename().c_str());
@@ -126,27 +151,30 @@ namespace turb {
      *  on u and v - precomputing saves a lot of
      *  cycles later on.
      */
-    void PaperIntegrator::initialize_operators()
+    void PolymerIntegrator::initialize_operators()
     {
         for (size_t i = 0; i < size_complex * 2.0 / 3; ++i) {
             double k = (double) i * 2 * M_PI / domain_size;
-            double Lx, Ly;
+            double Lx, Ly, Lz;
 
             Lx = - pow(k, 4) + 2 * pow(k, 2) - (1 - e);
             Ly = - D * pow(k, 2) - 1;
+            Lz = - 1 / lambda;
 
             Lu[i] = (1 + 0.5 * dt * Lx) / (1 - 0.5 * dt * Lx);
             Lv[i] = (1 + 0.5 * dt * Ly) / (1 - 0.5 * dt * Ly);
+            Ltau[i] = (1 + 0.5 * dt * Lz) / (1 - 0.5 * dt * Lz);
         }
     }
 
-    void PaperIntegrator::initialize_function(double x, double *result)
+    void PolymerIntegrator::initialize_function(double x, double *result)
     {
         result[0] = 2.0 * cos(x) + 0.03 * cos(11 * x / 12.0);
         result[1] = 0.0;
+        result[2] = 0.0;
     }
 
-    void PaperIntegrator::initialize(size_t dim_power, double timestep, double domain)
+    void PolymerIntegrator::initialize(size_t dim_power, double timestep, double domain)
     {
         allocate(dim_power, timestep, domain);
 
@@ -157,10 +185,12 @@ namespace turb {
             initialize_function((double) i / size_real * domain_size, temp_array);
             u[i] = temp_array[0];
             v[i] = temp_array[1];
+            tau[i] = temp_array[2];
         }
 
         fftw_execute(i_u);
         fftw_execute(i_v);
+        fftw_execute(i_tau);
 
         /** Make padidng the padding and scale the
          *  transformed arrays by sqrt(N)
@@ -191,7 +221,7 @@ namespace turb {
     /** \brief Used to override the default
      *      initialization
      */
-    void PaperIntegrator::override_initialize()
+    void PolymerIntegrator::override_initialize()
     {
         pt::ptime t = pt::microsec_clock::local_time();
         pt::ptime tick = pt::second_clock::local_time();
@@ -212,43 +242,57 @@ namespace turb {
      *  essentially just a multiplication by a precomputed
      *  vector. Nothing to see here, move along...
      */
-    void PaperIntegrator::compute_linear()
+    void PolymerIntegrator::compute_linear()
     {
         for (size_t i = 0; i < size_complex * 2.0 / 3; ++i) {
             double *tmp_u = c_u[i];
             double *tmp_v = c_v[i];
+            double *tmp_tau = c_tau[i];
 
             *tmp_u *= *(Lu + i);
             *(tmp_u + 1) *= *(Lu + i);
             *tmp_v *= *(Lv + i);
             *(tmp_v + 1) *= *(Lv + i);
+            *tmp_tau *= *(Ltau + i);
+            *(tmp_tau + 1) *= *(Ltau + i);
         }
     }
 
-    void PaperIntegrator::nonlinear_transform(size_t i, double *result)
+    void PolymerIntegrator::nonlinear_transform(size_t i, double *result)
     {
         double temp_u = (1 - e) *
             (a * v[i] + b * pow(v[i], 2)) * u[i] +
             u[i] * du[i];
 
+        double temp_tau =
+            1 / lambda * du[i] - u[i] * dtau[i] - 2 * tau[i] * du[i];
+
         result[0] = u[i] + dt * temp_u;
         result[1] = v[i] + dt * R * pow(u[i], 2);
+        result[2] = tau[i] + dt * temp_tau;
     }
 
-    void PaperIntegrator::compute_nonlinear()
+    void PolymerIntegrator::compute_nonlinear()
     {
         // Compute the derivative
         double inv_domain_size = 1 / domain_size;
         for (size_t i = 0; i < size_complex; ++i) {
-            double *temp_dc_u = dc_u[i];
-            double *temp_c_u = c_u[i];
+            double *temp_dc_u = dc_u[i],
+                   *temp_c_u = c_u[i],
+                   *temp_dc_tau = c_dtau[i],
+                   *temp_c_tau = c_tau[i];
+
             double k = (double) i * 2 * M_PI * inv_domain_size;
 
             *temp_dc_u = - k * *(temp_c_u + 1);
             *(temp_dc_u + 1) = k * *temp_c_u;
+
+            *temp_dc_tau = -k * *(temp_c_tau + 1);
+            *(temp_dc_tau + 1) = k * *temp_c_tau;
         }
 
         fftw_execute(f_u); fftw_execute(f_v); fftw_execute(f_du);
+        fftw_execute(f_tau); fftw_execute(f_dtau);
 
         // Normalize the transform
         double scale_factor = 1 / sqrt(size_real);
@@ -256,43 +300,58 @@ namespace turb {
             *(u + i) *= scale_factor;
             *(v + i) *= scale_factor;
             *(du + i) *= scale_factor;
+            *(tau + i) *= scale_factor;
+            *(dtau + i) *= scale_factor;
         }
 
         // Multiply the relevant parts according to the nonlinear equation
+        double inv_lambda = 1 / lambda;
         for (size_t i = 0; i < size_real; ++i) {
             nonlinear_transform(i, temp_array);
             u[i] = temp_array[0];
             v[i] = temp_array[1];
+            tau[i] = temp_array[2];
         }
 
         fftw_execute(b_u);
         fftw_execute(b_v);
+        fftw_execute(b_tau);
 
         // Normalize and nullify the padding
         for (size_t i = 0; i < size_complex; ++i) {
             double *u = c_u[i];
             double *v = c_v[i];
+            double *tau = c_tau[i];
 
             if (i >= size_complex * 2.0 / 3) {
                 *u = 0.0;
                 *(u + 1) = 0.0;
                 *v = 0.0;
                 *(v + 1) = 0.0;
+                *tau = 0.0;
+                *(tau + 1) = 0.0;
             } else {
                 *u *= scale_factor;
                 *(u + 1) *= scale_factor;
                 *v *= scale_factor;
                 *(v + 1) *= scale_factor;
+                *tau *= scale_factor;
+                *(tau + 1) *= scale_factor;
             }
         }
     }
 
-    void PaperIntegrator::forward_transform()
+    void PolymerIntegrator::forward_transform()
     {
-        fftw_execute(e_u); fftw_execute(e_v);
-        normalize(u, size_real); normalize(v, size_real);
+        fftw_execute(e_u);
+        fftw_execute(e_v);
+        fftw_execute(e_tau);
+
+        normalize(u, size_real);
+        normalize(v, size_real);
+        normalize(tau, size_real);
     }
 
-    PaperIntegrator *paper_integrator_instance = new PaperIntegrator();
+    PolymerIntegrator *polymer_integrator_instance = new PolymerIntegrator();
 }
 

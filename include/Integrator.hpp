@@ -65,7 +65,7 @@ namespace turb {
         virtual Integrator* clone() const = 0;
 
         // If set to true, static points will be searched for
-        bool search = true;
+        bool search;
     };
 }
 
