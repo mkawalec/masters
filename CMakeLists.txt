@@ -107,7 +107,7 @@ unset(MPI_LIB CACHE)
 
 find_package(FFTW)
 find_package(MPI REQUIRED)
-find_package(BLAS REQUIRED)
+find_package(Armadillo REQUIRED)
 
 set(Boost_USE_STATIC_LIBS        ON)
 set(Boost_USE_MULTITHREADED      OFF)
@@ -128,24 +128,30 @@ message(status "** FFTW Libraries: ${FFTW_LIBRARIES}")
 message(status "** MPI Include: ${MPI_CXX_INCLUDE_PATH}")
 message(status "** MPI Libraries: ${MPI_CXX_LIBRARIES}")
 
+message(status "** Armadillo include: ${ARMADILLO_INCLUDE_DIRS}")
+message(status "** Armadillo libraries: ${ARMADILLO_LIBRARIES}")
+
 
 INCLUDE_DIRECTORIES(
                  ${INCLUDE_DIRECTORIES}
                  ${Boost_INCLUDE_DIR} 
                  ${FFTW_INCLUDES} 
                  ${MPI_CXX_INCLUDE_PATH}
+                 ${ARMADILLO_INCLUDE_DIRS}
                  )
 LINK_DIRECTORIES(
                  ${Boost_LIBRARY_DIRS} 
                  ${FFTW_LIBRARIES} 
                  ${MPI_CXX_LIBRARIES} 
                  ${CMAKE_CURRENT_BINARY_DIR}
+                 ${ARMADILLO_LIBRARIES}
                  )
 
 target_link_libraries(integrator -lm ${FFTW_LIBRARIES} 
                                      ${Boost_LIBRARIES} 
                                      Alglib
                                      ${MPI_CXX_LIBRARIES}
+                                     ${ARMADILLO_LIBRARIES}
                      )
 #target_link_libraries(test-suite -lm ${FFTW_LIBRARIES} ${Boost_LIBRARIES} ${ALGLIB_LIBRARIES})
 

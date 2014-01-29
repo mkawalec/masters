@@ -3,13 +3,15 @@
 
 #include "Integrator.hpp"
 #include "Jacobian.hpp"
+#include "Base.hpp"
+
 #include <vector>
 
 namespace turb {
 
     class Integrator;
 
-    class Searcher {
+    class Searcher : public Base<Searcher> {
     private:
         typedef double jacobian_type;
 
@@ -46,6 +48,8 @@ namespace turb {
 
         std::vector<double> run();
         void init();
+
+        Searcher* clone() const { return new Searcher(*this);}
     };
 
 }
