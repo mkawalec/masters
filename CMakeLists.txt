@@ -106,14 +106,15 @@ unset(FFTW_LIBRARIES CACHE)
 unset(MPI_LIB CACHE)
 
 find_package(FFTW)
-#find_package(ALGLIB)
-
 find_package(MPI REQUIRED)
+find_package(BLAS REQUIRED)
 
 set(Boost_USE_STATIC_LIBS        ON)
 set(Boost_USE_MULTITHREADED      OFF)
 set(Boost_USE_STATIC_RUNTIME     ON)
 set(BOOST_ALL_DYN_LINK           OFF)   # force dynamic linking for all libraries
+
+
 
 find_package(Boost 1.52 COMPONENTS unit_test_framework program_options date_time REQUIRED)
 #ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK) 
@@ -127,6 +128,8 @@ message(status "** FFTW Libraries: ${FFTW_LIBRARIES}")
 message(status "** MPI Include: ${MPI_CXX_INCLUDE_PATH}")
 message(status "** MPI Libraries: ${MPI_CXX_LIBRARIES}")
 
+message(status "** BLAS Libraries: ${BLAS_LIBRARIES}")
+
 INCLUDE_DIRECTORIES(
                  ${INCLUDE_DIRECTORIES}
                  ${Boost_INCLUDE_DIR} 
@@ -138,12 +141,14 @@ LINK_DIRECTORIES(
                  ${FFTW_LIBRARIES} 
                  ${MPI_CXX_LIBRARIES} 
                  ${CMAKE_CURRENT_BINARY_DIR}
+                 ${BLAS_LIBRARIES}
                  )
 
 target_link_libraries(integrator -lm ${FFTW_LIBRARIES} 
                                      ${Boost_LIBRARIES} 
                                      Alglib
                                      ${MPI_CXX_LIBRARIES}
+                                     ${BLAS_LINKER_FLAGS}
                      )
 #target_link_libraries(test-suite -lm ${FFTW_LIBRARIES} ${Boost_LIBRARIES} ${ALGLIB_LIBRARIES})
 
