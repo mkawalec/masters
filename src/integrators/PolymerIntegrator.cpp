@@ -201,17 +201,22 @@ namespace turb {
         for (size_t i = 0; i < size_complex; ++i) {
             double *tmp_u = c_u[i];
             double *tmp_v = c_v[i];
+            double *tmp_tau = c_tau[i];
 
             if (i >= size_complex * 2.0 / 3) {
                 *tmp_u = 0.0;
                 *(tmp_u + 1) = 0.0;
                 *tmp_v = 0.0;
                 *(tmp_v + 1) = 0.0;
+                *tmp_tau = 0.0;
+                *(tmp_tau + 1) = 0.0;
             } else {
                 *tmp_u *= scale_factor;
                 *(tmp_u + 1) *= scale_factor;
                 *tmp_v *= scale_factor;
                 *(tmp_v + 1) *= scale_factor;
+                *tmp_tau *= scale_factor;
+                *(tmp_tau + 1) *= scale_factor;
             }
         }
 
@@ -262,10 +267,10 @@ namespace turb {
     {
         double temp_u = (1 - e) *
             (a * v[i] + b * pow(v[i], 2)) * u[i] +
-            u[i] * du[i];
+            u[i] * du[i] - dtau[i];
 
         double temp_tau =
-            1 / lambda * du[i] - u[i] * dtau[i] - 2 * tau[i] * du[i];
+            1 / lambda * du[i] - u[i] * dtau[i] + 2 * tau[i] * du[i];
 
         result[0] = u[i] + dt * temp_u;
         result[1] = v[i] + dt * R * pow(u[i], 2);
@@ -305,7 +310,6 @@ namespace turb {
         }
 
         // Multiply the relevant parts according to the nonlinear equation
-        double inv_lambda = 1 / lambda;
         for (size_t i = 0; i < size_real; ++i) {
             nonlinear_transform(i, temp_array);
             u[i] = temp_array[0];
@@ -316,6 +320,7 @@ namespace turb {
         fftw_execute(b_u);
         fftw_execute(b_v);
         fftw_execute(b_tau);
+
 
         // Normalize and nullify the padding
         for (size_t i = 0; i < size_complex; ++i) {

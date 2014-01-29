@@ -128,7 +128,6 @@ message(status "** FFTW Libraries: ${FFTW_LIBRARIES}")
 message(status "** MPI Include: ${MPI_CXX_INCLUDE_PATH}")
 message(status "** MPI Libraries: ${MPI_CXX_LIBRARIES}")
 
-message(status "** BLAS Libraries: ${BLAS_LIBRARIES}")
 
 INCLUDE_DIRECTORIES(
                  ${INCLUDE_DIRECTORIES}
@@ -141,14 +140,12 @@ LINK_DIRECTORIES(
                  ${FFTW_LIBRARIES} 
                  ${MPI_CXX_LIBRARIES} 
                  ${CMAKE_CURRENT_BINARY_DIR}
-                 ${BLAS_LIBRARIES}
                  )
 
 target_link_libraries(integrator -lm ${FFTW_LIBRARIES} 
                                      ${Boost_LIBRARIES} 
                                      Alglib
                                      ${MPI_CXX_LIBRARIES}
-                                     ${BLAS_LINKER_FLAGS}
                      )
 #target_link_libraries(test-suite -lm ${FFTW_LIBRARIES} ${Boost_LIBRARIES} ${ALGLIB_LIBRARIES})
 

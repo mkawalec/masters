@@ -58,7 +58,7 @@ namespace turb {
      *      u and v at a given time.
      */
     struct history {
-        double time, u, v;
+        double time, u, v, tau;
     };
 
     /*! \brief Used to explicitly mark parameters

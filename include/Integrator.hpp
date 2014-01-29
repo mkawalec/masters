@@ -48,7 +48,8 @@ namespace turb {
 
         double dt, domain_size, dim_power,
                e, a, b, D, R;
-        double *u = NULL, *v = NULL, *du = NULL, *Lu = NULL, *Lv = NULL;
+        double *u = NULL, *v = NULL, *du = NULL, *Lu = NULL, *Lv = NULL,
+               *tau = NULL, *dtau = NULL;
 
         fftw_plan e_u, e_v, i_u, i_v,
                   f_u, f_v, f_du, b_u, b_v;

@@ -21,7 +21,7 @@ namespace turb {
         void allocate(size_t dim_power, double timestep, double domain);
         double lambda;
 
-        double *tau = NULL, *dtau = NULL, *Ltau = NULL;
+        double *Ltau = NULL;
         fftw_complex *c_tau, *c_dtau;
 
         fftw_plan e_tau, i_tau, f_tau, f_dtau, b_tau;

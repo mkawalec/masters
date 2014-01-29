@@ -67,7 +67,13 @@ namespace turb {
                 run_history[index].u    = norm_u;
                 run_history[index].v    = norm_v;
 
-                if (norm_u < decay_threshold) {
+                if (integrator->tau != NULL) {
+                    double norm_tau = l2_norm(integrator->tau,
+                            integrator->size_real);
+                    run_history[index].tau    = norm_tau;
+                }
+
+                if (norm_u < decay_threshold || (i + 2 * print_every) * dt  > fast_threshold) {
                     std::string output_data;
                     output_data.reserve(30 * index);
                     for (size_t j = 0; j < index + 1; ++j) {
@@ -76,6 +82,12 @@ namespace turb {
                         output_data.append(std::to_string(run_history[j].u));
                         output_data += " ";
                         output_data.append(std::to_string(run_history[j].v));
+
+                        if (integrator->tau != NULL) {
+                            output_data += " ";
+                            output_data.append(std::to_string(run_history[j].tau));
+                        }
+
                         output_data += "\n";
                     }
                     delete run_history;
