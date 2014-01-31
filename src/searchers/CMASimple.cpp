@@ -39,6 +39,9 @@ namespace turb {
     {
         set_params();
 
+        for (int i = 0; i < stop_iters; ++i) {
+
+        }
     }
 
     void CMASimple::set_params()
@@ -72,6 +75,8 @@ namespace turb {
         D->fill(1.0);
         *C = *B * diagmat(*D % *D) * B->t();
         *invsqrtC = *B * diagmat(pow(*D, -1)) * B->t();
+        eigenval = 0;
+        chiN = pow(N, 0.5) * (1 - 1 / (4 * N) + 1 / (21 * pow(N, 2)));
     }
 
     void CMASimple::allocate(Integrator *integrator)
