@@ -1,5 +1,7 @@
 #include "Serializer.hpp"
 #include "Computer.hpp"
+#include "Searcher.hpp"
+
 #include "helpers.hpp"
 #include "exceptions.hpp"
 
@@ -17,10 +19,14 @@ namespace po = boost::program_options;
 turb::Computer* initialize(int argc, char *argv[])
 {
     std::string output_filename, config_filename,
-        serializer_name, computer_name, integrator_name;
+        serializer_name, computer_name, integrator_name,
+        searcher;
     double end_time, dt, domain_size, threshold;
     size_t print_every, samples, runs;
     bool split_files, fit;
+
+    int my_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 
     po::options_description generic_opts("Generic options");
     generic_opts.add_options()
@@ -72,6 +78,10 @@ turb::Computer* initialize(int argc, char *argv[])
          "if specified, the MultirunComputers will try to fit"
          " returned values of u to an exponential curve and print"
          " results to stdout")
+        ("searcher",
+         po::value<std::string>(&searcher)->default_value("no-tau-simple"),
+         ("Specifies a searcher to use. Available are:\n\n" +
+         turb::Searcher::list_available()).c_str())
         ;
 
     po::options_description cmdline_opts;
@@ -99,8 +109,6 @@ turb::Computer* initialize(int argc, char *argv[])
     }
 
     if (vm.count("help")) {
-        int my_rank;
-        MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
         std::stringstream output;
 
         if (my_rank == 0)
@@ -113,6 +121,30 @@ turb::Computer* initialize(int argc, char *argv[])
 
     turb::Computer *computer = turb::Computer::choose(computer_name)->clone();
     computer->integrator = turb::Integrator::choose(integrator_name)->clone();
+
+    std::vector<std::string> comp_ints =
+        turb::Searcher::choose(searcher)->compatible_integrators;
+
+    bool compatible = false;
+    for (int i = 0; (unsigned)i < comp_ints.size(); ++i) {
+        if (comp_ints[i] == computer->integrator->name) {
+            compatible = true;
+            break;
+        }
+    }
+    if (!compatible) {
+        std::stringstream output;
+        if (my_rank == 0)
+            output << "Searcher " << searcher <<
+                "is not compatible with integrator " <<
+                computer->integrator->name << std::endl;
+
+        throw turb::ProgramDeathRequest(&output);
+    } else {
+        computer->integrator->selected_searcher = searcher;
+    }
+
+
     computer->serializer = turb::Serializer::choose(serializer_name);
     computer->parse_params(argc, argv);
 

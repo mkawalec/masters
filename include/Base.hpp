@@ -23,9 +23,6 @@ namespace turb {
          */
         void unregister();
 
-        /// Contains currently available worker classes
-        static std::list<T*> available;
-
         /*! \brief Gives additional information about a worker.
          *  \return the additional information
          *
@@ -46,6 +43,9 @@ namespace turb {
          *      an empty std::string
          */
         static T* choose(std::string name);
+
+        /// Contains currently available worker classes
+        static std::list<T*> available;
 
         /*! \brief Provides a human-readable information
          *      about currently available workers.

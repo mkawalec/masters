@@ -39,7 +39,8 @@ namespace turb {
     void Integrator::setup_searcher()
     {
         if (searcher) delete searcher;
-        searcher = new Searcher(this);
+        searcher = Searcher::choose(selected_searcher)->clone();
+        searcher->allocate(this);
     }
 
     std::vector<double> Integrator::get_norms(std::vector<double> coords)

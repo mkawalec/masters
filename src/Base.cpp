@@ -2,6 +2,7 @@
 #define turb_Base_cpp
 
 #include "exceptions.hpp"
+#include "Searcher.hpp"
 
 #include <string>
 #include <list>
@@ -39,7 +40,7 @@ namespace turb {
     std::string Base<T>::list_available()
     {
         std::string output_methods_desc;
-        
+
         for (typename std::list<T*>::iterator it = T::available.begin();
              it != T::available.end(); ++it) {
             output_methods_desc += (*it)->name + ": \t" +
@@ -51,4 +52,4 @@ namespace turb {
 }
 
 
-#endif 
+#endif

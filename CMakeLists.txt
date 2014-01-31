@@ -58,6 +58,8 @@ set(HEADER_FILES
     include/serializers/NormSerializer.hpp
     include/serializers/ComponentSerializer.hpp
     include/serializers/GenericSerializer.hpp
+    include/searchers/NoTauSimple.hpp
+    include/searchers/SimpleSearcher.hpp
     include/Searcher.hpp
     include/Computer.hpp
     include/computers/SimpleComputer.hpp
@@ -65,6 +67,7 @@ set(HEADER_FILES
     include/computers/DecayMultirunComputer.hpp
     include/computers/DecayPathComputer.hpp
     )
+
 set(CPP_FILES
     src/helpers.cpp
     src/integrator.cpp
@@ -72,7 +75,8 @@ set(CPP_FILES
     src/integrators/PaperIntegrator.cpp
     src/integrators/PolymerIntegrator.cpp
     src/Computer.cpp
-    src/Searcher.cpp
+    src/searchers/SimpleSearcher.cpp
+    src/searchers/NoTauSimple.cpp
     src/serializers/NormSerializer.cpp
     src/serializers/ComponentSerializer.cpp
     src/serializers/GenericSerializer.cpp
@@ -91,7 +95,7 @@ add_executable(integrator ${CPP_FILES})
 set(MARCH native)
 if (CMAKE_COMPILER_IS_GNUCXX)
     message(status "Setting GCC flags")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=${MARCH} -ffast-math -ftree-vectorize -O3 -Wall -Wextra -Wno-ignored-qualifiers -pedantic -W -std=c++0x")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=${MARCH} -ffast-math -ftree-vectorize -O3 -Wall -Wextra -Wno-ignored-qualifiers -pedantic -W -std=c++0x -g")
 else()
     message(status "gcc not found!")
     return()
