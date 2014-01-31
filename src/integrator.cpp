@@ -132,6 +132,7 @@ turb::Computer* initialize(int argc, char *argv[])
             break;
         }
     }
+
     if (!compatible) {
         std::stringstream output;
         if (my_rank == 0)
@@ -143,7 +144,6 @@ turb::Computer* initialize(int argc, char *argv[])
     } else {
         computer->integrator->selected_searcher = searcher;
     }
-
 
     computer->serializer = turb::Serializer::choose(serializer_name);
     computer->parse_params(argc, argv);
@@ -174,6 +174,10 @@ int main(int argc, char *argv[])
     try {
         computer = initialize(argc, argv);
     } catch (const turb::ProgramDeathRequest& e) {
+        std::cerr << e.what() << std::endl;
+        MPI_Finalize();
+        return 0;
+    } catch (const turb::InstanceNotFound& e) {
         std::cerr << e.what() << std::endl;
         MPI_Finalize();
         return 0;
