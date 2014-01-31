@@ -32,6 +32,7 @@ namespace turb {
         delete B;
         delete D;
         delete C;
+        delete invsqrtC;
     }
 
     std::vector<double> CMASimple::run()
@@ -43,9 +44,19 @@ namespace turb {
     void CMASimple::set_params()
     {
         int i = 1;
+        // Setting the weighted recombination
         for (mat::col_iterator iter = weights->begin_col(0);
              iter < weights->end_col(0); ++iter, ++i)
             *iter = log(mu + 0.5) - log(i) / log(10);
+
+        // Setting the initial point
+        i = 0;
+        for (mat::col_iterator iter = xmean->begin_col(0);
+             iter < weights->end_col(0); ++iter, ++i)
+            *iter = f[i];
+
+        *weights /= accu(*weights);
+        mueff = pow(accu(*weights), 2) / accu(*weights % *weights);
 
         // Adaptation parameters
         cc =  (4 + mueff / N) / (N + 4 + 2 * mueff / N);
@@ -53,6 +64,14 @@ namespace turb {
         c1 = 2 / (pow(N + 1.3, 2) + mueff);
         cmu = std::min(1 - c1, 2 * (mueff - 2 + 1/mueff) / (pow(N + 2, 2) + mueff));
         damps = 1 + 2 * std::max(0.0, sqrt((mueff - 1) / (N + 1)) - 1) + cs;
+
+        // Initialize dynamic strategy parameters
+        pc->fill(0.0);
+        ps->fill(0.0);
+        B->fill(fill::eye);
+        D->fill(1.0);
+        *C = *B * diagmat(*D % *D) * B->t();
+        *invsqrtC = *B * diagmat(pow(*D, -1)) * B->t();
     }
 
     void CMASimple::allocate(Integrator *integrator)
@@ -66,11 +85,12 @@ namespace turb {
 
         weights = new mat(mu, 1);
         xmean   = new mat(N, 1);
-        pc      = new mat(N, 1, fill::zeros);
-        ps      = new mat(N, 1, fill::zeros);
-        B       = new mat(N, N, fill::eye);
-        D       = new mat(N, 1, fill::ones);
+        pc      = new mat(N, 1);
+        ps      = new mat(N, 1);
+        B       = new mat(N, N);
+        D       = new mat(N, 1);
         C       = new mat(N, N);
+        invsqrtC= new mat(N, N);
 
         SimpleSearcher::allocate(integrator);
 

@@ -30,7 +30,8 @@ namespace turb {
             *ps,
             *B,
             *D,
-            *C;
+            *C,
+            *invsqrtC;
 
         void set_params();
 
