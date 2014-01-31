@@ -25,7 +25,7 @@ namespace turb {
         void compute_F(double *__restrict__ input, double *__restrict__ result);
 
     public:
-        void init();
+        virtual void init();
         virtual void allocate(Integrator *integrator);
         virtual ~SimpleSearcher();
     };

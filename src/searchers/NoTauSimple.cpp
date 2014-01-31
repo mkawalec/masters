@@ -135,5 +135,10 @@ namespace turb {
         Searcher::available.push_back(this);
     }
 
+    NoTauSimple::~NoTauSimple()
+    {
+        delete jacobian;
+    }
+
     NoTauSimple *simple_instance = new NoTauSimple;
 }

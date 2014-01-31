@@ -140,7 +140,7 @@ namespace turb {
         }
     }
 
-    void PaperIntegrator::initialize_function(double x, double *result)
+    void PaperIntegrator::initialize_function(double x, double *__restrict__ result)
     {
         result[0] = 2.0 * cos(x) + 0.03 * cos(11 * x / 12.0);
         result[1] = 0.0;
@@ -225,7 +225,7 @@ namespace turb {
         }
     }
 
-    void PaperIntegrator::nonlinear_transform(size_t i, double *result)
+    void PaperIntegrator::nonlinear_transform(size_t i, double *__restrict__ result)
     {
         double temp_u = (1 - e) *
             (a * v[i] + b * pow(v[i], 2)) * u[i] +

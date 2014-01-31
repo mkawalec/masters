@@ -28,7 +28,7 @@ namespace turb {
 
     public:
         NoTauSimple();
-        virtual ~NoTauSimple() { };
+        virtual ~NoTauSimple();
 
         std::vector<double> run();
         void allocate(Integrator *integrator);

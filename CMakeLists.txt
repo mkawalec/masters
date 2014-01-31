@@ -60,6 +60,7 @@ set(HEADER_FILES
     include/serializers/GenericSerializer.hpp
     include/searchers/NoTauSimple.hpp
     include/searchers/SimpleSearcher.hpp
+    include/searchers/CMASimple.hpp
     include/Searcher.hpp
     include/Computer.hpp
     include/computers/SimpleComputer.hpp
@@ -77,6 +78,7 @@ set(CPP_FILES
     src/Computer.cpp
     src/searchers/SimpleSearcher.cpp
     src/searchers/NoTauSimple.cpp
+    src/searchers/CMASimple.cpp
     src/serializers/NormSerializer.cpp
     src/serializers/ComponentSerializer.cpp
     src/serializers/GenericSerializer.cpp
@@ -109,7 +111,7 @@ unset(FFTW_LIBRARIES CACHE)
 #unset(ALGLIB_LIBRARIES CACHE)
 unset(MPI_LIB CACHE)
 
-find_package(FFTW)
+find_package(FFTW REQUIRED)
 find_package(MPI REQUIRED)
 find_package(Armadillo REQUIRED)
 

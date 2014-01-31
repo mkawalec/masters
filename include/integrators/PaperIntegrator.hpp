@@ -29,11 +29,11 @@ namespace turb {
 
         virtual void override_initialize();
 
-        virtual void initialize_function(double x, double *results);
+        virtual void initialize_function(double x, double *__restrict__ results);
         /*! \brief The overloadable nonlinear transform applied
          *      in the real (non-Fourier) space
          */
-        virtual void nonlinear_transform(size_t i, double *results);
+        virtual void nonlinear_transform(size_t i, double *__restrict__ results);
 
         // The much needed temporary array of two doubles
         double *temp_array = NULL;
