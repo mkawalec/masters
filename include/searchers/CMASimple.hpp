@@ -12,9 +12,9 @@ namespace turb {
     class CMASimple : public SimpleSearcher {
     private:
         int N, lambda, mu;
-        double sigma = 0.3,
-               stop_fitness = 1e-10,
-               stop_iters = 100,
+        double sigma = 0.5,
+               stop_fitness = 1,
+               stop_iters,
                mueff,                   // Variance-effectiveness
                cc,                      // Time constant for cumulation for C
                cs,                      // t-const for cumulation for sigma control
@@ -24,12 +24,15 @@ namespace turb {
                eigenval,
                chiN;
 
-        mat *weights,                   // array for weighted recombination
-            *xmean,                     // initial point for variables
-            *pc,
-            *ps,
-            *B,
+        vec **values,
+            *weights,
             *D,
+            *xmean,
+            *xold,
+            *pc,
+            *ps;
+
+        mat *B,
             *C,
             *invsqrtC;
 

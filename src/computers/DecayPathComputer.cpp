@@ -42,6 +42,8 @@ namespace turb {
             ("static-interval", po::value<double>(&static_interval)->default_value(1.0),
              "Tries to find a static point every static-interval"
              " of time")
+            ("find-zeros", po::value<bool>(&search)->default_value(true),
+             "If true, the search for a stationary point will be performed")
             ;
     }
 
@@ -100,7 +102,8 @@ namespace turb {
             }
 
             // Try to find a static point at the current position
-            if (i != 0 && integrator->search && i%(int)(static_interval / dt) == 0) {
+            if (i != 0 && search && integrator->search
+                    && i%(int)(static_interval / dt) == 0) {
                 try {
                     integrator->searcher->init();
                     base->add_stationary(integrator->searcher->run());

@@ -17,6 +17,7 @@ namespace turb {
     private:
         double decay_threshold, fast_threshold;
         Searcher *searcher = NULL;
+        bool search;
 
     public:
         DecayPathComputer();
