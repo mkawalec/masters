@@ -76,33 +76,30 @@ namespace turb {
                 eigenval = i + 1;
                 *C = symmatu(*C);
                 eig_sym(*D, *B, *C);
-                *D = sqrt(*D);
+                *D = sqrt(sign(*D) % *D);
                 for (int j = 0; (unsigned)j < B->n_cols; ++j)
                     B->col(j) /= norm(B->col(j), 2);
 
                 *invsqrtC = *B * diagmat(pow(*D, -1)) * B->t();
             }
-            if (fitness[0].first < stop_fitness) {
-                std::cout << "Found " << fitness[0].first << std::endl;
-                std::vector<double> zero;
-                zero.reserve(N);
-                for (int j = 0; j < N; ++j)
-                    zero.push_back((*xmean)(j));
+
+            if (fabs(fitness[0].first) > 1e7 || isnan(fitness[0].first)) {
+                delete[] result;
+                throw NoResult();
+            } else if (fitness[0].first < stop_fitness) {
+                std::cout << "Found " << fitness[0].first << endl;
 
                 delete[] result;
-                return zero;
+                return std::vector<double>(xmean->memptr(), xmean->memptr() + N);
             }
 
             if (fitness[floor(0.7 * lambda)].first - fitness[0].first < 0.1)
                 sigma *= exp(0.2 * cs / damps);
 
-            /*for (int j = 0; j < 5; ++j)
-                std::cout << fitness[j].first << " ";
-            std::cout << std::endl;*/
-
-            if (fitness[0].first > 1e7) {
-                delete[] result;
-                throw NoResult();
+            if (i%1 == 0) {
+                for (int j = 0; j < 5; ++j)
+                    std::cout << fitness[j].first << " ";
+                std::cout << std::endl;
             }
 
         }
@@ -153,7 +150,7 @@ namespace turb {
 
         // Parameter setting
         N = 2 * integrator->size_real;
-        lambda = 12 + floor(3 * log(N)/log(10));
+        lambda = 100 + floor(3 * log(N)/log(10));
         mu = lambda / 2;
         stop_iters = 1e3 * N;
 
@@ -172,7 +169,6 @@ namespace turb {
             values[i] = new vec(N);
 
         SimpleSearcher::allocate(integrator);
-
     }
 
     CMASimple::~CMASimple()

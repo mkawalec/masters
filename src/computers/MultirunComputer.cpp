@@ -109,7 +109,7 @@ namespace turb {
         for (size_t i = 0; i < single_pts.size(); ++i) {
             std::vector<double> norms = integrator->get_norms(single_pts[i]);
             for (int j = 0; j < norms.size(); ++j) {
-                if (fabs(norms[i]) > 300) continue;
+                if (fabs(norms[j]) > 300) continue;
             }
 
             std::string current_filename = "stationary";
@@ -121,14 +121,16 @@ namespace turb {
             current_filename += output_number.str();
 
             for (int j = 0; j < norms.size(); ++j) {
-                current_filename +=
-                "-" + std::to_string(norms[i]);
+                current_filename += "-" + std::to_string(norms[j]);
+                std::cerr << norms[j] << " ";
             }
+            std::cerr << std::endl;
 
             std::ofstream output(current_filename);
             for (size_t j = 0; j < single_pts[i].size(); ++j)
                 output << j << " " << single_pts[i][j] << std::endl;
             output.close();
+
         }
     }
 

@@ -12,8 +12,8 @@ namespace turb {
     class CMASimple : public SimpleSearcher {
     private:
         int N, lambda, mu;
-        double sigma = 0.5,
-               stop_fitness = 1,
+        double sigma = 0.3,
+               stop_fitness = 3e-1,
                stop_iters,
                mueff,                   // Variance-effectiveness
                cc,                      // Time constant for cumulation for C
