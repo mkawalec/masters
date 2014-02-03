@@ -76,6 +76,7 @@ set(CPP_FILES
     src/integrators/PaperIntegrator.cpp
     src/integrators/PolymerIntegrator.cpp
     src/Computer.cpp
+    src/Searcher.cpp
     src/searchers/SimpleSearcher.cpp
     src/searchers/NoTauSimple.cpp
     src/searchers/CMASimple.cpp
@@ -97,7 +98,7 @@ add_executable(integrator ${CPP_FILES})
 set(MARCH native)
 if (CMAKE_COMPILER_IS_GNUCXX)
     message(status "Setting GCC flags")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=${MARCH} -ffast-math -ftree-vectorize -O3 -Wall -Wextra -Wno-ignored-qualifiers -pedantic -W -std=c++0x")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=${MARCH} -ffast-math -ftree-vectorize -O3 -Wall -Wextra -Wno-ignored-qualifiers -pedantic -W -std=c++0x -g")
 else()
     message(status "gcc not found!")
     return()

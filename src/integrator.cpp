@@ -148,6 +148,7 @@ turb::Computer* initialize(int argc, char *argv[])
     computer->serializer = turb::Serializer::choose(serializer_name);
     computer->parse_params(argc, argv);
 
+
     // Setting the params
     computer->print_every = print_every;
     computer->end_time = end_time;
@@ -171,6 +172,9 @@ int main(int argc, char *argv[])
     MPI_Init(&argc, &argv);
     turb::Computer *computer = NULL;
 
+    int my_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+
     try {
         computer = initialize(argc, argv);
     } catch (const turb::ProgramDeathRequest& e) {
@@ -183,7 +187,14 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    computer->run();
+    try {
+        computer->run();
+    } catch (const turb::ProgramDeathRequest& e) {
+        if (my_rank == 0) std::cerr << e.what() << std::endl;
+
+        MPI_Finalize();
+        return 0;
+    }
 
     MPI_Finalize();
     return 0;

@@ -4,6 +4,7 @@
 #include "searchers/SimpleSearcher.hpp"
 
 #include <armadillo>
+#include <iostream>
 using namespace arma;
 
 
@@ -13,7 +14,7 @@ namespace turb {
     private:
         int N, lambda, mu;
         double sigma = 0.3,
-               stop_fitness = 3e-1,
+               stop_fitness = 3e-2,
                stop_iters,
                mueff,                   // Variance-effectiveness
                cc,                      // Time constant for cumulation for C
@@ -45,7 +46,13 @@ namespace turb {
         std::vector<double> run();
         void allocate(Integrator *integrator);
 
-        Searcher* clone() const { return new CMASimple(*this);}
+        Searcher* clone() const
+        {
+            std::cout << "cloned " << check_filename << std::endl;
+            Searcher *cloned = new CMASimple(*this);
+            cloned->check_filename = check_filename;
+            return cloned;
+        }
     };
 }
 

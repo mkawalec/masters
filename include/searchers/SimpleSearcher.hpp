@@ -24,6 +24,8 @@ namespace turb {
         void F(double *__restrict__ input, double *__restrict__ result);
         void compute_F(double *__restrict__ input, double *__restrict__ result);
 
+        void check_verify();
+
     public:
         virtual void init();
         virtual void allocate(Integrator *integrator);

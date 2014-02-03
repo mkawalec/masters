@@ -1,11 +1,17 @@
 #include "searchers/SimpleSearcher.hpp"
 #include "Integrator.hpp"
+#include "exceptions.hpp"
+#include "helpers.hpp"
+
+#include <fstream>
+#include <cstdlib>
 
 namespace turb {
 
     void SimpleSearcher::allocate(Integrator *integrator)
     {
         this->integrator = integrator;
+
         srand(1234);
 
         f = (double*)
@@ -83,6 +89,7 @@ namespace turb {
             *(d2u + 1) = *(du + 1);
             *d4u = *du;
             *(d4u + 1) = *(du + 1);
+            std::cout << *d2u << std::endl;
         }
 
 
@@ -99,6 +106,7 @@ namespace turb {
                 tmp[1] = k * *du;
 
                 *du = tmp[0];
+            std::cout << *du << std::endl;
                 *(du + 1) = tmp[1];
                 *d2v *= -pow(k, 2);
                 *(d2v + 1) *= -pow(k, 2);
@@ -168,6 +176,44 @@ namespace turb {
         fftw_free(f_val1);
         fftw_free(dx);
     }
+
+    void SimpleSearcher::check_verify()
+    {
+        if (check_filename == "") return;
+
+        std::ifstream input_file(check_filename);
+        allocate(integrator);
+        if (not input_file.is_open()) {
+            throw ProgramDeathRequest("The file " +
+                    check_filename + " is not readable!");
+        }
+
+        std::string tmp_line;
+        for (int i = 0; (unsigned)i < 2 * integrator->size_real; ++i) {
+            std::getline(input_file, tmp_line);
+            const char *tmp_str = tmp_line.c_str();
+            char *first_end;
+            strtod(tmp_str, &first_end);
+            f[i] = strtod(first_end, NULL);
+
+            std::cout << i << " " << f[i] << std::endl;
+        }
+        std::cout << std::endl;
+
+        F(f, f_val1);
+
+        double norm = l2_norm(f_val1, integrator->size_real);
+        std::cout << norm << std::endl;
+        if (norm < 0.03) {
+            throw ProgramDeathRequest("The file " +
+                    check_filename + " is correct");
+        }
+        else {
+            throw ProgramDeathRequest("The norm for file " +
+                    check_filename + " is " + std::to_string(norm) + " and is too big!");
+        }
+    }
+
 }
 
 

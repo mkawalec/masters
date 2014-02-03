@@ -132,6 +132,7 @@ namespace turb {
             "a simple linar descent strategy";
         compatible_integrators.push_back("paper");
 
+        set_options();
         Searcher::available.push_back(this);
     }
 

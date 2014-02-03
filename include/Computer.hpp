@@ -58,6 +58,10 @@ namespace turb {
 
         void fold(std::vector<std::vector<double> > *folded, int target_rank);
 
+        // Saved command line arguments for later
+        int my_argc;
+        char **my_argv = NULL;
+
     public:
         /// Currently used Integrator
         Integrator *integrator = NULL;
@@ -95,6 +99,8 @@ namespace turb {
          *      a correct pointer is returned.
          */
         virtual Computer* clone() const = 0;
+
+        virtual ~Computer();
     };
 }
 

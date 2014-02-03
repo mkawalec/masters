@@ -43,6 +43,12 @@ namespace turb {
         searcher->allocate(this);
     }
 
+    void Integrator::setup_searcher(int argc, char *argv[])
+    {
+        setup_searcher();
+        searcher->parse_params(argc, argv);
+    }
+
     std::vector<double> Integrator::get_norms(std::vector<double> coords)
     {
         std::vector<double> norms;

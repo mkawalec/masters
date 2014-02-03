@@ -22,6 +22,7 @@ namespace turb {
 
         compatible_integrators.push_back("paper");
 
+        set_options();
         Searcher::available.push_back(this);
     }
 
@@ -83,11 +84,12 @@ namespace turb {
                 *invsqrtC = *B * diagmat(pow(*D, -1)) * B->t();
             }
 
-            if (fabs(fitness[0].first) > 1e7 || isnan(fitness[0].first)) {
+            if (norm(*xmean, 2) > 400 || isnan(fitness[0].first)) {
+                std::cerr << "No result" << std::endl;
                 delete[] result;
                 throw NoResult();
             } else if (fitness[0].first < stop_fitness) {
-                std::cout << "Found " << fitness[0].first << endl;
+                std::cerr << "Found " << fitness[0].first << std::endl;
 
                 delete[] result;
                 return std::vector<double>(xmean->memptr(), xmean->memptr() + N);
@@ -96,7 +98,7 @@ namespace turb {
             if (fitness[floor(0.7 * lambda)].first - fitness[0].first < 0.1)
                 sigma *= exp(0.2 * cs / damps);
 
-            if (i%1 == 0) {
+            if (i%100 == 0) {
                 for (int j = 0; j < 5; ++j)
                     std::cout << fitness[j].first << " ";
                 std::cout << std::endl;
@@ -152,7 +154,7 @@ namespace turb {
         N = 2 * integrator->size_real;
         lambda = 100 + floor(3 * log(N)/log(10));
         mu = lambda / 2;
-        stop_iters = 1e3 * N;
+        stop_iters = 1e3 * 5;
 
         weights = new vec(mu);
         xmean   = new vec(N);

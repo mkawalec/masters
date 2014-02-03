@@ -51,7 +51,7 @@ namespace turb {
     {
         set_serializer();
         integrator->clear(samples, dt, domain_size);
-        integrator->setup_searcher();
+        integrator->setup_searcher(my_argc, my_argv);
 
         history *run_history =
             new history[(size_t)(fast_threshold / dt / (double) print_every)];
@@ -103,7 +103,8 @@ namespace turb {
 
             // Try to find a static point at the current position
             if (i != 0 && search && integrator->search
-                    && i%(int)(static_interval / dt) == 0) {
+                    && i%(int)(static_interval / dt) == 0
+                    && i/(int)(static_interval / dt) > 1) {
                 try {
                     integrator->searcher->init();
                     base->add_stationary(integrator->searcher->run());

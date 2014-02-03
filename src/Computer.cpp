@@ -23,7 +23,6 @@ namespace turb {
             message += params_desc.str();
         }
         return message;
-
     }
 
     void Computer::set_serializer()
@@ -44,6 +43,18 @@ namespace turb {
         }
 
         integrator->parse_params(argc, argv);
+
+        integrator->clear(samples, dt, domain_size);
+        integrator->setup_searcher();
+        integrator->searcher->parse_params(argc, argv);
+
+        my_argc = argc;
+        my_argv = new char* [argc];
+        for (int i = 0; i < argc; ++i) {
+            size_t length = strlen(argv[i]);
+            my_argv[i] = new char[length];
+            strncpy(my_argv[i], argv[i], length);
+        }
     }
 
     void Computer::set_filename(std::string *output)
@@ -129,6 +140,12 @@ namespace turb {
         if (my_rank == target_rank) std::cerr << " done" << std::endl;
     }
 
-
+    Computer::~Computer()
+    {
+        if (my_argv) {
+            for (int i = 0; i < my_argc; ++i)
+                delete[] my_argv[i];
+        }
+    }
 }
 

@@ -57,6 +57,8 @@ namespace turb {
 
         Searcher *searcher = NULL;
         void setup_searcher();
+        void setup_searcher(int argc, char *argv[]);
+
         std::string selected_searcher;
 
         virtual std::vector<double> get_norms(std::vector<double> coords);
