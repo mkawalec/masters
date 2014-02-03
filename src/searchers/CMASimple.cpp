@@ -92,7 +92,8 @@ namespace turb {
                 std::cerr << "Found " << fitness[0].first << std::endl;
 
                 delete[] result;
-                return std::vector<double>(xmean->memptr(), xmean->memptr() + N);
+                return std::vector<double>(values[fitness[0].second]->memptr(),
+                                           values[fitness[0].second]->memptr() + N);
             }
 
             if (fitness[floor(0.7 * lambda)].first - fitness[0].first < 0.1)
