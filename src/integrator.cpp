@@ -146,7 +146,6 @@ turb::Computer* initialize(int argc, char *argv[])
     }
 
     computer->serializer = turb::Serializer::choose(serializer_name);
-    computer->parse_params(argc, argv);
 
 
     // Setting the params
@@ -162,6 +161,7 @@ turb::Computer* initialize(int argc, char *argv[])
     computer->fit = fit;
     computer->threshold = threshold;
     computer->runs = runs;
+    computer->parse_params(argc, argv);
 
     return computer;
 }

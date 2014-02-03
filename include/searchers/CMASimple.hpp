@@ -48,9 +48,7 @@ namespace turb {
 
         Searcher* clone() const
         {
-            std::cout << "cloned " << check_filename << std::endl;
             Searcher *cloned = new CMASimple(*this);
-            cloned->check_filename = check_filename;
             return cloned;
         }
     };

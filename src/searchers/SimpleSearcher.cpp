@@ -89,7 +89,6 @@ namespace turb {
             *(d2u + 1) = *(du + 1);
             *d4u = *du;
             *(d4u + 1) = *(du + 1);
-            std::cout << *d2u << std::endl;
         }
 
 
@@ -106,7 +105,6 @@ namespace turb {
                 tmp[1] = k * *du;
 
                 *du = tmp[0];
-            std::cout << *du << std::endl;
                 *(du + 1) = tmp[1];
                 *d2v *= -pow(k, 2);
                 *(d2v + 1) *= -pow(k, 2);
@@ -195,18 +193,15 @@ namespace turb {
             char *first_end;
             strtod(tmp_str, &first_end);
             f[i] = strtod(first_end, NULL);
-
-            std::cout << i << " " << f[i] << std::endl;
         }
-        std::cout << std::endl;
 
         F(f, f_val1);
 
-        double norm = l2_norm(f_val1, integrator->size_real);
-        std::cout << norm << std::endl;
-        if (norm < 0.03) {
+        double norm = l2_norm(f_val1, 2 * integrator->size_real);
+        if (norm < 0.1) {
             throw ProgramDeathRequest("The file " +
-                    check_filename + " is correct");
+                    check_filename + " is correct with norm " +
+                    std::to_string(norm));
         }
         else {
             throw ProgramDeathRequest("The norm for file " +
