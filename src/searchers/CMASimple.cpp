@@ -32,6 +32,7 @@ namespace turb {
 
         std::vector<std::pair<double, int> > fitness;
         double *result = new double[N];
+        std::ofstream out("CMA" + std::to_string(rand()));
 
         for (int i = 0; i < stop_iters; ++i) {
             fitness.clear();
@@ -40,7 +41,15 @@ namespace turb {
             for (int j = 0; j < lambda; ++j) {
                 *values[j] = *xmean + sigma * (*B * (*D % randn(N)));
                 F(values[j]->memptr(), result);
-                fitness.push_back(std::make_pair(l2_norm(result, N), j));
+
+                double fitness_value = l2_norm(result, N);
+                    /*norm_u = l2_norm(values[j]->memptr(), N / 2),
+                    norm_v = l2_norm(values[j]->memptr() + N / 2, N / 2);*/
+
+                /*fitness_value += 0.6 / norm_u;
+                fitness_value += 0.4 / norm_v;*/
+
+                fitness.push_back(std::make_pair(fitness_value, j));
             }
 
             // Recombination of the mean
@@ -50,6 +59,10 @@ namespace turb {
             xmean->fill(0);
             for (int j = 0; j < mu; ++j)
                 *xmean += *values[fitness[j].second] * (*weights)(j);
+            if (i%100 == 0) std::cout << norm(*xold - *xmean, 2) << std::endl;
+
+            out << l2_norm(xmean->memptr(), N / 2) << " "
+                << l2_norm(xmean->memptr() + N / 2, N / 2) << std::endl;
 
             // Updating evolution paths
             *ps = (1 - cs) * *ps
@@ -86,11 +99,15 @@ namespace turb {
 
             if (norm(*xmean, 2) > 400 || isnan(fitness[0].first)) {
                 std::cerr << "No result" << std::endl;
+                out.close();
                 delete[] result;
                 throw NoResult();
             } else if (fitness[0].first < stop_fitness) {
-                std::cerr << "Found " << fitness[0].first << std::endl;
+                std::cerr << "Found " << fitness[0].first <<
+                    " " << norm(*xmean, 2) << " " <<
+                    norm(*values[fitness[0].second], 2) << std::endl;
 
+                out.close();
                 delete[] result;
                 return std::vector<double>(values[fitness[0].second]->memptr(),
                                            values[fitness[0].second]->memptr() + N);
@@ -106,8 +123,9 @@ namespace turb {
             }
 
         }
-        std::cout << "finished" << std::endl;
+        std::cerr << "finished" << std::endl;
 
+        out.close();
         delete[] result;
         throw NoResult();
     }
@@ -141,7 +159,7 @@ namespace turb {
         ps->fill(0.0);
         B->fill(fill::eye);
         D->fill(1.0);
-        *C = *B * diagmat(*D % *D) * B->t();
+        *C = *B * diagmat(pow(*D, 2)) * B->t();
         *invsqrtC = *B * diagmat(pow(*D, -1)) * B->t();
         eigenval = 0;
         chiN = pow(N, 0.5) * (1 - 1 / (4 * N) + 1 / (21 * pow(N, 2)));
@@ -153,7 +171,7 @@ namespace turb {
 
         // Parameter setting
         N = 2 * integrator->size_real;
-        lambda = 100 + floor(3 * log(N)/log(10));
+        lambda = 4 + floor(3 * log(N)/log(10));
         mu = lambda / 2;
         stop_iters = 1e3 * 5;
 
@@ -188,7 +206,7 @@ namespace turb {
 
         for (int i = 0; i < lambda; ++i)
             delete values[i];
-        //delete values;
+        delete values;
     }
 
 

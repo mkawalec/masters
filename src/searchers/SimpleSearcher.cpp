@@ -26,6 +26,11 @@ namespace turb {
         d2_v = (double*)
             fftw_malloc(sizeof(fftw_complex) * integrator->size_real);
 
+        d_cv = (fftw_complex*)
+            fftw_malloc(sizeof(fftw_complex) * integrator->size_complex);
+        dv = (double*)
+            fftw_malloc(sizeof(fftw_complex) * integrator->size_real);
+
         d2_cu = (fftw_complex*)
             fftw_malloc(sizeof(fftw_complex) * integrator->size_complex);
         d2_u = (double*)
@@ -44,12 +49,19 @@ namespace turb {
 
         fftw_import_wisdom_from_filename(get_wisdom_filename().c_str());
         du_c = fftw_plan_dft_r2c_1d(integrator->size_real, f, d_cu,
-                FFTW_MEASURE);
+                FFTW_MEASURE | FFTW_PRESERVE_INPUT);
         du_r = fftw_plan_dft_c2r_1d(integrator->size_real, d_cu, du,
                 FFTW_MEASURE);
 
+        dv_c = fftw_plan_dft_r2c_1d(integrator->size_real,
+                f + integrator->size_real, d_cv,
+                FFTW_MEASURE | FFTW_PRESERVE_INPUT);
+        dv_r = fftw_plan_dft_c2r_1d(integrator->size_real, d_cv, dv,
+                FFTW_MEASURE);
+
         d2v_c = fftw_plan_dft_r2c_1d(integrator->size_real,
-                f + integrator->size_real, d2_cv, FFTW_MEASURE);
+                f + integrator->size_real, d2_cv,
+                FFTW_MEASURE | FFTW_PRESERVE_INPUT);
         d2v_r = fftw_plan_dft_c2r_1d(integrator->size_real, d2_cv, d2_v,
                 FFTW_MEASURE);
 
@@ -65,8 +77,11 @@ namespace turb {
     void SimpleSearcher::init()
     {
         for (size_t i = 0; i < integrator->size_real; ++i) {
-            f[i] = integrator->u[i];
-            f[i + integrator->size_real] = integrator->v[i];
+            /*f[i] = integrator->u[i];
+            f[i + integrator->size_real] = integrator->v[i];*/
+            double x = i * integrator->domain_size / integrator->size_real;
+            f[i] = 0.4 * cos(x);
+            f[i + integrator->size_real] = 0.5 * sin(x);
         }
     }
 
@@ -75,10 +90,11 @@ namespace turb {
     {
         double inv_domain_size = 1 / integrator->domain_size;
         double inv_size = 1 / (double) integrator->size_real;
-        double tmp[2];
+        double tmp[2], tmp2[2];
 
         // Execute the plan transforming u/v to complex form
         fftw_execute_dft_r2c(du_c, input, d_cu);
+        fftw_execute_dft_r2c(dv_c, input + integrator->size_real, d_cv);
         fftw_execute_dft_r2c(d2v_c, input + integrator->size_real, d2_cv);
         for (size_t i = 0; i < integrator->size_complex; ++i) {
             double *d2u = d2_cu[i],
@@ -95,17 +111,22 @@ namespace turb {
         // Computing the derivative
         for (size_t i = 0; i < integrator->size_complex; ++i) {
             double k = (double) i * 2 * M_PI * inv_domain_size;
-            double *du = d_cu[i];
-            double *d2v = d2_cv[i];
-            double *d2u = d2_cu[i];
-            double *d4u = d4_cu[i];
+            double  *du     = d_cu[i],
+                    *dv     = d_cv[i],
+                    *d2v    = d2_cv[i],
+                    *d2u    = d2_cu[i],
+                    *d4u    = d4_cu[i];
 
             if (i < integrator->size_complex * 2.0 / 3) {
                 tmp[0] = -k * *(du + 1);
                 tmp[1] = k * *du;
+                tmp2[0] = -k * *(dv + 1);
+                tmp2[1] = k * *dv;
 
                 *du = tmp[0];
                 *(du + 1) = tmp[1];
+                *dv = tmp2[0];
+                *(dv + 1) = tmp2[1];
                 *d2v *= -pow(k, 2);
                 *(d2v + 1) *= -pow(k, 2);
                 *d2u *= -pow(k, 2);
@@ -115,6 +136,8 @@ namespace turb {
             } else {
                 *du = 0;
                 *(du + 1) = 0;
+                *dv = 0;
+                *(dv + 1) = 0;
                 *d2v = 0;
                 *(d2v + 1) = 0;
                 *d2u = 0;
@@ -126,6 +149,7 @@ namespace turb {
 
         // Transform the derivative back into the real form
         fftw_execute(du_r);
+        fftw_execute(dv_r);
         fftw_execute(d2v_r);
         fftw_execute(d2u_r);
         fftw_execute(d4u_r);
@@ -135,6 +159,7 @@ namespace turb {
             d2_u[i] *= inv_size;
             d4_u[i] *= inv_size;
             du[i] *= inv_size;
+            dv[i] *= inv_size;
         }
 
         compute_F(input, result);
@@ -149,12 +174,14 @@ namespace turb {
             double u = input[i];
             double v = input[i + size];
 
-            result[i] = -d4_u[i] - 2 * d2_u[i] +
+            /*result[i] = -d4_u[i] - 2 * d2_u[i] +
                 (-1 + integrator->e + (1 - integrator->e) *
                 (integrator->a * v + integrator->b * pow(v, 2)) +
                 du[i]) * u;
 
-            result[i + size] = -v + integrator->D * d2_v[i] + integrator->R * pow(u, 2);
+            result[i + size] = -v + integrator->D * d2_v[i] + integrator->R * pow(u, 2);*/
+            result[i] = d4_u[i] + u * dv[i] - 2 * pow(u, 2) - (1 - u) * u;
+            result[i + size] = d2_v[i] + v;
         }
     }
 

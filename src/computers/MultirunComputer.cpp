@@ -92,6 +92,7 @@ namespace turb {
         if (my_rank != 0) return;
 
         std::vector<std::vector<double> > single_pts;
+        std::cerr << "Starting with number of points: " << temp_vec.size() << std::endl;
 
         for (int i = 0; (unsigned)i < temp_vec.size(); ++i) {
             if (!contains(&single_pts, &temp_vec[i]))

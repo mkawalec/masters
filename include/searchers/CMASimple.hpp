@@ -13,8 +13,8 @@ namespace turb {
     class CMASimple : public SimpleSearcher {
     private:
         int N, lambda, mu;
-        double sigma = 0.3,
-               stop_fitness = 3e-2,
+        double sigma = 0.003,
+               stop_fitness = 3e-1,
                stop_iters,
                mueff,                   // Variance-effectiveness
                cc,                      // Time constant for cumulation for C
@@ -48,8 +48,7 @@ namespace turb {
 
         Searcher* clone() const
         {
-            Searcher *cloned = new CMASimple(*this);
-            return cloned;
+            return new CMASimple(*this);
         }
     };
 }

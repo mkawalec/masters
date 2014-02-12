@@ -25,6 +25,9 @@ namespace turb {
         Jacobian<T>(int m, int n);
         ~Jacobian<T>();
     };
+
+    template <typename T>
+    using matrix = Jacobian<T>;
 }
 
 #include "Jacobian.cpp"

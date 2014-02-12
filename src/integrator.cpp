@@ -133,7 +133,7 @@ turb::Computer* initialize(int argc, char *argv[])
         }
     }
 
-    if (!compatible) {
+    if (!compatible && false) {
         std::stringstream output;
         if (my_rank == 0)
             output << "Searcher " << searcher <<

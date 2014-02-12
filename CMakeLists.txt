@@ -61,6 +61,7 @@ set(HEADER_FILES
     include/searchers/NoTauSimple.hpp
     include/searchers/SimpleSearcher.hpp
     include/searchers/CMASimple.hpp
+    include/searchers/FireflySimple.hpp
     include/Searcher.hpp
     include/Computer.hpp
     include/computers/SimpleComputer.hpp
@@ -80,6 +81,7 @@ set(CPP_FILES
     src/searchers/SimpleSearcher.cpp
     src/searchers/NoTauSimple.cpp
     src/searchers/CMASimple.cpp
+    src/searchers/FireflySimple.cpp
     src/serializers/NormSerializer.cpp
     src/serializers/ComponentSerializer.cpp
     src/serializers/GenericSerializer.cpp
