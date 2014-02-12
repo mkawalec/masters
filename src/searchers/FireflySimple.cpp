@@ -56,7 +56,7 @@ namespace turb {
 
     std::vector<double> FireflySimple::run()
     {
-        alpha = 0.001 * problem_scale;
+        alpha = 0.1 * problem_scale;
 
         double last_fitness = INT_MAX;
         int last_fitness_change = 0;
@@ -68,7 +68,7 @@ namespace turb {
 
         for (int i = 0; i < points_n; ++i) {
             for (int j = 0; j < N; ++j)
-                (*old_points)(j, i) = f[j] + 0.01 * (double)d(gen);
+                (*old_points)(j, i) = f[j] + 0.1 * (double)d(gen);
 
             F(old_points->colptr(i), tmp_value->memptr());
             (*fitness)(i) = norm(*tmp_value, 2);

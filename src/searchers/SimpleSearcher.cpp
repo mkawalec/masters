@@ -77,11 +77,11 @@ namespace turb {
     void SimpleSearcher::init()
     {
         for (size_t i = 0; i < integrator->size_real; ++i) {
-            /*f[i] = integrator->u[i];
-            f[i + integrator->size_real] = integrator->v[i];*/
-            double x = i * integrator->domain_size / integrator->size_real;
+            f[i] = integrator->u[i];
+            f[i + integrator->size_real] = integrator->v[i];
+            /*double x = i * integrator->domain_size / integrator->size_real;
             f[i] = 0.4 * cos(x);
-            f[i + integrator->size_real] = 0.5 * sin(x);
+            f[i + integrator->size_real] = 0.5 * sin(x);*/
         }
     }
 
@@ -174,14 +174,14 @@ namespace turb {
             double u = input[i];
             double v = input[i + size];
 
-            /*result[i] = -d4_u[i] - 2 * d2_u[i] +
+            result[i] = -d4_u[i] - 2 * d2_u[i] +
                 (-1 + integrator->e + (1 - integrator->e) *
                 (integrator->a * v + integrator->b * pow(v, 2)) +
                 du[i]) * u;
 
-            result[i + size] = -v + integrator->D * d2_v[i] + integrator->R * pow(u, 2);*/
-            result[i] = d4_u[i] + u * dv[i] - 2 * pow(u, 2) - (1 - u) * u;
-            result[i + size] = d2_v[i] + v;
+            result[i + size] = -v + integrator->D * d2_v[i] + integrator->R * pow(u, 2);
+            /*result[i] = d4_u[i] + u * dv[i] - 2 * pow(u, 2) - (1 - u) * u;
+            result[i + size] = d2_v[i] + v;*/
         }
     }
 
