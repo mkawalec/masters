@@ -18,7 +18,7 @@ namespace turb {
                delta = 0.99,
                problem_scale = 4,
                threshold = 3e-1;
-        int N, points_n = 1000, stop_iters = 1e4;
+        int N, points_n = 30, stop_iters = 1e4;
 
         mat *old_points, *new_points;
         vec *fitness, *tmp_value;
