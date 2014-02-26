@@ -12,10 +12,32 @@
 namespace turb {
 
     template <typename T>
-    JacobianElement<T> Jacobian<T>::operator[](int index)
+    JacobianElement<T> Jacobian<T>::operator[] (int index)
     {
         if (index >= y) throw OutOfBounds();
         return elements[index];
+    }
+
+    template <typename T>
+    Jacobian<T> Jacobian<T>::operator* (Jacobian<T> *second)
+    {
+        if (x != second->x || y != second->y)
+            throw OutOfBounds("The dimensions don't match");
+
+        for (int i = 0; i < y; ++i) {
+            for (int j = 0; j < x; ++j) {
+                tmp_line[j] = 0;
+
+                for (int k = 0; k < x; k++)
+                    tmp_line[j] += (*this)[i][k] * (*second)[k][i];
+            }
+
+            // Copy over the tmp_line
+            for (int j = 0; j < x; ++j)
+                (*this)[i][j] = tmp_line[j];
+        }
+
+        return *this;
     }
 
     template <typename T>
@@ -51,6 +73,7 @@ namespace turb {
         x = n;
 
         jacobian = (T*) fftw_malloc(sizeof(T) * y * x);
+        tmp_line = (T*) fftw_malloc(sizeof(T) * x);
         elements = (JacobianElement<T>*)
             fftw_malloc(sizeof(JacobianElement<T>) * y);
 

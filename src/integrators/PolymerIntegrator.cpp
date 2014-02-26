@@ -55,8 +55,10 @@ namespace turb {
         fftw_free(c_u); fftw_free(c_v); fftw_free(dc_u);
         fftw_free(c_tau); fftw_free(c_dtau);
 
-        fftw_free(Lu); fftw_free(Lv); fftw_free(Ltau);
+        fftw_free(Lv);
         fftw_free(temp_array);
+
+        delete L_u_tau;
 
         initialize(dim_power, dt, domain_size);
     }
@@ -70,7 +72,8 @@ namespace turb {
         fftw_free(c_u); fftw_free(c_v); fftw_free(dc_u);
         fftw_free(c_tau); fftw_free(c_dtau);
 
-        fftw_free(Lu); fftw_free(Lv); fftw_free(Ltau);
+        fftw_free(Lv);
+        delete L_u_tau;
         fftw_free(temp_array);
     }
 
@@ -101,12 +104,9 @@ namespace turb {
         c_dtau = (fftw_complex*) fftw_malloc(size_complex * sizeof(fftw_complex));
 
         // Linear operators acting on u and v
-        Lu = (double*) fftw_malloc(size_complex *
-                sizeof(double) * 2.0 / 3);
         Lv = (double*) fftw_malloc(size_complex *
                 sizeof(double) * 2.0 / 3);
-        Ltau = (double*) fftw_malloc(size_complex *
-                sizeof(double) * 2.0 / 3);
+        L_u_tau = new matrix<std::complex<double> >(2 * size_complex, 2 * size_complex);
 
         // Plans to be applied initially
         i_u = fftw_plan_dft_r2c_1d(size_real, u, c_u,
@@ -155,15 +155,13 @@ namespace turb {
     {
         for (size_t i = 0; i < size_complex * 2.0 / 3; ++i) {
             double k = (double) i * 2 * M_PI / domain_size;
-            double Lx, Ly, Lz;
+            double Ly;
 
-            Lx = - pow(k, 4) + 2 * pow(k, 2) - (1 - e);
             Ly = - D * pow(k, 2) - 1;
-            Lz = - 1 / lambda;
 
-            Lu[i] = (1 + 0.5 * dt * Lx) / (1 - 0.5 * dt * Lx);
             Lv[i] = (1 + 0.5 * dt * Ly) / (1 - 0.5 * dt * Ly);
-            Ltau[i] = (1 + 0.5 * dt * Lz) / (1 - 0.5 * dt * Lz);
+
+            // Set the L_u_tau operator
         }
     }
 
@@ -254,12 +252,8 @@ namespace turb {
             double *tmp_v = c_v[i];
             double *tmp_tau = c_tau[i];
 
-            *tmp_u *= *(Lu + i);
-            *(tmp_u + 1) *= *(Lu + i);
             *tmp_v *= *(Lv + i);
             *(tmp_v + 1) *= *(Lv + i);
-            *tmp_tau *= *(Ltau + i);
-            *(tmp_tau + 1) *= *(Ltau + i);
         }
     }
 

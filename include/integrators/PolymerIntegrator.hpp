@@ -3,9 +3,11 @@
 
 #include "helpers.hpp"
 #include "Integrator.hpp"
+#include "Jacobian.hpp"
 
 #include <fftw3.h>
 #include <fstream>
+#include <complex>
 
 namespace turb {
 
@@ -21,7 +23,7 @@ namespace turb {
         void allocate(size_t dim_power, double timestep, double domain);
         double lambda;
 
-        double *Ltau = NULL;
+        matrix<std::complex<double> > *L_u_tau = NULL;
         fftw_complex *c_tau, *c_dtau;
 
         fftw_plan e_tau, i_tau, f_tau, f_dtau, b_tau;

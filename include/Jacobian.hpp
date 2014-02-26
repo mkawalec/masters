@@ -13,10 +13,15 @@ namespace turb {
     private:
         T *jacobian;
         JacobianElement<T> *elements;
+
+        // A temporary line, used for multiplication
+        T *tmp_line;
         int x, y;
 
     public:
-        JacobianElement<T> operator[](int index);
+        JacobianElement<T> operator[] (int index);
+        Jacobian<T> operator* (Jacobian<T> *second);
+
         void swap_lines(int i, int j);
         int max_arg(int k);
 
