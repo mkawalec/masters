@@ -45,8 +45,11 @@ namespace turb {
         integrator->parse_params(argc, argv);
 
         integrator->clear(samples, dt, domain_size);
-        integrator->setup_searcher();
-        integrator->searcher->parse_params(argc, argv);
+
+        if (integrator->search) {
+            integrator->setup_searcher();
+            integrator->searcher->parse_params(argc, argv);
+        }
 
         my_argc = argc;
         my_argv = new char* [argc];

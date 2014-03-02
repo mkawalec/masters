@@ -133,14 +133,16 @@ turb::Computer* initialize(int argc, char *argv[])
         }
     }
 
-    if (!compatible && false) {
+    if (!compatible) {
         std::stringstream output;
         if (my_rank == 0)
-            output << "Searcher " << searcher <<
-                "is not compatible with integrator " <<
-                computer->integrator->name << std::endl;
+            std::cerr << "Either no searcher is selected, "
+                "or the selected searcher is not compatible "
+                "with selected integrator. Disabling searching."
+                << std::endl;
 
-        throw turb::ProgramDeathRequest(&output);
+        computer->integrator->selected_searcher = "no_searcher";
+        computer->integrator->search = false;
     } else {
         computer->integrator->selected_searcher = searcher;
     }

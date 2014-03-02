@@ -39,14 +39,18 @@ namespace turb {
     void Integrator::setup_searcher()
     {
         if (searcher) delete searcher;
-        searcher = Searcher::choose(selected_searcher)->clone();
-        searcher->allocate(this);
+        if (selected_searcher != "no_searcher") {
+            searcher = Searcher::choose(selected_searcher)->clone();
+            searcher->allocate(this);
+        }
     }
 
     void Integrator::setup_searcher(int argc, char *argv[])
     {
         setup_searcher();
-        searcher->parse_params(argc, argv);
+
+        if (search)
+            searcher->parse_params(argc, argv);
     }
 
     std::vector<double> Integrator::get_norms(std::vector<double> coords)
