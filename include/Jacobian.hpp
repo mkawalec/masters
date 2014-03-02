@@ -19,7 +19,7 @@ namespace turb {
         int x, y;
 
     public:
-        JacobianElement<T> operator[] (int index);
+        JacobianElement<T>& operator[] (int index);
         Jacobian<T> operator* (Jacobian<T> *second);
 
         void swap_lines(int i, int j);

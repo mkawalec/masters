@@ -12,7 +12,7 @@
 namespace turb {
 
     template <typename T>
-    JacobianElement<T> Jacobian<T>::operator[] (int index)
+    JacobianElement<T>& Jacobian<T>::operator[] (int index)
     {
         if (index >= y) throw OutOfBounds();
         return elements[index];
