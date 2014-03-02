@@ -9,6 +9,7 @@
 #include <fstream>
 #include <complex>
 
+
 namespace turb {
 
     /*! \brief The class doing actual computation through
@@ -24,7 +25,7 @@ namespace turb {
         double lambda;
 
         matrix<std::complex<double> > *L_u_tau = NULL;
-        fftw_complex *c_tau, *c_dtau;
+        fftw_complex *c_tau, *c_dtau, *tmp_u, *tmp_tau;
 
         fftw_plan e_tau, i_tau, f_tau, f_dtau, b_tau;
 

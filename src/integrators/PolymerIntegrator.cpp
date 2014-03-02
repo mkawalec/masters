@@ -8,11 +8,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
+#include <complex>
 
 #include <boost/program_options.hpp>
 #include <boost/date_time.hpp>
 namespace po = boost::program_options;
 namespace pt = boost::posix_time;
+
+#include <armadillo>
+using namespace arma;
+
 
 namespace turb {
 
@@ -68,6 +73,7 @@ namespace turb {
     {
         fftw_free(u); fftw_free(v); fftw_free(du);
         fftw_free(tau); fftw_free(dtau);
+        fftw_free(tmp_u); fftw_free(tmp_tau);
 
         fftw_free(c_u); fftw_free(c_v); fftw_free(dc_u);
         fftw_free(c_tau); fftw_free(c_dtau);
@@ -102,6 +108,9 @@ namespace turb {
         dc_u = (fftw_complex*) fftw_malloc(size_complex * sizeof(fftw_complex));
         c_tau = (fftw_complex*) fftw_malloc(size_complex * sizeof(fftw_complex));
         c_dtau = (fftw_complex*) fftw_malloc(size_complex * sizeof(fftw_complex));
+
+        tmp_u = (fftw_complex*) fftw_malloc(size_complex * sizeof(fftw_complex));
+        tmp_tau = (fftw_complex*) fftw_malloc(size_complex * sizeof(fftw_complex));
 
         // Linear operators acting on u and v
         Lv = (double*) fftw_malloc(size_complex *
@@ -153,16 +162,50 @@ namespace turb {
      */
     void PolymerIntegrator::initialize_operators()
     {
-        for (size_t i = 0; i < size_complex * 2.0 / 3; ++i) {
+        double inv_lambda = 1 / lambda;
+
+        // Set the L_u_tau operator
+        cx_mat *Z = new cx_mat(2 * size_complex, 2 * size_complex, fill::zeros);
+        cx_mat *I = new cx_mat(2 * size_complex, 2 * size_complex, fill::eye);
+
+        for (size_t i = 0; i < size_complex; ++i) {
             double k = (double) i * 2 * M_PI / domain_size;
             double Ly;
 
-            Ly = - D * pow(k, 2) - 1;
+            if (i < size_complex * 2.0 / 3) {
+                Ly = - D * pow(k, 2) - 1;
+                Lv[i] = (1 + 0.5 * dt * Ly) / (1 - 0.5 * dt * Ly);
+            }
 
-            Lv[i] = (1 + 0.5 * dt * Ly) / (1 - 0.5 * dt * Ly);
+            // Fill in the L part
+            (*Z)(i, i) = std::complex<double>(-pow(k, 4) + 2 * pow(k, 2) - (1 - e), 0);
 
-            // Set the L_u_tau operator
+            // The C part
+            (*Z)(i, i + size_complex) = std::complex<double>(0, k);
+
+            // The A part
+            (*Z)(i + size_complex, i) = std::complex<double>(0, k * inv_lambda);
+
+            // The B part
+            (*Z)(i + size_complex, i + size_complex) = std::complex<double>(-inv_lambda, 0);
         }
+
+        // Multiplying by a constant
+        *Z = dt / 2 * (*Z);
+
+        // Creating the operator
+        *Z = ((*I) - (*Z)).i() * ((*I) + (*Z));
+
+        // Copy the operator into the right place
+        for (int i = 0; (unsigned)i < 2 * size_complex; ++i) {
+            for (int j = 0; (unsigned)j < 2 * size_complex; ++j) {
+                (*L_u_tau)[i][j] = (*Z)(i, j);
+            }
+        }
+
+        std::cout << "Here !" << std::endl;
+        delete Z;
+        delete I;
     }
 
     void PolymerIntegrator::initialize_function(double x, double *result)
@@ -247,14 +290,50 @@ namespace turb {
      */
     void PolymerIntegrator::compute_linear()
     {
-        for (size_t i = 0; i < size_complex * 2.0 / 3; ++i) {
-            double *tmp_u = c_u[i];
-            double *tmp_v = c_v[i];
-            double *tmp_tau = c_tau[i];
 
+        std::complex<double> *temp_u =
+            reinterpret_cast<std::complex<double>*>(tmp_u);
+        std::complex<double> *temp_tau =
+            reinterpret_cast<std::complex<double>*>(tmp_tau);
+        std::complex<double> *u =
+            reinterpret_cast<std::complex<double>*>(c_u);
+        std::complex<double> *tau =
+            reinterpret_cast<std::complex<double>*>(c_tau);
+
+        for (size_t i = 0; i < size_complex; ++i) {
+            temp_u[i] = 0;
+            temp_tau[i] = 0;
+        }
+
+        for (size_t i = 0; i < size_complex * 2.0 / 3; ++i) {
+            double *tmp_v = c_v[i];
             *tmp_v *= *(Lv + i);
             *(tmp_v + 1) *= *(Lv + i);
+
+            // Setting u and tau
+            for (int j = 0; (unsigned)j < size_complex; ++j) {
+                temp_u[i] += u[i] *
+                    (const std::complex<double>)(*L_u_tau)[i][j];
+                temp_u[i] += tau[i] *
+                    (const std::complex<double>)(*L_u_tau)[i][j + size_complex];
+
+                temp_tau[i] += u[i] *
+                    (const std::complex<double>)(*L_u_tau)[i + size_complex][j];
+                temp_tau[i] += tau[i] *
+                    (const std::complex<double>)(*L_u_tau)[i + size_complex][j + size_complex];
+            }
+
+            std::cout << i << " " << temp_u[i] << " " << temp_tau[i] << std::endl;
         }
+
+        // Rotate the pointers
+        fftw_complex *tmp = tmp_u;
+        tmp_u = c_u;
+        c_u = tmp;
+
+        tmp = tmp_tau;
+        tmp_tau = c_tau;
+        c_tau = tmp;
     }
 
     void PolymerIntegrator::nonlinear_transform(size_t i, double *result)
