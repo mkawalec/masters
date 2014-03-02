@@ -56,6 +56,7 @@ namespace turb {
     {
         fftw_free(u); fftw_free(v); fftw_free(du);
         fftw_free(tau); fftw_free(dtau);
+        fftw_free(tmp_u); fftw_free(tmp_tau);
 
         fftw_free(c_u); fftw_free(c_v); fftw_free(dc_u);
         fftw_free(c_tau); fftw_free(c_dtau);
@@ -203,7 +204,6 @@ namespace turb {
             }
         }
 
-        std::cout << "Here !" << std::endl;
         delete Z;
         delete I;
     }
@@ -323,17 +323,15 @@ namespace turb {
                     (const std::complex<double>)(*L_u_tau)[i + size_complex][j + size_complex];
             }
 
-            std::cout << i << " " << temp_u[i] << " " << temp_tau[i] << std::endl;
         }
 
-        // Rotate the pointers
-        fftw_complex *tmp = tmp_u;
-        tmp_u = c_u;
-        c_u = tmp;
 
-        tmp = tmp_tau;
-        tmp_tau = c_tau;
-        c_tau = tmp;
+        // We need to explicitly copy, cannot just rotate the pointers
+        // because of the way fftw plans work
+        for (size_t i = 0; i < size_complex; ++i) {
+            u[i] = temp_u[i];
+            tau[i] = temp_tau[i];
+        }
     }
 
     void PolymerIntegrator::nonlinear_transform(size_t i, double *result)
