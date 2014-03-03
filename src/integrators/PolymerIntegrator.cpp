@@ -185,11 +185,20 @@ namespace turb {
             (*Z)(i, i + size_complex) = std::complex<double>(0, k);
 
             // The A part
-            (*Z)(i + size_complex, i) = std::complex<double>(0, k * inv_lambda);
+            (*Z)(i + size_complex, i) = std::complex<double>(0, k);
 
             // The B part
             (*Z)(i + size_complex, i + size_complex) = std::complex<double>(-inv_lambda, 0);
         }
+
+        cx_vec *foo = new cx_vec(2 * size_complex);
+        for (int i = 0; (unsigned)i < size_complex; ++i)
+            (*foo)(i) = std::complex<double>(i, sqrt(i));
+
+        for (int i = (int)size_complex; (unsigned)i < 2 * size_complex; ++i)
+            (*foo)(i) = std::complex<double>(-(i - (int)size_complex),
+                                             sin(-(i - (int)size_complex)));
+
 
         // Multiplying by a constant
         *Z = dt / 2 * (*Z);
@@ -312,14 +321,14 @@ namespace turb {
 
             // Setting u and tau
             for (int j = 0; (unsigned)j < size_complex; ++j) {
-                temp_u[i] += u[i] *
+                temp_u[i] += u[j] *
                     (const std::complex<double>)(*L_u_tau)[i][j];
-                temp_u[i] += tau[i] *
+                temp_u[i] += tau[j] *
                     (const std::complex<double>)(*L_u_tau)[i][j + size_complex];
 
-                temp_tau[i] += u[i] *
+                temp_tau[i] += u[j] *
                     (const std::complex<double>)(*L_u_tau)[i + size_complex][j];
-                temp_tau[i] += tau[i] *
+                temp_tau[i] += tau[j] *
                     (const std::complex<double>)(*L_u_tau)[i + size_complex][j + size_complex];
             }
 
@@ -338,10 +347,10 @@ namespace turb {
     {
         double temp_u = (1 - e) *
             (a * v[i] + b * pow(v[i], 2)) * u[i] +
-            u[i] * du[i] - dtau[i];
+            u[i] * du[i];
 
         double temp_tau =
-            1 / lambda * du[i] - u[i] * dtau[i] + 2 * tau[i] * du[i];
+            - u[i] * dtau[i] + 2 * tau[i] * du[i];
 
         result[0] = u[i] + dt * temp_u;
         result[1] = v[i] + dt * R * pow(u[i], 2);

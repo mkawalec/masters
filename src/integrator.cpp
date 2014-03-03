@@ -62,7 +62,7 @@ turb::Computer* initialize(int argc, char *argv[])
 
     po::options_description simulation_opts("Simulation options");
     simulation_opts.add_options()
-        ("dt,t", po::value<double>(&dt)->default_value(0.0005),
+        ("dt", po::value<double>(&dt)->default_value(0.0005),
          "timestep size")
         ("end-time", po::value<double>(&end_time)->default_value(2000),
          "local simulation time when integration of a single run ends")
