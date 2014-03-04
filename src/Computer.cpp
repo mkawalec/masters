@@ -79,6 +79,51 @@ namespace turb {
         *output = prepend + process_number.str() + "-" + *output;
     }
 
+    void Computer::fold(std::vector<double> *folded, int target_rank)
+    {
+        int my_rank, process_count;
+        MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+        MPI_Comm_size(MPI_COMM_WORLD, &process_count);
+        MPI_Request send_request;
+        MPI_Status tmp_status;
+
+        MPI_Barrier(MPI_COMM_WORLD);
+        MPI_Issend(folded->data(), folded->size(), MPI_DOUBLE,
+                   target_rank, 0, MPI_COMM_WORLD, &send_request);
+
+        if (my_rank != 0) {
+            MPI_Wait(&send_request, &tmp_status);
+            return;
+        }
+
+        auto received = new std::vector<double>;
+        auto recv_array = new double[runs];
+
+        received->reserve(runs * process_count);
+
+        for (int i = 0; i < process_count; ++i) {
+            int received_count;
+            MPI_Status recv_status;
+
+            MPI_Recv(recv_array, runs, MPI_DOUBLE,
+                    i, 0, MPI_COMM_WORLD, &recv_status);
+            MPI_Get_count(&recv_status, MPI_DOUBLE, &received_count);
+
+            for (int j = 0; j < received_count; ++j)
+                received->push_back(recv_array[j]);
+        }
+
+        MPI_Wait(&send_request, &tmp_status);
+
+        folded->clear();
+        folded->reserve(received->size());
+        for (int i = 0; (unsigned)i < received->size(); ++i)
+            folded->push_back(received->at(i));
+
+        delete[] recv_array;
+        delete received;
+    }
+
 
     void Computer::fold(std::vector<std::vector<double> > *folded, int target_rank)
     {
@@ -92,11 +137,10 @@ namespace turb {
         MPI_Request send_request;
         MPI_Status tmp_status;
 
-        // TODO: MPI_Barrier
         MPI_Barrier(MPI_COMM_WORLD);
 
         if (my_rank == target_rank)
-            std::cerr << "About to fold stationary points..." << std::flush;
+            std::cerr << "About to fold..." << std::flush;
 
         // Gather
         // Prepare send array

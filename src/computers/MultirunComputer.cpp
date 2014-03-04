@@ -64,7 +64,9 @@ namespace turb {
         }
 
         print_stationary();
-        if (fit) fit_it(&decay_times);
+        if (fit) {
+            fit_it(&decay_times);
+        }
 
         if (!split_files) {
             if (output->is_open()) output->close();
@@ -137,10 +139,24 @@ namespace turb {
     template <typename T>
     void MultirunComputer<T>::fit_it(std::vector<double> *decay_times)
     {
-        std::cerr << "Fitting starting... " << std::flush;
+        fold(decay_times, 0);
 
+        int my_rank;
+        MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+        if (my_rank != 0) return;
+
+        std::cerr << "Fitting starting... " << std::flush;
         std::sort(decay_times->begin(), decay_times->end());
 
+        // All the survival probabilities are printed to another file
+        std::ofstream probs_out("survival_probability");
+        for (int i = 0; (unsigned)i < decay_times->size(); ++i) {
+            double prob = (decay_times->size() - i) / (double)decay_times->size();
+            probs_out << decay_times->at(i) << " " << prob << std::endl;
+        }
+        probs_out.close();
+
+        // The actual fitting code starts here
         alglib::real_2d_array x;
         alglib::real_1d_array y, c = "[1, 0]";
 

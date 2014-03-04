@@ -57,6 +57,7 @@ namespace turb {
         std::string prefix = "process";
 
         void fold(std::vector<std::vector<double> > *folded, int target_rank);
+        void fold(std::vector<double> *folded, int target_rank);
 
         // Saved command line arguments for later
         int my_argc;
