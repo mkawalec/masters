@@ -10,3 +10,4 @@ make -j3
 
 cp libarmadillo.so.4.100.1 $current
 cd $current
+ln -s libarmadillo.so.4.100.1 libarmadillo.so
