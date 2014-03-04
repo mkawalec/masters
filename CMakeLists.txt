@@ -118,8 +118,7 @@ find_package(FFTW REQUIRED)
 find_package(MPI REQUIRED)
 find_package(Armadillo)
 
-message(status ${ARMADILLO_INCLUDE_DIRS})
-if (test strequal ${ARMADILLO_INCLUDE_DIRS} "")
+if (NOT DEFINED ARMADILLO_INCLUDE_DIRS)
     set(ARMADILLO_INCLUDE_DIRS
         ${CMAKE_CURRENT_BINARY_DIR}/arma_include
         )
