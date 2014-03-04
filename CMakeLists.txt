@@ -108,6 +108,7 @@ else()
     message(status "gcc not found!")
     return()
 endif()
+set( CMAKE_VERBOSE_MAKEFILE on )
 
 unset(Boost_INCLUDE_DIR CACHE)
 unset(Boost_LIBRARY_DIRS CACHE)
