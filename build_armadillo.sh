@@ -9,5 +9,7 @@ cd armadillo-4.100.1
 make -j3
 
 cp libarmadillo.so.4.100.1 $current
+cp -r include arma_include
+
 cd $current
 ln -s libarmadillo.so.4.100.1 libarmadillo.so

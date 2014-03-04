@@ -116,7 +116,17 @@ unset(MPI_LIB CACHE)
 
 find_package(FFTW REQUIRED)
 find_package(MPI REQUIRED)
-find_package(Armadillo REQUIRED)
+find_package(Armadillo)
+
+message(status ${ARMADILLO_INCLUDE_DIRS})
+if (test strequal ${ARMADILLO_INCLUDE_DIRS} "")
+    set(ARMADILLO_INCLUDE_DIRS
+        ${CMAKE_CURRENT_BINARY_DIR}/arma_include
+        )
+    set(ARMADILLO_LIBRARIES
+        ${CMAKE_CURRENT_BINARY_DIR}/libarmadillo.so
+        )
+endif()
 
 set(Boost_USE_STATIC_LIBS        ON)
 set(Boost_USE_MULTITHREADED      OFF)
