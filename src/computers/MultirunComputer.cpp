@@ -45,7 +45,6 @@ namespace turb {
                 output = new std::ofstream(current_filename);
             }
 
-
             // Create a new instance, run and save the
             // output values
             T* instance = static_cast<T*>(clone());
@@ -143,16 +142,19 @@ namespace turb {
         std::sort(decay_times->begin(), decay_times->end());
 
         alglib::real_2d_array x;
-        alglib::real_1d_array y, c = "[0]";
+        alglib::real_1d_array y, c = "[1, 0]";
 
-        size_t start = (1 - fit_part) * decay_times->size();
-        size_t points_no = decay_times->size() - start;
-        double *values = new double[points_no];
-        double *points = new double[points_no];
+        int start = (1 - fit_part) * decay_times->size(),
+            points_no = decay_times->size() - start;
 
-        for (size_t i = start; i < decay_times->size(); ++i) {
-            values[(int)(i - start)] = (decay_times->size() - i) / (double) decay_times->size();
-            points[(int)(i - start)] = decay_times->at(i);
+        double *values = new double[points_no],
+               *points = new double[points_no];
+
+        for (int i = start; (unsigned)i < decay_times->size(); ++i) {
+            values[i - start] = (decay_times->size() - i) / (double) decay_times->size();
+            points[i - start] = decay_times->at(i);
+
+            std::cout << values[i-start] << " " << points[i-start] << std::endl;
         }
 
         x.setcontent(points_no, 1, points);
@@ -168,7 +170,7 @@ namespace turb {
         alglib::lsfitfit(state, e_x);
         alglib::lsfitresults(state, info, c, rep);
         std::cerr << "done" << std::endl;
-        std::cout << c[0] << " " << rep.rmserror << std::endl;
+        std::cout << c[0] << " " << c[1] << " " << rep.rmserror << std::endl;
 
         delete[] values;
         delete[] points;

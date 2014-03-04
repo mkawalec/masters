@@ -5,7 +5,7 @@
 #include "Computer.hpp"
 
 namespace turb {
-    
+
     /*! \brief Runs the integrator for one full cycle
      *      output data that is Serializer-dependent
      */
@@ -17,10 +17,14 @@ namespace turb {
         SimpleComputer();
         virtual ~SimpleComputer() { unregister(); }
 
-        Computer* clone() const { return new SimpleComputer(*this); }
+        Computer* clone() const {
+            auto tmp = new SimpleComputer(*this);
+            tmp->is_clone = true;
+            return tmp;
+        }
     };
 }
-        
+
 
 
 #endif

@@ -75,7 +75,7 @@ namespace turb {
                     run_history[index].tau    = norm_tau;
                 }
 
-                if (norm_u < decay_threshold || (i + 2 * print_every) * dt  > fast_threshold) {
+                if (norm_u < decay_threshold) {
                     std::string output_data;
                     output_data.reserve(30 * index);
                     for (size_t j = 0; j < index + 1; ++j) {

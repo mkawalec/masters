@@ -62,6 +62,8 @@ namespace turb {
         int my_argc;
         char **my_argv = NULL;
 
+        bool is_clone = false;
+
     public:
         /// Currently used Integrator
         Integrator *integrator = NULL;

@@ -24,7 +24,12 @@ namespace turb {
         virtual ~DecayPathComputer() { unregister(); delete searcher;}
 
         double compute_single(std::ofstream *output, MultirunComputer *base);
-        Computer* clone() const { return new DecayPathComputer(*this); }
+
+        Computer* clone() const {
+            auto tmp = new DecayPathComputer(*this);
+            tmp->is_clone = true;
+            return tmp;
+        }
 
         void set_options();
     };

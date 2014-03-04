@@ -63,7 +63,7 @@ namespace turb {
     void e_x(const alglib::real_1d_array &c, const alglib::real_1d_array &x,
             double &func, void *ptr)
     {
-        func = exp(-c[0] * x[0]);
+        func = c[0] * exp(-c[1] * x[0]);
         unused(ptr);
     }
 

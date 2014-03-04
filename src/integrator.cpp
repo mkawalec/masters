@@ -193,9 +193,6 @@ int main(int argc, char *argv[])
         computer->run();
     } catch (const turb::ProgramDeathRequest& e) {
         if (my_rank == 0) std::cerr << e.what() << std::endl;
-
-        MPI_Finalize();
-        return 0;
     }
 
     MPI_Finalize();

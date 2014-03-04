@@ -145,7 +145,8 @@ namespace turb {
 
     Computer::~Computer()
     {
-        if (my_argv) {
+        if (!is_clone && my_argv) {
+            std::cout << my_argc << " " << my_argv << std::endl;
             for (int i = 0; i < my_argc; ++i)
                 delete[] my_argv[i];
         }
