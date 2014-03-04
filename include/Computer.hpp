@@ -86,7 +86,7 @@ namespace turb {
         double end_time=2000, dt=0.0005, domain_size, threshold=300,
                static_interval;
         std::string output_filename, output_prefix;
-        bool split_files, fit=true;
+        bool split_files, fit=true, find_zeros;
 
         /*! \brief Produces additional information about
          *      current instance

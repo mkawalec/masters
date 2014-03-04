@@ -63,10 +63,11 @@ namespace turb {
             }
         }
 
-        print_stationary();
-        if (fit) {
+        if (find_zeros)
+            print_stationary();
+
+        if (fit)
             fit_it(&decay_times);
-        }
 
         if (!split_files) {
             if (output->is_open()) output->close();
@@ -187,6 +188,10 @@ namespace turb {
         alglib::lsfitresults(state, info, c, rep);
         std::cerr << "done" << std::endl;
         std::cout << c[0] << " " << c[1] << " " << rep.rmserror << std::endl;
+
+        std::ofstream fit_out(output_prefix + "fit");
+        fit_out << c[0] << " " << c[1] << " " << rep.rmserror << std::endl;
+        fit_out.close();
 
         delete[] values;
         delete[] points;

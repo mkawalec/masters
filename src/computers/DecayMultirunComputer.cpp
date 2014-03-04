@@ -46,7 +46,6 @@ namespace turb {
             }
         }
 
-        delete integrator;
         throw NoResult();
     }
 

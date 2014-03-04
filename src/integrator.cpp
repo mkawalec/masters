@@ -23,7 +23,7 @@ turb::Computer* initialize(int argc, char *argv[])
         searcher, output_prefix;
     double end_time, dt, domain_size, threshold;
     size_t print_every, samples, runs;
-    bool split_files, fit;
+    bool split_files, fit, find_zeros;
 
     int my_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
@@ -80,6 +80,8 @@ turb::Computer* initialize(int argc, char *argv[])
          "if specified, the MultirunComputers will try to fit"
          " returned values of u to an exponential curve and print"
          " results to stdout")
+        ("find-zeros", po::value<bool>(&find_zeros)->default_value(true),
+         "If true, the search for a stationary point will be performed")
         ("searcher",
          po::value<std::string>(&searcher)->default_value("no-tau-simple"),
          ("Specifies a searcher to use. Available are:\n\n" +
@@ -160,6 +162,7 @@ turb::Computer* initialize(int argc, char *argv[])
     computer->domain_size = domain_size;
     computer->output_filename = output_filename;
     computer->output_prefix = output_prefix;
+    computer->find_zeros = find_zeros;
     if (!computer->split_files)
         computer->split_files = split_files;
 
