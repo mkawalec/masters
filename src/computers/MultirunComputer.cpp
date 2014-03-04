@@ -31,7 +31,7 @@ namespace turb {
 
         std::ofstream *output = NULL;
         if (!split_files)
-            output = new std::ofstream(output_filename);
+            output = new std::ofstream(output_prefix + output_filename);
 
 
         for (size_t i = 0; i < runs; ++i) {
@@ -42,7 +42,7 @@ namespace turb {
                 output_number << std::setfill('0') << i;
 
                 current_filename += output_number.str();
-                output = new std::ofstream(current_filename);
+                output = new std::ofstream(output_prefix + current_filename);
             }
 
             // Create a new instance, run and save the
@@ -128,7 +128,7 @@ namespace turb {
             }
             std::cerr << std::endl;
 
-            std::ofstream output(current_filename);
+            std::ofstream output(output_prefix + current_filename);
             for (size_t j = 0; j < single_pts[i].size(); ++j)
                 output << j << " " << single_pts[i][j] << std::endl;
             output.close();
@@ -149,7 +149,7 @@ namespace turb {
         std::sort(decay_times->begin(), decay_times->end());
 
         // All the survival probabilities are printed to another file
-        std::ofstream probs_out("survival_probability");
+        std::ofstream probs_out(output_prefix + "survival_probability");
         for (int i = 0; (unsigned)i < decay_times->size(); ++i) {
             double prob = (decay_times->size() - i) / (double)decay_times->size();
             probs_out << decay_times->at(i) << " " << prob << std::endl;

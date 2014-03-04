@@ -27,7 +27,7 @@ namespace turb {
 
         set_filename(&output_filename);
 
-        std::ofstream output(output_filename);
+        std::ofstream output(output_prefix + output_filename);
         for (size_t i = 0; i * dt < end_time; ++i) {
             double current_time = i * dt;
             integrator->apply_step();

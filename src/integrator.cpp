@@ -20,7 +20,7 @@ turb::Computer* initialize(int argc, char *argv[])
 {
     std::string output_filename, config_filename,
         serializer_name, computer_name, integrator_name,
-        searcher;
+        searcher, output_prefix;
     double end_time, dt, domain_size, threshold;
     size_t print_every, samples, runs;
     bool split_files, fit;
@@ -43,6 +43,8 @@ turb::Computer* initialize(int argc, char *argv[])
          "put each output round in a separate file if set")
         ("print-every,p", po::value<size_t>(&print_every)->default_value(100),
          "output every p iterations")
+        ("prefix", po::value<std::string>(&output_prefix)->default_value(""),
+         "the prefix of all output files")
         ;
 
     po::options_description modules_opts("Modules options");
@@ -157,6 +159,7 @@ turb::Computer* initialize(int argc, char *argv[])
     computer->samples = samples;
     computer->domain_size = domain_size;
     computer->output_filename = output_filename;
+    computer->output_prefix = output_prefix;
     if (!computer->split_files)
         computer->split_files = split_files;
 

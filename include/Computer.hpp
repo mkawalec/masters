@@ -85,7 +85,7 @@ namespace turb {
         size_t print_every=100, samples=7, runs=2000;
         double end_time=2000, dt=0.0005, domain_size, threshold=300,
                static_interval;
-        std::string output_filename;
+        std::string output_filename, output_prefix;
         bool split_files, fit=true;
 
         /*! \brief Produces additional information about
