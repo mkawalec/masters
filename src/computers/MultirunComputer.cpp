@@ -30,13 +30,16 @@ namespace turb {
         set_filename(&output_filename);
 
         std::ofstream *output = NULL;
-        if (!split_files)
+        if (!split_files && use_output)
             output = new std::ofstream(output_prefix + output_filename);
+        if (!use_output)
+            output = new std::ofstream("/dev/null");
+
 
 
         for (size_t i = 0; i < runs; ++i) {
             std::string current_filename = output_filename;
-            if (split_files) {
+            if (split_files && use_output) {
                 std::ostringstream output_number;
                 output_number.width(log(runs)/log(10) + 1);
                 output_number << std::setfill('0') << i;

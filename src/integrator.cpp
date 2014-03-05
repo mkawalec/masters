@@ -23,7 +23,7 @@ turb::Computer* initialize(int argc, char *argv[])
         searcher, output_prefix;
     double end_time, dt, domain_size, threshold;
     size_t print_every, samples, runs;
-    bool split_files, fit, find_zeros;
+    bool split_files, fit, find_zeros, use_output;
 
     int my_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
@@ -45,6 +45,8 @@ turb::Computer* initialize(int argc, char *argv[])
          "output every p iterations")
         ("prefix", po::value<std::string>(&output_prefix)->default_value(""),
          "the prefix of all output files")
+        ("use-output", po::value<bool>(&use_output)->default_value(true),
+         "if specified, the standard output files will be used")
         ;
 
     po::options_description modules_opts("Modules options");
@@ -163,6 +165,7 @@ turb::Computer* initialize(int argc, char *argv[])
     computer->output_filename = output_filename;
     computer->output_prefix = output_prefix;
     computer->find_zeros = find_zeros;
+    computer->use_output = use_output;
     if (!computer->split_files)
         computer->split_files = split_files;
 
