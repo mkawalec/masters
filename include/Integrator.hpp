@@ -47,7 +47,7 @@ namespace turb {
         size_t size_real, size_complex;
 
         double dt, domain_size, dim_power,
-               e, a, b, D, R;
+               e, a, b, D, R, start_mult;
         double *u = NULL, *v = NULL, *du = NULL, *Lu = NULL, *Lv = NULL,
                *tau = NULL, *dtau = NULL;
 

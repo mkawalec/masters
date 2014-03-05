@@ -57,6 +57,7 @@ namespace turb {
             } catch (const RemoveOutput &e) {
                 output->close();
                 remove(current_filename.c_str());
+                std::cerr << "Removing the file" << std::endl;
             } catch (const NoResult &e) {}
 
             delete instance;

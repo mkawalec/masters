@@ -21,7 +21,7 @@ turb::Computer* initialize(int argc, char *argv[])
     std::string output_filename, config_filename,
         serializer_name, computer_name, integrator_name,
         searcher, output_prefix;
-    double end_time, dt, domain_size, threshold;
+    double end_time, dt, domain_size, threshold, start_mult;
     size_t print_every, samples, runs;
     bool split_files, fit, find_zeros, use_output;
 
@@ -88,6 +88,8 @@ turb::Computer* initialize(int argc, char *argv[])
          po::value<std::string>(&searcher)->default_value("no-tau-simple"),
          ("Specifies a searcher to use. Available are:\n\n" +
          turb::Searcher::list_available()).c_str())
+        ("start-mult", po::value<double>(&start_mult)->default_value(1),
+         "Specifies the multiplier of starting conditions")
         ;
 
     po::options_description cmdline_opts;
@@ -166,6 +168,7 @@ turb::Computer* initialize(int argc, char *argv[])
     computer->output_prefix = output_prefix;
     computer->find_zeros = find_zeros;
     computer->use_output = use_output;
+    computer->integrator->start_mult = start_mult;
     if (!computer->split_files)
         computer->split_files = split_files;
 
