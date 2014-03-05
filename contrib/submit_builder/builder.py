@@ -10,7 +10,7 @@ def create_submitters():
         with open("submit-" + str(R) + '.sh', 'w') as f:
             f.write(template)
             f.write("aprun -n 256 -N 32 /work/d54/d54/s0905879/integrator "
-                    "-c decay-mult -r 40 -f 1 --fast-threshold 7000 "
+                    "-c decay-mult -r 40 -f 1 --end-time 7000 "
                     "--find-zeros 0 --use-output 0 -R %s --prefix '%s'\n"
                     % (str(R), str(R) + '-'))
 
