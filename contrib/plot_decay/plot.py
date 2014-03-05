@@ -2,6 +2,8 @@
 
 from glob import glob
 import re
+import matplotlib.pyplot as plt
+import numpy as np
 
 
 def plot_decay():
@@ -14,7 +16,16 @@ def plot_decay():
                                     c1=float(numbers[1]),
                                     R=float(fit_file.split('-')[0])))
 
-    print decay_rates
+    decay_rates = sorted(decay_rates, key=lambda x: x['R'])
+    x = np.linspace(0, 1500, 1500)
+    fig, ax = plt.subplots()
+
+    for rate in decay_rates:
+        y = rate['c0'] * np.exp(- rate['c1'] * x)
+        ax.plot(x, y, label='R = %s' % (rate['R']))
+
+    ax.legend(loc=0)
+    plt.show()
 
 
 
