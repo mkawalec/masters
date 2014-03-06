@@ -6,7 +6,8 @@ module load PrgEnv-gnu
 module load boost
 module load gcc/4.8.2
 
-export CMAKE_PREFIX_PATH=/opt/fftw/3.3.0.4/sandybridge:${LD_LIBRARY_PATH}
+export CMAKE_PREFIX_PATH=/opt/fftw/3.3.0.4/sandybridge:${LD_LIBRARY_PATH}:/opt/cray/mpt/6.1.1/gni/mpich2-cray/81/
+export BOOST_ROOT=/home/y07/y07/cse/boost/1.55/gnu/boost/
 
 export CXX=g++
 export CC=gcc
