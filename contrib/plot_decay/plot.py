@@ -4,11 +4,12 @@ from glob import glob
 import re
 import matplotlib.pyplot as plt
 import numpy as np
+from sys import argv
 
 
 def plot_decay():
     decay_rates = []
-    for fit_file in glob('*fit'):
+    for fit_file in glob(argv[1]):
         with open(fit_file, 'r') as f:
             line = f.readline()
             numbers = line.split(' ')
@@ -25,6 +26,7 @@ def plot_decay():
         ax.plot(x, y, label='R = %s' % (rate['R']))
 
     ax.legend(loc=0)
+    ax.settitle(argv[2])
     plt.show()
 
 
