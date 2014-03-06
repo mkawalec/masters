@@ -2,11 +2,11 @@ module load git
 module load cmake/2.8.12
 
 module load fftw/3.3.0.4
-module swap PrgEnv-cray PrgEnv-gnu
+module load PrgEnv-gnu
 module load boost
 module load gcc/4.8.2
 
-export CMAKE_PREFIX_PATH=/opt/fftw/3.3.0.4/sandybridge:/opt/gcc/4.8.2/snos/lib64:/home/y07/y07/cse/boost/1.55/gnu/boost/lib:/opt/cray/csa/3.0.0-1_2.0500.41366.1.129.ari/lib64:/opt/cray/job/1.5.5-0.1_2.0500.41368.1.92.ari/lib64:/opt/gcc/mpc/0.8.1/lib:/opt/gcc/mpfr/2.4.2/lib:/opt/gcc/gmp/4.3.2/lib:/opt/gcc/4.8.1/snos/lib64:/usr/local/packages/cse/git/1.8.5.2/lib:/usr/local/packages/cse/python/2.7.6-pp/lib
+export CMAKE_PREFIX_PATH=/opt/fftw/3.3.0.4/sandybridge:${LD_LIBRARY_PATH}
 
 export CXX=g++
 export CC=gcc
