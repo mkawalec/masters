@@ -1,13 +1,12 @@
 module load git
-module load CMake/2.8.12
+module load cmake/2.8.12
 
 module load fftw/3.3.0.4
 module swap PrgEnv-cray PrgEnv-gnu
 module load boost
 module load gcc/4.8.2
-module load lapack
 
-export CMAKE_PREFIX_PATH=/opt/cray/pmi/4.0.0-1.0000.9282.69.4.gem:/opt/cray/libsci/12.0.02/GNU/47/interlagos:/opt/fftw/3.3.0.3/interlagos:/opt/cray/mpt/5.6.5/gni/mpich2-cray/74:/opt/cray/libsci/12.0.02/CRAY/81/x86_64:/opt/cray/xpmem/0.1-2.0400.31280.3.1.gem:/opt/cray/dmapp/3.2.1-1.0400.4255.2.159.gem:/opt/cray/ugni/2.3-1.0400.4374.4.88.gem:/opt/cray/udreg/2.3.1-1.0400.4264.3.1.gem:/opt/gcc/mpc/0.8.1:/opt/gcc/mpfr/2.4.2:/opt/gcc/gmp/4.3.2:/usr/local/packages/nag/boost/1.52/gnu:/opt/gcc/4.7.2/snos
+export CMAKE_PREFIX_PATH=/opt/fftw/3.3.0.4/sandybridge:/opt/gcc/4.8.2/snos/lib64:/home/y07/y07/cse/boost/1.55/gnu/boost/lib:/opt/cray/csa/3.0.0-1_2.0500.41366.1.129.ari/lib64:/opt/cray/job/1.5.5-0.1_2.0500.41368.1.92.ari/lib64:/opt/gcc/mpc/0.8.1/lib:/opt/gcc/mpfr/2.4.2/lib:/opt/gcc/gmp/4.3.2/lib:/opt/gcc/4.8.1/snos/lib64:/usr/local/packages/cse/git/1.8.5.2/lib:/usr/local/packages/cse/python/2.7.6-pp/lib
 
 export CXX=g++
 export CC=gcc
