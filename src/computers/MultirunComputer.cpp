@@ -191,10 +191,12 @@ namespace turb {
         alglib::lsfitfit(state, e_x);
         alglib::lsfitresults(state, info, c, rep);
         std::cerr << "done" << std::endl;
-        std::cout << c[0] << " " << c[1] << " " << rep.rmserror << std::endl;
+        std::cout << c[0] << " " << c[1] << " " << rep.rmserror
+                  << " " << decay_times.size() << std::endl;
 
         std::ofstream fit_out(output_prefix + "fit");
-        fit_out << c[0] << " " << c[1] << " " << rep.rmserror << std::endl;
+        fit_out << c[0] << " " << c[1] << " " << rep.rmserror
+                << " " << decay_times.size() << std::endl;
         fit_out.close();
 
         delete[] values;
