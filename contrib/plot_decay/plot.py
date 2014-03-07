@@ -15,7 +15,7 @@ def plot_decay():
             numbers = line.split(' ')
             decay_rates.append(dict(c0=float(numbers[0]),
                                     c1=float(numbers[1]),
-                                    R=float(fit_file.split('-')[0])))
+                                    R=float(fit_file.split('-')[1])))
 
     decay_rates = sorted(decay_rates, key=lambda x: x['R'])
     x = np.linspace(0, 1500, 1500)
@@ -26,8 +26,9 @@ def plot_decay():
         ax.plot(x, y, label='R = %s' % (rate['R']))
 
     ax.legend(loc=0)
-    ax.settitle(argv[2])
-    plt.show()
+    ax.set_title(argv[2])
+    fig.savefig(argv[2] + '.png', dpi=300)
+    #plt.show()
 
 
 
