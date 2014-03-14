@@ -108,7 +108,7 @@ else()
     message(status "gcc not found!")
     return()
 endif()
-#set( CMAKE_VERBOSE_MAKEFILE on )
+set( CMAKE_VERBOSE_MAKEFILE on )
 
 unset(Boost_INCLUDE_DIR CACHE)
 unset(Boost_LIBRARY_DIRS CACHE)
@@ -169,13 +169,13 @@ LINK_DIRECTORIES(
                  ${ARMADILLO_LIBRARIES}
                  )
 
-target_link_libraries(integrator -lm ${FFTW_LIBRARIES} 
-                                     ${Boost_LIBRARIES} 
-                                     Alglib
-                                     ${MPI_CXX_LIBRARIES}
-                                     ${ARMADILLO_LIBRARIES}
+target_link_libraries(integrator -lm 
+                                    ${FFTW_LIBRARIES} 
+                                    ${Boost_LIBRARIES} 
+                                    Alglib
+                                    ${MPI_CXX_LIBRARIES}
+                                    ${ARMADILLO_LIBRARIES}
                      )
-#target_link_libraries(test-suite -lm ${FFTW_LIBRARIES} ${Boost_LIBRARIES} ${ALGLIB_LIBRARIES})
 
 find_package(Doxygen)
 if(DOXYGEN_FOUND)

@@ -188,13 +188,20 @@ turb::Computer* initialize(int argc, char *argv[])
 
 void segv_handler(int sig)
 {
-    void *array[15];
-    size_t size;
+    int my_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 
-    size = backtrace(array, 15);
+    if (my_rank == 0) {
+        void *array[10];
+        size_t size;
 
-    fprintf(stderr, "Error: received a signal %d:\n", sig);
-    backtrace_symbols_fd(array, size, STDERR_FILENO);
+        // get void*'s for all entries on the stack
+        size = backtrace(array, 10);
+
+        // print out all the frames to stderr
+        fprintf(stderr, "Error: signal %d:\n", sig);
+        backtrace_symbols_fd(array, size, STDERR_FILENO);
+    }
 
     MPI_Finalize();
     exit(1);
@@ -208,6 +215,10 @@ int main(int argc, char *argv[])
 
     MPI_Init(&argc, &argv);
     turb::Computer *computer = NULL;
+
+    // Test the segfault
+    /*int *foo = (int*)-1;
+    printf("%d\n", *foo);*/
 
     int my_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
