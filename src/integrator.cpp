@@ -11,6 +11,7 @@
 #include <cstdlib>
 #include <list>
 #include <sstream>
+#include <exception>
 
 #include <stdio.h>
 #include <execinfo.h>
@@ -199,7 +200,7 @@ void segv_handler(int sig)
         size = backtrace(array, 10);
 
         // print out all the frames to stderr
-        fprintf(stderr, "Error: signal %d:\n", sig);
+        fprintf(stderr, "Error: signal SIGSEGV\n");
         backtrace_symbols_fd(array, size, STDERR_FILENO);
     }
 
@@ -207,11 +208,18 @@ void segv_handler(int sig)
     exit(1);
 }
 
+void segv_handler()
+{
+    std::cerr << "Exception thrown" << std::endl;
+    segv_handler(0);
+}
+
 
 int main(int argc, char *argv[])
 {
     // Gracefully catching a segfault
     signal(SIGSEGV, segv_handler);
+    std::set_terminate(segv_handler);
 
     MPI_Init(&argc, &argv);
     turb::Computer *computer = NULL;
