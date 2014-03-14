@@ -6,7 +6,7 @@
 #include <string>
 
 namespace turb {
-    
+
     GenericSerializer::GenericSerializer()
     {
         name = "generic";
@@ -14,7 +14,7 @@ namespace turb {
         description = "Prints a string passed as a third argument."
             " Should only be used with Computers capable of"
             " utilizing it properly";
-        
+
         Serializer::available.push_back(this);
     }
 
@@ -26,6 +26,6 @@ namespace turb {
         *output << *static_cast<std::string*>(output_data) << std::endl;
     }
 
-    GenericSerializer *generic_serializer_instance = 
+    GenericSerializer *generic_serializer_instance =
         new GenericSerializer();
 }

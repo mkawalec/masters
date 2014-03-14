@@ -32,6 +32,7 @@ def plot_a1():
                 label='%s pi' % (domain))
 
     ax.legend(loc=0)
+    fig.savefig('a1.png', dpi=300)
     plt.show()
 
 

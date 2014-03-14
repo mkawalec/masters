@@ -50,7 +50,7 @@ namespace turb {
 
             // Create a new instance, run and save the
             // output values
-            T* instance = static_cast<T*>(clone());
+            auto instance = static_cast<T*>(clone());
             try {
                 decay_times.push_back(instance->compute_single(output, this));
                 *output << std::endl << std::endl;
@@ -58,7 +58,9 @@ namespace turb {
                 output->close();
                 remove(current_filename.c_str());
                 std::cerr << "Removing the file" << std::endl;
-            } catch (const NoResult &e) {}
+            } catch (const NoResult &e) {
+                std::cerr << "Finished with no result" << std::endl;
+            }
 
             delete instance;
             if (split_files) {
