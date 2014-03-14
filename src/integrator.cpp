@@ -210,7 +210,10 @@ void segv_handler(int sig)
 
 void segv_handler()
 {
-    std::cerr << "Exception thrown" << std::endl;
+    int my_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+
+    if (my_rank == 0) std::cerr << "Exception thrown" << std::endl;
     segv_handler(0);
 }
 
@@ -226,7 +229,8 @@ int main(int argc, char *argv[])
 
     // Test the segfault
     /*int *foo = (int*)-1;
-    printf("%d\n", *foo);*/
+    printf("%d\n", *foo);
+    throw new turb::InstanceNotFound;*/
 
     int my_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
