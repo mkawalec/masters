@@ -190,10 +190,6 @@ turb::Computer* initialize(int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
-    // Gracefully catching a segfault
-    signal(SIGSEGV, segv_handler);
-    std::set_terminate(segv_handler);
-
     MPI_Init(&argc, &argv);
     turb::Computer *computer = NULL;
 
