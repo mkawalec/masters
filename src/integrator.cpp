@@ -187,35 +187,6 @@ turb::Computer* initialize(int argc, char *argv[])
     return computer;
 }
 
-void *dbg_array[10];
-int dbg_rank;
-size_t dbg_size;
-
-void segv_handler(int sig)
-{
-    MPI_Comm_rank(MPI_COMM_WORLD, &dbg_rank);
-
-    if (dbg_rank == 0) {
-        // get void*'s for all entries on the stack
-        dbg_size = backtrace(dbg_array, 10);
-
-        // print out all the frames to stderr
-        fprintf(stderr, "Error: signal SIGSEGV\n");
-        backtrace_symbols_fd(dbg_array, dbg_size, STDERR_FILENO);
-    }
-
-    MPI_Finalize();
-    exit(1);
-}
-
-void segv_handler()
-{
-    MPI_Comm_rank(MPI_COMM_WORLD, &dbg_rank);
-
-    if (dbg_rank == 0) std::cerr << "Exception thrown" << std::endl;
-    segv_handler(0);
-}
-
 
 int main(int argc, char *argv[])
 {
@@ -225,11 +196,6 @@ int main(int argc, char *argv[])
 
     MPI_Init(&argc, &argv);
     turb::Computer *computer = NULL;
-
-    // Test the segfault
-    /*int *foo = (int*)-1;
-    printf("%d\n", *foo);
-    throw new turb::InstanceNotFound;*/
 
     int my_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
