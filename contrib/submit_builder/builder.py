@@ -14,7 +14,7 @@ def create_submitters():
 
             # R range from 0.9 to 1.09
             for R in [x * 0.01 for x in range(90, 110)]:
-                f.write("aprun -n 240 -N 24 /work/d59/d59/s0905879/integrator "
+                f.write("aprun -n 2400 -N 24 /work/d59/d59/s0905879/integrator "
                         "-c decay-mult -r 40 -f 1 --end-time 7000 -d %s "
                         "--find-zeros 0 --use-output 0 -R %s --prefix '%s'\n"
                         % (str(domain * pi), str(R), str(domain) + '-' + str(R) + '-'))
