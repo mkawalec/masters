@@ -88,7 +88,7 @@ namespace turb {
     JacobianElement<T>::JacobianElement(int line_size)
     {
         line = (T*) fftw_malloc(sizeof(T) * line_size);
-        line_size = line_size;
+        this->line_size = line_size;
         free_at_destruction = true;
     }
 

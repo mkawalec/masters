@@ -20,7 +20,6 @@ namespace turb {
      */
     double l2_norm(double *array, size_t size, size_t start_i=0);
     double l2_norm(long double *array, size_t size, size_t start_i=0);
-    double l2_norm(__float128 *array, size_t size, size_t start_i=0);
 
     /*! \brief Returns L2 norm of a complex array
      *  \param array a complex-numbered array
