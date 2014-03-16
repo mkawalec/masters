@@ -21,6 +21,7 @@ namespace turb {
         virtual void check_verify() = 0;
 
     public:
+        Searcher() { Searcher::available.push_back(this);}
         virtual ~Searcher() { };
 
         virtual std::vector<double> run() = 0;

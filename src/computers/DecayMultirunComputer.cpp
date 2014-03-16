@@ -17,8 +17,6 @@ namespace turb {
         suggested_serializer = "generic";
 
         decay_threshold = 5.0;
-
-        Computer::available.push_back(this);
     }
 
     double DecayMultirunComputer::compute_single(std::ofstream *output, MultirunComputer *base)

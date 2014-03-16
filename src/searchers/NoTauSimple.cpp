@@ -8,6 +8,17 @@
 
 namespace turb {
 
+    NoTauSimple::NoTauSimple()
+    {
+        name = "no-tau-simple";
+        class_name = "Searcher";
+        description = "Searches for stationary points using "
+            "a simple linar descent strategy";
+        compatible_integrators.push_back("paper");
+
+        set_options();
+    }
+
     std::vector<double> NoTauSimple::run()
     {
         size_t size = integrator->size_real;
@@ -122,18 +133,6 @@ namespace turb {
         jacobian = new Jacobian<jacobian_type>(2 * integrator->size_real,
                                 2 * integrator->size_real + 1);
         SimpleSearcher::allocate(integrator);
-    }
-
-    NoTauSimple::NoTauSimple()
-    {
-        name = "no-tau-simple";
-        class_name = "Searcher";
-        description = "Searches for stationary points using "
-            "a simple linar descent strategy";
-        compatible_integrators.push_back("paper");
-
-        set_options();
-        Searcher::available.push_back(this);
     }
 
     NoTauSimple::~NoTauSimple()

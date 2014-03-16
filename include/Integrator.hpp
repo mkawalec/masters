@@ -38,6 +38,7 @@ namespace turb {
 
 
     public:
+        Integrator() { Integrator::available.push_back(this);}
         virtual ~Integrator() { };
         virtual void clear(size_t dim_power, double dt, double domain_size=2*M_PI) = 0;
 

@@ -66,6 +66,9 @@ namespace turb {
         bool is_clone = false;
 
     public:
+        virtual ~Computer();
+        Computer() { Computer::available.push_back(this); }
+
         /// Currently used Integrator
         Integrator *integrator = NULL;
 
@@ -103,7 +106,6 @@ namespace turb {
          */
         virtual Computer* clone() const = 0;
 
-        virtual ~Computer();
     };
 }
 

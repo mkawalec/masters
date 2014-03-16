@@ -15,7 +15,6 @@ namespace turb {
         class_name = "Serializer";
         description = "Prints current time and then norm "
                       "real(u) and norm real(v)";
-        Serializer::available.push_back(this);
     }
 
     void NormSerializer::serialize(Integrator *instance,

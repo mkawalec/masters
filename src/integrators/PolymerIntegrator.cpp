@@ -28,7 +28,6 @@ namespace turb {
         class_name = "integrator";
         description = " integrator trying to model polymers.";
         set_options();
-        Integrator::available.push_back(this);
 
         search = false;
     }

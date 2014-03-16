@@ -18,6 +18,8 @@ namespace turb {
      */
     class Serializer : public Base<Serializer> {
     public:
+        Serializer() { Serializer::available.push_back(this);}
+
         /*! \brief Function called to persist current
          *      integrator state.
          *
@@ -27,7 +29,7 @@ namespace turb {
          *  \param time current time, its role depends
          *      on output method used
          */
-        virtual void serialize(Integrator *integrator, 
+        virtual void serialize(Integrator *integrator,
                 std::ofstream *output, void *time) = 0;
 
         /*! \brief Base::clone overload to return

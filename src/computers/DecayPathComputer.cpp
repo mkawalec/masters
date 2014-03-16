@@ -25,7 +25,6 @@ namespace turb {
         split_files = true;
 
         set_options();
-        Computer::available.push_back(this);
     }
 
     void DecayPathComputer::set_options()

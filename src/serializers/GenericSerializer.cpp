@@ -14,8 +14,6 @@ namespace turb {
         description = "Prints a string passed as a third argument."
             " Should only be used with Computers capable of"
             " utilizing it properly";
-
-        Serializer::available.push_back(this);
     }
 
     void GenericSerializer::serialize(Integrator *nothing,

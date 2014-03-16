@@ -16,8 +16,6 @@ namespace turb {
                       "and serializes the results every few frames";
         serializer = NULL;
         suggested_serializer = "norm";
-
-        Computer::available.push_back(this);
     }
 
     void SimpleComputer::compute()

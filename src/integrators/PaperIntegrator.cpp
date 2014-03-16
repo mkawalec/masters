@@ -24,7 +24,6 @@ namespace turb {
         description = "Integrator operating on an equation from"
                       " the paper";
         set_options();
-        Integrator::available.push_back(this);
 
         search = true;
     }

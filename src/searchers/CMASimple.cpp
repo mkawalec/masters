@@ -23,7 +23,6 @@ namespace turb {
         compatible_integrators.push_back("paper");
 
         set_options();
-        Searcher::available.push_back(this);
     }
 
     std::vector<double> CMASimple::run()
