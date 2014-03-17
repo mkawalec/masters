@@ -435,7 +435,7 @@ namespace turb {
         normalize(v, size_real);
         normalize(tau, size_real);
     }
-
-    PolymerIntegrator *polymer_integrator_instance = new PolymerIntegrator();
 }
+
+DECLARE_TURB_PLUGIN(PolymerIntegrator);
 

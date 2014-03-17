@@ -1,5 +1,6 @@
 #include "computers/DecayMultirunComputer.hpp"
 #include "Computer.hpp"
+#include "helpers.hpp"
 
 #include <fstream>
 #include <string>
@@ -46,9 +47,7 @@ namespace turb {
 
         throw NoResult();
     }
-
-    DecayMultirunComputer *decay_mult_instance = new DecayMultirunComputer();
 }
 
-
+DECLARE_TURB_PLUGIN(DecayMultirunComputer);
 

@@ -84,4 +84,6 @@ namespace turb {
 
 }
 
+#define DECLARE_TURB_PLUGIN(clsname) turb::clsname plugin_ ## clsname
+
 #endif

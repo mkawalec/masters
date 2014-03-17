@@ -291,7 +291,7 @@ namespace turb {
         fftw_execute(e_u); fftw_execute(e_v);
         normalize(u, size_real); normalize(v, size_real);
     }
-
-    PaperIntegrator *paper_integrator_instance = new PaperIntegrator();
 }
+
+DECLARE_TURB_PLUGIN(PaperIntegrator);
 

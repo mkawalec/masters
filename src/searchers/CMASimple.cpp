@@ -207,7 +207,7 @@ namespace turb {
             delete values[i];
         delete values;
     }
-
-
-    CMASimple *cma_instance = new CMASimple();
 }
+
+DECLARE_TURB_PLUGIN(CMASimple);
+

@@ -150,12 +150,7 @@ namespace turb {
         std::cerr << "finished here" << std::endl;
         throw NoResult();
     }
-
-    FireflySimple *firefly_instance = new FireflySimple();
 }
 
-
-
-
-
+DECLARE_TURB_PLUGIN(FireflySimple);
 

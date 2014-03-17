@@ -37,7 +37,7 @@ namespace turb {
         output.close();
         delete integrator;
     }
-
-    SimpleComputer *simple_computer_instance = new SimpleComputer();
 }
+
+DECLARE_TURB_PLUGIN(SimpleComputer);
 

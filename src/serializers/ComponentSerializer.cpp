@@ -28,8 +28,7 @@ namespace turb {
 
         *output << std::endl;
     }
-
-    ComponentSerializer *cpt_serializer_instance = new ComponentSerializer();
 }
 
+DECLARE_TURB_PLUGIN(ComponentSerializer);
 

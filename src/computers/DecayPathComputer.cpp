@@ -2,6 +2,7 @@
 #include "Computer.hpp"
 #include "exceptions.hpp"
 #include "Searcher.hpp"
+#include "helpers.hpp"
 
 #include <fstream>
 #include <string>
@@ -114,8 +115,7 @@ namespace turb {
         delete run_history;
         throw RemoveOutput();
     }
-
-
-    DecayPathComputer *decay_path_instance = new DecayPathComputer();
 }
+
+DECLARE_TURB_PLUGIN(DecayPathComputer);
 

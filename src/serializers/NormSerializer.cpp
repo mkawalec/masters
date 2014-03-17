@@ -27,8 +27,7 @@ namespace turb {
             l2_norm(instance->v, instance->size_real) <<
             std::endl;
     }
-
-    NormSerializer *norm_serializer_instance = new NormSerializer();
 }
 
+DECLARE_TURB_PLUGIN(NormSerializer);
 

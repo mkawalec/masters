@@ -2,6 +2,7 @@
 #include "Jacobian.hpp"
 #include "searchers/SimpleSearcher.hpp"
 #include "searchers/NoTauSimple.hpp"
+#include "helpers.hpp"
 
 #include <mpi.h>
 
@@ -139,6 +140,6 @@ namespace turb {
     {
         delete jacobian;
     }
-
-    NoTauSimple *simple_instance = new NoTauSimple;
 }
+
+DECLARE_TURB_PLUGIN(NoTauSimple);

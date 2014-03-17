@@ -24,6 +24,6 @@ namespace turb {
         *output << *static_cast<std::string*>(output_data) << std::endl;
     }
 
-    GenericSerializer *generic_serializer_instance =
-        new GenericSerializer();
 }
+
+DECLARE_TURB_PLUGIN(GenericSerializer);
