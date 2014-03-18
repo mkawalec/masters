@@ -11,6 +11,8 @@ def create_submitters():
 
     if argv[2] == 'mult':
         create_input_mult(template)
+    elif argv[2] == 'lambda':
+        create_lambda(template)
     else:
         create_diff_domains(template)
 
@@ -26,6 +28,19 @@ def create_input_mult(template):
                      (mult, 'input-mult-' + str(mult) + '-'))
 
     output.close()
+
+
+def create_lambda(template):
+    points = np.logspace(-2, -7, 40)
+
+    for i in range(len(points)/10):
+        with open('submit-lambda-' + str(i), 'w') as f:
+            f.write(template)
+            for j in range(i * len(points) / 4, (i + 1) * len(points) / 4):
+                f.write("aprun -n 2400 -N 24 /work/d59/d59/s0905879/integrator "
+                     "-c decay-mult -r 40 -f 1 --end-time 7000 --dt 0.00005 "
+                     "-i polymer --lambda %e --find-zeros 0 --use-output 0 --prefix '%s'\n" %
+                     (points[j], 'input-lambda-' + str(points[j]) + '-'))
 
 
 def create_diff_domains(template):
