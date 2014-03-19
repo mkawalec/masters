@@ -4,11 +4,12 @@ from glob import glob
 import re
 import matplotlib.pyplot as plt
 import numpy as np
+from sys import argv
 
 
-def plot_a1():
+def get_a1(pattern):
     a1 = {}
-    for fit_file in glob('*-fit'):
+    for fit_file in glob(pattern):
         with open(fit_file) as f:
             line = f.readline()
             coeffs = line.split(' ')
@@ -22,9 +23,12 @@ def plot_a1():
     # Sort and remove the soring hints
     for key in a1.keys():
         a1[key] = sorted(a1[key], key=lambda x: x[0])
-        a1[key] = dict(y=map(lambda x: x[1], a1[key]),
-                       x=map(lambda x: x[0], a1[key]))
+        a1[key] = dict(y=map(lambda x: float(x[1]), a1[key]),
+                       x=map(lambda x: float(x[0]), a1[key]))
+    return a1
 
+def plot_a1():
+    a1 = get_a1(argv[1])
     fig, ax = plt.subplots()
 
     for domain in sorted(a1.keys(), key=lambda x: float(x)):
