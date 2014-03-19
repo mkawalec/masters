@@ -15,6 +15,7 @@ import random as rnd
 
 import params
 
+
 r = redis.StrictRedis(host='localhost', port=6379, db=0)
 
 def model_function(x, a0, a1):
@@ -72,8 +73,8 @@ def gen_fits(fit_prop, prop=1, cache=True):
             random_popt.append(popt)
 
         # Getting the average
-        avg = map(lambda x: x / len(random_popt), reduce(gen_sum, random_popt))
-        variance = [np.var(map(lambda x: x[i], random_popt)) for i in range(len(popt))]
+        avg = map(lambda x: x / len(random_popt), reduce(gen_sum, random_popt, [0, 0]))
+        variance = [np.var(map(lambda x: x[i], random_popt)) for i in range(2)]
 
         if domain not in fits:
             fits[domain] = {}
@@ -84,34 +85,30 @@ def gen_fits(fit_prop, prop=1, cache=True):
     return fits
 
 
-def plot_fits(fit_prop):
-    fits = gen_fits(fit_prop)
+def plot_fits(fit_prop, prop=1, cache=True):
+    fits = gen_fits(fit_prop, prop, cache)
 
     fig, ax = plt.subplots()
-    plt.title(fit_prop)
+    plt.title('Fit to tail of %.1f, with %.2f in each sample' % (fit_prop, prop))
     for n, domain in enumerate(sorted(fits.keys(), key=lambda x: float(x))):
         x = sorted(fits[domain].keys(), key=lambda x: float(x))
-        y = map(lambda x: fits[domain][x][1], x)
-        ax.plot(x, y, label='%s pi' % (domain),
+        y = map(lambda x: fits[domain][x]['avg'][1], x)
+        err = map(lambda x: fits[domain][x]['variance'][1], x)
+
+        ax.errorbar(x, y, yerr=np.array(err), label='%s pi' % (domain),
                 color=hsv_to_rgb(float(n) / len(fits.keys()), 0.7, 0.9))
 
     ax.legend(loc=0)
 
 
 def gen_surv_plot():
-    with open('24-1.08-survival_probability') as f:
+    with open('24-1.06-survival_probability') as f:
         points = map(lambda x: (float(x.split(' ')[0]),
                                 float(x.split(' ')[1])),
                      f.readlines())
 
-    with open('24-1.08-fit') as f:
-        a0, a1 = map(lambda x: float(x), f.read().split(' ')[:2])
-
-
-    popt, pcov = opt.curve_fit(model_function,
-                               np.array(map(lambda x: x[0], points[len(points)*3/9:])),
-                               np.array(map(lambda x: x[1], points[len(points)*3/9:])),
-                               (a0, a1))
+    fits = gen_fits(0.3, 0.1)
+    a0, a1 = fits['24']['1.06']['avg']
 
     fig, ax = plt.subplots()
     ax.plot(map(lambda x: x[0], points), map(lambda x: x[1], points),
@@ -121,11 +118,7 @@ def gen_surv_plot():
                 map(lambda x: x[0], points)),
             label="fit")
 
-    ax.plot(map(lambda x: x[0], points),
-            map(lambda x: model_function(x, popt[0], popt[1]),
-                map(lambda x: x[0], points)),
-            label="taily fit")
-
+    plt.title('Data and fit at R=1.06')
     ax.legend(loc=0)
     plt.show()
 
@@ -136,7 +129,9 @@ if __name__ == "__main__":
     #plot_fits(0.1)
     #plot_fits(0.05)
     #plt.show()
-    print gen_fits(0.3, 0.1)
+    #plot_fits(0.3, 0.010)
+    gen_surv_plot()
+    plt.show()
 
 
 
