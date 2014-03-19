@@ -38,7 +38,7 @@ def create_lambda(template):
             f.write(template)
             for j in range(i * len(points) / 4, (i + 1) * len(points) / 4):
                 f.write("aprun -n 2400 -N 24 /work/d59/d59/s0905879/integrator "
-                     "-c decay-mult -r 40 -f 1 --end-time 7000 --dt 0.00005 "
+                     "-c decay-mult -r 40 -f 1 --end-time 7000 "
                      "-i polymer --lambda %e --find-zeros 0 --use-output 0 --prefix '%s'\n" %
                      (points[j], 'input-lambda-' + str(points[j]) + '-'))
 
