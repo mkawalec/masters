@@ -43,7 +43,9 @@ def gen_sum(acc, el):
 
 
 def gen_fits(fit_prop, prop=1, cache=True):
-    fits = r.get('fits' + str(fit_prop) + '-' + str(prop))
+    key = 'fits-%f-%f' % (fit_prop, prop)
+    fits = r.get(key)
+
     if fits and cache:
         return pickle.loads(fits)
     else:
@@ -78,7 +80,7 @@ def gen_fits(fit_prop, prop=1, cache=True):
 
         fits[domain][R] = dict(variance=variance, avg=avg)
 
-    r.set('fits' + str(fit_prop), pickle.dumps(fits))
+    r.set(key, pickle.dumps(fits))
     return fits
 
 
