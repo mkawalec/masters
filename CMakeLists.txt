@@ -154,6 +154,7 @@ message(status "** Armadillo include: ${ARMADILLO_INCLUDE_DIRS}")
 message(status "** Armadillo libraries: ${ARMADILLO_LIBRARIES}")
 
 
+
 INCLUDE_DIRECTORIES(
                  ${INCLUDE_DIRECTORIES}
                  ${Boost_INCLUDE_DIR} 

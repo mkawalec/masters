@@ -216,6 +216,7 @@ namespace turb {
         delete I;
     }
 
+
     void PolymerIntegrator::initialize_function(double x, double *result)
     {
         result[0] = 2.0 * cos(x) + 0.03 * cos(11 * x / 12.0);
