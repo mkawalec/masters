@@ -118,4 +118,3 @@ namespace turb {
 }
 
 DECLARE_TURB_PLUGIN(DecayPathComputer);
-

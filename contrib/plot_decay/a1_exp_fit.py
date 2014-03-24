@@ -99,14 +99,14 @@ def plot_coeffs(coeffs):
 
     plt.subplots_adjust(bottom=0.3, left=0.20)
     ax1.set_yscale('log')
-    ax1.set_xlabel('Domain size')
+    ax1.set_xlabel('Domain size/$\pi$')
     savefig('b1_vs_domain.png', dpi=600)
 
     fig, ax2 = plt.subplots()
     ax2.plot(toplot['x'], toplot['y2'], marker='o',
             color=hsv_to_rgb(0.5, 0.7, 0.9), label='$b_2$')
 
-    ax2.set_xlabel('Domain size')
+    ax2.set_xlabel('Domain size/$\pi$')
     plt.subplots_adjust(bottom=0.3)
     savefig('b2_vs_domain.png', dpi=600)
 
