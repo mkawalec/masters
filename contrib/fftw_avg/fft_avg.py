@@ -12,7 +12,7 @@ from colorsys import hsv_to_rgb
 import params
 
 
-def get_avg(prefix='../../build/'):
+def get_avg(prefix='../../build/', maxlen=-1):
     u = []
     for filename in glob(prefix + 'process0-output*'):
         with open(filename) as f:
@@ -21,39 +21,54 @@ def get_avg(prefix='../../build/'):
                          filter(lambda x: len(x.split(' ')) > 2, lines)))
 
     u = filter(lambda x: len(x) > 0, u)
-    transformed = map(lambda x: np.fft.fft(np.array(x)), u)
-    avg = []
-    maxlen = -1
-    for fft in transformed:
-        if fft.shape[0] > maxlen:
-            maxlen = fft.shape[0]
-    for i in range(maxlen):
-        avg.append(0)
+    for points in u:
+        if len(points) > maxlen:
+            maxlen = len(points)
+    for points in u:
+        for i in range(maxlen - len(points)):
+            points.append(0)
 
-    for i in range(maxlen):
+
+    transformed = map(lambda x: np.fft.fft(np.array(x)), u)
+    trans_len = transformed[0].shape[0]
+    avg = [0] * trans_len
+
+    for i in range(trans_len):
         for j in range(len(transformed)):
-            if np.shape(transformed[j])[0] > i:
-                location = i * int(maxlen / np.shape(transformed[j])[0])
-                avg[location] += transformed[j][i] * np.conjugate(transformed[j][i])
+                avg[i] += transformed[j][i] * np.conjugate(transformed[j][i])
 
     for i in range(len(avg)):
         avg[i] /= len(transformed)
 
-    return dict(x=map(lambda x: 1 / 0.0005 * float(x) / len(avg), range(len(avg))), y=avg)
+    return dict(x=map(lambda x: 1 / 0.05 * float(x) / len(avg), range(len(avg))), y=avg)
 
 def plot_avg():
-    second = get_avg('/tmp/e-02/')
-    fifth = get_avg('/tmp/e-05/')
+    maxlen = -1
+    for filename in glob('/tmp/e-02/process0-output*'):
+        with open(filename) as f:
+            length = len(f.readlines())
+            if length > maxlen:
+                maxlen = length
+
+    for filename in glob('/tmp/e-05/process0-output*'):
+        with open(filename) as f:
+            length = len(f.readlines())
+            if length > maxlen:
+                maxlen = length
+
+    second = get_avg('/tmp/e-02/', maxlen)
+    fifth = get_avg('/tmp/e-05/', maxlen)
 
 
     color1 = hsv_to_rgb(0, 0.7, 0.9)
     color2 = hsv_to_rgb(0.5, 0.7, 0.9)
     fig, ax = plt.subplots()
-    ax.plot(fifth['x'], fifth['y'], label='1e-05', color=color1)
-    ax.plot(second['x'], second['y'], alpha=0.8, label='1e-02', color=color2)
+    ax.plot(fifth['x'], fifth['y'], label='1e-05', color=color2)
+    ax.plot(second['x'], second['y'], alpha=0.8, label='1e-02', color=color1)
     ax.set_xscale('log')
     ax.set_yscale('log')
     ax.legend(loc=0)
+    plt.subplots_adjust(bottom=0.15)
     ax.set_xlabel('frequency')
     savefig('fourier.png', dpi=600)
 
