@@ -71,6 +71,11 @@ def set_value(params, container, value):
 
 
 def gen_fits(fit_prop, prop=1, prefix='', cache=True):
+    ''' Generates the fits to the experimental data,
+        and caches them on redis. Please use this function
+        to access the fits and not generate them yourself
+    '''
+
     key = 'fits-%f-%f-%s' % (fit_prop, prop, prefix)
     fits = r.get(key)
 

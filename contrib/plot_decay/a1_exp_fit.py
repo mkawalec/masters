@@ -23,6 +23,7 @@ def model_function(x, a0, a1, a2):
 
 def execute_fit():
     fits = gen_fits(0.3, 0.1)
+    print fits[24][1.04]
 
     rcParams['figure.figsize'] = 4.981320049813201, 4
     gs = gridspec.GridSpec(5, 1)

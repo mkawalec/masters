@@ -63,8 +63,8 @@ def plot_avg():
     color1 = hsv_to_rgb(0, 0.7, 0.9)
     color2 = hsv_to_rgb(0.5, 0.7, 0.9)
     fig, ax = plt.subplots()
-    ax.plot(fifth['x'], fifth['y'], label='1e-05', color=color2)
-    ax.plot(second['x'], second['y'], alpha=0.8, label='1e-02', color=color1)
+    ax.plot(fifth['x'], fifth['y'], label='$\lambda=10^{-5}$', color=color2)
+    ax.plot(second['x'], second['y'], alpha=0.8, label='$\lambda=10^{-2}$', color=color1)
     ax.set_xscale('log')
     ax.set_yscale('log')
     ax.legend(loc=0)
@@ -90,15 +90,17 @@ def plot_portrait():
     color2 = hsv_to_rgb(0.5, 0.7, 0.9)
 
     ax.plot(map(lambda x: x[1], pos02), map(lambda x: x[2], pos02),
-            label='$10^{-2}$', color=color1)
+            label='$\lambda=10^{-2}$', color=color1)
     ax.plot(map(lambda x: x[1], pos05), map(lambda x: x[2], pos05),
-            label='$10^{-5}$', color=color2, alpha=0.8)
+            label='$\lambda=10^{-5}$', color=color2, alpha=0.8)
     ax.legend(loc=0)
+    ax.set_xlabel('l2 norm of $u(t)$')
+    ax.set_ylabel('l2 norm of $v(t)$')
+    plt.subplots_adjust(bottom=0.15)
     savefig('phase.png', dpi=600)
 
 
 if __name__ == '__main__':
     plot_avg()
     plot_portrait()
-    plt.show()
 

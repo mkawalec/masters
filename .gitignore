@@ -1,6 +1,7 @@
 build
 drop
 tags
+masters-venv
 
 .*.sw*
 *.pyc
